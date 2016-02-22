@@ -11,7 +11,7 @@
  * A range which provides single-use iteration.
  *
  * #### Notes
- * This is the most basic type of all ranges.
+ * This is the most basic type of range.
  */
 export
 interface IInputRange<T> {
@@ -23,7 +23,7 @@ interface IInputRange<T> {
   isEmpty(): boolean;
 
   /**
-   * Retrieve the value at the front of the range.
+   * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
    *
@@ -47,30 +47,30 @@ interface IInputRange<T> {
 
 
 /**
- * A range which can save the current location.
+ * An input range which can be sliced into a new range.
  */
 export
 interface IForwardRange<T> extends IInputRange<T> {
   /**
-   * Create a clone of the range at the current location.
+   * Create an independent slice of the range.
    *
-   * @returns An independent clone of the current range.
+   * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned clone can be used to iterate independently of the
-   * original range. This is useful for lookahead and duplication.
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
    */
-  save(): this;
+  slice(): IForwardRange<T>;
 }
 
 
 /**
- * A range which can be consumed from the front and back.
+ * A forward range which can also be iterated from the back.
  */
 export
 interface IBidirectionalRange<T> extends IForwardRange<T> {
   /**
-   * Retrieve the value at the back of the range.
+   * Get the value at the back of the range.
    *
    * @returns The value at the back of the range.
    *
@@ -90,30 +90,41 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * are easier for the JIT to inline.
    */
   popBack(): void;
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
+   */
+  slice(): IBidirectionalRange<T>;
 }
 
 
 /**
- * A range which provides random access iteration.
+ * A bidirectional range which also supports random access.
  */
 export
 interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
   /**
-   * Get the number of items remaining in the range.
+   * Get the number of values remaining in the range.
    *
-   * @returns The current number of items in the range.
+   * @returns The current number of values in the range.
    *
    * #### Notes
-   * If the range is empty, the behavior is undefined.
+   * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number;
 
   /**
-   * Get the item in the range at the given index.
+   * Get the value at a specific index in the range.
    *
-   * @param index - The index of the item of interest.
+   * @param index - The index of the value of interest.
    *
-   * @returns The item at the specified index.
+   * @returns The value at the specified index.
    *
    * #### Notes
    * If the index is out of range, the behavior is undefined.
@@ -121,6 +132,27 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   at(index: number): T;
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice. The default
+   *   is the front of the current range.
+   *
+   * @param length - The length of the slice. The default is the
+   *   length of the current range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
+   *
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the length is out of range, the behavior is undefined.
+   */
+  slice(start?: number, length?: number): IRandomAccessRange<T>;
 }
 
 
@@ -147,7 +179,18 @@ interface IMutableInputRange<T> extends IInputRange<T> {
  * A forward range which supports mutation.
  */
 export
-interface IMutableForwardRange<T> extends IMutableInputRange<T>, IForwardRange<T> { }
+interface IMutableForwardRange<T> extends IMutableInputRange<T>, IForwardRange<T> {
+  /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
+   */
+  slice(): IMutableForwardRange<T>;
+}
 
 
 /**
@@ -166,6 +209,17 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
    * If the range is empty, the behavior is undefined.
    */
   setBack(value: T): void;
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
+   */
+  slice(): IMutableBidirectionalRange<T>;
 }
 
 
@@ -175,18 +229,39 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
 export
 interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IRandomAccessRange<T> {
   /**
-   * Set the value at the given index.
+   * Set the value at a specific index in the range.
    *
-   * @param index - The index to modify.
+   * @param index - The index of the value of interest.
    *
-   * @param value - The value to set at the index.
+   * @param value - The value to set at the specified index.
    *
    * #### Notes
-   * This overwrites the current value at the given index.
+   * This overwrites the current value at the specified index.
    *
    * If the index is out of range, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.
    */
   setAt(index: number, value: T): void;
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice. The default
+   *   is the front of the current range.
+   *
+   * @param length - The length of the slice. The default is the
+   *   length of the current range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
+   *
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the length is out of range, the behavior is undefined.
+   */
+  slice(start?: number, length?: number): IMutableRandomAccessRange<T>;
 }
