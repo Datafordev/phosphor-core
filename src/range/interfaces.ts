@@ -42,7 +42,7 @@ interface IInputRange<T> {
    * a range to advance without looking up a value, and simple methods
    * are easier for the JIT to inline.
    */
-  popFront(): void;
+  dropFront(): void;
 }
 
 
@@ -89,7 +89,7 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * a range to advance without looking up a value, and simple methods
    * are easier for the JIT to inline.
    */
-  popBack(): void;
+  dropBack(): void;
 
   /**
    * Create an independent slice of the range.
