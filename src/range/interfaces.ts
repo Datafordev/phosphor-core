@@ -136,11 +136,11 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
   /**
    * Create an independent slice of the range.
    *
-   * @param start - The starting index of the slice. The default
-   *   is the front of the current range.
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero.
    *
-   * @param length - The length of the slice. The default is the
-   *   length of the current range.
+   * @param stop - The ending index of the slice, exclusive.
+   *   The default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
@@ -150,9 +150,9 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the length is out of range, the behavior is undefined.
+   * If the stop index out of range, the behavior is undefined.
    */
-  slice(start?: number, length?: number): IRandomAccessRange<T>;
+  slice(start?: number, stop?: number): IRandomAccessRange<T>;
 }
 
 
@@ -247,11 +247,11 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
   /**
    * Create an independent slice of the range.
    *
-   * @param start - The starting index of the slice. The default
-   *   is the front of the current range.
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero.
    *
-   * @param length - The length of the slice. The default is the
-   *   length of the current range.
+   * @param stop - The ending index of the slice, exclusive.
+   *   The default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
@@ -261,7 +261,7 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the length is out of range, the behavior is undefined.
+   * If the stop index out of range, the behavior is undefined.
    */
-  slice(start?: number, length?: number): IMutableRandomAccessRange<T>;
+  slice(start?: number, stop?: number): IMutableRandomAccessRange<T>;
 }
