@@ -159,7 +159,7 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
 
 
 /**
- * An input range which supports mutation.
+ * An input range which supports mutation of the underlying data.
  */
 export
 interface IMutableInputRange<T> extends IInputRange<T> {
@@ -178,7 +178,7 @@ interface IMutableInputRange<T> extends IInputRange<T> {
 
 
 /**
- * A forward range which supports mutation.
+ * A forward range which supports mutation of the underlying data.
  */
 export
 interface IMutableForwardRange<T> extends IMutableInputRange<T>, IForwardRange<T> {
@@ -196,7 +196,7 @@ interface IMutableForwardRange<T> extends IMutableInputRange<T>, IForwardRange<T
 
 
 /**
- * A bidirectional range which supports mutation.
+ * A bidirectional range which supports mutation of the underlying data.
  */
 export
 interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidirectionalRange<T> {
@@ -226,7 +226,7 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
 
 
 /**
- * A random access range which supports mutation.
+ * A random access range which supports mutation of the underlying data.
  */
 export
 interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IRandomAccessRange<T> {
