@@ -122,7 +122,8 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest.
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
    *
    * @returns The value at the specified index.
    *
@@ -137,10 +138,11 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero.
+   *   The default is zero. Negative indices are not supported.
    *
-   * @param stop - The ending index of the slice, exclusive.
-   *   The default is the length of the range.
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the array. Negative indices are
+   *   not supported.
    *
    * @returns A new slice of the current range.
    *
@@ -231,7 +233,8 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
   /**
    * Set the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest.
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
    *
    * @param value - The value to set at the specified index.
    *
@@ -248,10 +251,11 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero.
+   *   The default is zero. Negative indices are not supported.
    *
-   * @param stop - The ending index of the slice, exclusive.
-   *   The default is the length of the range.
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the array. Negative indices are
+   *   not supported.
    *
    * @returns A new slice of the current range.
    *
