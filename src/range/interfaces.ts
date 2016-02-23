@@ -141,7 +141,7 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    *   The default is zero. Negative indices are not supported.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the array. Negative indices are
+   *   default is the length of the range. Negative indices are
    *   not supported.
    *
    * @returns A new slice of the current range.
@@ -254,7 +254,7 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    *   The default is zero. Negative indices are not supported.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the array. Negative indices are
+   *   default is the length of the range. Negative indices are
    *   not supported.
    *
    * @returns A new slice of the current range.
