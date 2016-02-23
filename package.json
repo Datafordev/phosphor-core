@@ -1,0 +1,40 @@
+{
+  "name": "phosphor-core",
+  "version": "0.0.0",
+  "description": "The core non-ui functionality of the PhosphorJS project.",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^1.8.0"
+  },
+  "scripts": {
+    "clean": "rimraf lib",
+    "build:src": "tsc --project src",
+    "build": "npm run build:src",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phosphorjs/phosphor-core.git"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "keywords": [
+    "algorithm",
+    "collections",
+    "messaging",
+    "properties",
+    "range",
+    "ranges",
+    "signaling"
+  ],
+  "author": "S. Chris Colbert <sccolbert@gmail.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/phosphorjs/phosphor-core/issues"
+  },
+  "homepage": "https://github.com/phosphorjs/phosphor-core"
+}
