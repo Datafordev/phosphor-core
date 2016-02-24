@@ -63,8 +63,8 @@ namespace ArrayExt {
    * If the stop index out of range, the behavior is undefined.
    */
   export
-  function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutRange<T> {
-    return new MutRange<T>(array, start, stop);
+  function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableRange<T> {
+    return new MutableRange<T>(array, start, stop);
   }
 
   /**
@@ -230,7 +230,7 @@ namespace ArrayExt {
    * A mutable random access range for an array.
    */
   export
-  class MutRange<T> extends Range<T> implements IMutableRandomAccessRange<T> {
+  class MutableRange<T> extends Range<T> implements IMutableRandomAccessRange<T> {
     /**
      * Set the value at the front of the range.
      *
@@ -307,12 +307,12 @@ namespace ArrayExt {
      *
      * If the stop index out of range, the behavior is undefined.
      */
-    slice(start = 0, stop = this.length()): MutRange<T> {
+    slice(start = 0, stop = this.length()): MutableRange<T> {
       if (__DEBUG__) {
         assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid Index!');
         assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid Index!');
       }
-      return new MutRange(this._array, this._a + start, this._a + stop);
+      return new MutableRange(this._array, this._a + start, this._a + stop);
     }
   }
 }
