@@ -6,8 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IBidirectionalRange, IForwardRange, IInputRange, IMutableBidirectionalRange,
-  IMutableForwardRange, IMutableInputRange, IMutableRandomAccessRange,
+  IBidirectionalRange, IMutableBidirectionalRange, IMutableRandomAccessRange,
   IRandomAccessRange
 } from './interfaces';
 
