@@ -24,40 +24,43 @@ import {
  * range will also be mutable and/or random access.
  */
 export
-function retro<T>(range: IMutableRandomAccessRange<T>): retro.MutRandRange<T>;
+function backward<T>(range: IMutableRandomAccessRange<T>): backward.MutRandRange<T>;
 export
-function retro<T>(range: IRandomAccessRange<T>): retro.RandRange<T>;
+function backward<T>(range: IRandomAccessRange<T>): backward.RandRange<T>;
 export
-function retro<T>(range: IMutableBidirectionalRange<T>): retro.MutRange<T>;
+function backward<T>(range: IMutableBidirectionalRange<T>): backward.MutRange<T>;
 export
-function retro<T>(range: IBidirectionalRange<T>): retro.Range<T>;
+function backward<T>(range: IBidirectionalRange<T>): backward.Range<T>;
 export
-function retro<T>(range: any): any {
+function backward<T>(range: any): any {
   if (typeof range.setAt === 'function') {
-    return new retro.MutRandRange<T>(range);
+    return new backward.MutRandRange<T>(range);
   }
   if (typeof range.at === 'function') {
-    return new retro.RandRange<T>(range);
+    return new backward.RandRange<T>(range);
   }
   if (typeof range.setBack === 'function') {
-    return new retro.MutRange<T>(range);
+    return new backward.MutRange<T>(range);
   }
-  return new retro.Range<T>(range);
+  return new backward.Range<T>(range);
 }
 
 
 /**
- * The namespace which holds the retro range implementations.
+ * The namespace which holds the backward range implementations.
  */
 export
-namespace retro {
+namespace backward {
   /**
-   * A bidirectional retro range.
+   * A bidirectional backward range.
+   *
+   * #### Notes
+   * Ranges of this type iterate their source in reverse order.
    */
   export
   class Range<T> implements IBidirectionalRange<T> {
     /**
-     * Construct a new retro range.
+     * Construct a new backward range.
      *
      * @param source - The bidirectional range to iterate.
      */
@@ -66,7 +69,7 @@ namespace retro {
     }
 
     /**
-     * The original range provided during construction.
+     * The source range for the backward range.
      */
     source: IBidirectionalRange<T>;
 
@@ -145,12 +148,12 @@ namespace retro {
   }
 
   /**
-   * A mutable bidirectional retro range.
+   * A mutable bidirectional backward range.
    */
   export
   class MutRange<T> extends Range<T> implements IMutableBidirectionalRange<T> {
     /**
-     * Construct a new mutable retro range.
+     * Construct a new mutable backward range.
      *
      * @param source - The mutable bidirectional range to iterate.
      */
@@ -159,7 +162,7 @@ namespace retro {
     }
 
     /**
-     * The source range for the retro range.
+     * The source range for the backward range.
      */
     source: IMutableBidirectionalRange<T>;
 
@@ -202,12 +205,12 @@ namespace retro {
   }
 
   /**
-   * A random access retro range.
+   * A random access backward range.
    */
   export
   class RandRange<T> extends Range<T> implements IRandomAccessRange<T> {
     /**
-     * Construct a new random access retro range.
+     * Construct a new random access backward range.
      *
      * @param source - The random access range to iterate.
      */
@@ -216,7 +219,7 @@ namespace retro {
     }
 
     /**
-     * The source range for the retro range.
+     * The source range for the backward range.
      */
     source: IRandomAccessRange<T>;
 
@@ -277,12 +280,12 @@ namespace retro {
   }
 
   /**
-   * A mutable random access retro range.
+   * A mutable random access backward range.
    */
   export
   class MutRandRange<T> extends RandRange<T> implements IMutableRandomAccessRange<T> {
     /**
-     * Construct a new mutable random access retro range.
+     * Construct a new mutable random access backward range.
      *
      * @param source - The mutable random access range to iterate.
      */
@@ -291,7 +294,7 @@ namespace retro {
     }
 
     /**
-     * The source range for the retro range.
+     * The source range for the backward range.
      */
     source: IMutableRandomAccessRange<T>;
 
