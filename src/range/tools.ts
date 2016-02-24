@@ -13,34 +13,24 @@ import {
 
 
 /**
- * Create a range which iterates a bidirectional range in reverse.
+ * Iterate a bidirectional range in reverse order.
  *
  * @param range - The bidirectional range of interest.
  *
- * @returns A new range which iterates the given range in reverse.
+ * @returns A range which iterates the given range in reverse.
  *
  * #### Notes
- * If a mutable and/or random access range is provided, the returned
- * range will also be mutable and/or random access.
+ * If a random access range is provided, the returned range will also
+ * support random access.
  */
 export
-function backward<T>(range: IMutableRandomAccessRange<T>): backward.MutRandRange<T>;
-export
-function backward<T>(range: IRandomAccessRange<T>): backward.RandRange<T>;
-export
-function backward<T>(range: IMutableBidirectionalRange<T>): backward.MutRange<T>;
+function backward<T>(range: IRandomAccessRange<T>): backward.RandomRange<T>;
 export
 function backward<T>(range: IBidirectionalRange<T>): backward.Range<T>;
 export
 function backward<T>(range: any): any {
-  if (typeof range.setAt === 'function') {
-    return new backward.MutRandRange<T>(range);
-  }
   if (typeof range.at === 'function') {
-    return new backward.RandRange<T>(range);
-  }
-  if (typeof range.setBack === 'function') {
-    return new backward.MutRange<T>(range);
+    return new backward.RandomRange<T>(range);
   }
   return new backward.Range<T>(range);
 }
@@ -55,7 +45,7 @@ namespace backward {
    * A bidirectional backward range.
    *
    * #### Notes
-   * Ranges of this type iterate their source in reverse order.
+   * This range iterates a bidirectional source range in reverse order.
    */
   export
   class Range<T> implements IBidirectionalRange<T> {
@@ -148,67 +138,13 @@ namespace backward {
   }
 
   /**
-   * A mutable bidirectional backward range.
-   */
-  export
-  class MutRange<T> extends Range<T> implements IMutableBidirectionalRange<T> {
-    /**
-     * Construct a new mutable backward range.
-     *
-     * @param source - The mutable bidirectional range to iterate.
-     */
-    constructor(source: IMutableBidirectionalRange<T>) {
-      super(source);
-    }
-
-    /**
-     * The source range for the backward range.
-     */
-    source: IMutableBidirectionalRange<T>;
-
-    /**
-     * Set the value at the front of the range.
-     *
-     * @param value - The value to set at the front of the range.
-     *
-     * #### Notes
-     * This is equivalent to `setBack()` on the source range.
-     *
-     * If the range is empty, the behavior is undefined.
-     */
-    setFront(value: T): void {
-      this.source.setBack(value);
-    }
-
-    /**
-     * Set the value at the back of the range.
-     *
-     * @param value - The value to set at the back of the range.
-     *
-     * #### Notes
-     * This is equivalent to `setFront()` on the source range.
-     *
-     * If the range is empty, the behavior is undefined.
-     */
-    setBack(value: T): void {
-      this.source.setFront(value);
-    }
-
-    /**
-     * Create an independent slice of the range.
-     *
-     * @returns A new slice of the current range.
-     */
-    slice(): MutRange<T> {
-      return new MutRange<T>(this.source.slice());
-    }
-  }
-
-  /**
    * A random access backward range.
+   *
+   * #### Notes
+   * This range iterates a random access source range in reverse order.
    */
   export
-  class RandRange<T> extends Range<T> implements IRandomAccessRange<T> {
+  class RandomRange<T> extends Range<T> implements IRandomAccessRange<T> {
     /**
      * Construct a new random access backward range.
      *
@@ -271,19 +207,115 @@ namespace backward {
      *
      * If the stop index out of range, the behavior is undefined.
      */
-    slice(start?: number, stop?: number): RandRange<T> {
+    slice(start?: number, stop?: number): RandomRange<T> {
       let len = this.source.length();
       if (start === void 0) start = 0;
       if (stop === void 0) stop = len;
-      return new RandRange<T>(this.source.slice(len - stop, len - start));
+      return new RandomRange<T>(this.source.slice(len - stop, len - start));
+    }
+  }
+}
+
+
+/**
+ * Iterate a mutable bidirectional range in reverse order.
+ *
+ * @param range - The mutable bidirectional range of interest.
+ *
+ * @returns A mutable range which iterates the given range in reverse.
+ *
+ * #### Notes
+ * If a random access range is provided, the returned range will also
+ * support random access.
+ */
+export
+function mutableBackward<T>(range: IMutableRandomAccessRange<T>): mutableBackward.RandomRange<T>;
+export
+function mutableBackward<T>(range: IMutableBidirectionalRange<T>): mutableBackward.Range<T>;
+export
+function mutableBackward<T>(range: any): any {
+  if (typeof range.setAt === 'function') {
+    return new mutableBackward.RandomRange<T>(range);
+  }
+  return new mutableBackward.Range<T>(range);
+}
+
+
+/**
+ * The namespace which holds the mutable backward range implementations.
+ */
+export
+namespace mutableBackward {
+  /**
+   * A mutable bidirectional backward range.
+   *
+   * #### Notes
+   * This range iterates a mutable bidirectional source range in
+   * reverse order.
+   */
+  export
+  class Range<T> extends backward.Range<T> implements IMutableBidirectionalRange<T> {
+    /**
+     * Construct a new mutable backward range.
+     *
+     * @param source - The mutable bidirectional range to iterate.
+     */
+    constructor(source: IMutableBidirectionalRange<T>) {
+      super(source);
+    }
+
+    /**
+     * The source range for the backward range.
+     */
+    source: IMutableBidirectionalRange<T>;
+
+    /**
+     * Set the value at the front of the range.
+     *
+     * @param value - The value to set at the front of the range.
+     *
+     * #### Notes
+     * This is equivalent to `setBack()` on the source range.
+     *
+     * If the range is empty, the behavior is undefined.
+     */
+    setFront(value: T): void {
+      this.source.setBack(value);
+    }
+
+    /**
+     * Set the value at the back of the range.
+     *
+     * @param value - The value to set at the back of the range.
+     *
+     * #### Notes
+     * This is equivalent to `setFront()` on the source range.
+     *
+     * If the range is empty, the behavior is undefined.
+     */
+    setBack(value: T): void {
+      this.source.setFront(value);
+    }
+
+    /**
+     * Create an independent slice of the range.
+     *
+     * @returns A new slice of the current range.
+     */
+    slice(): Range<T> {
+      return new Range<T>(this.source.slice());
     }
   }
 
   /**
    * A mutable random access backward range.
+   *
+   * #### Notes
+   * This range iterates a mutable random access source range in
+   * reverse order.
    */
   export
-  class MutRandRange<T> extends RandRange<T> implements IMutableRandomAccessRange<T> {
+  class RandomRange<T> extends backward.RandomRange<T> implements IMutableRandomAccessRange<T> {
     /**
      * Construct a new mutable random access backward range.
      *
@@ -356,15 +388,15 @@ namespace backward {
      *
      * If the stop index out of range, the behavior is undefined.
      */
-    slice(start?: number, stop?: number): MutRandRange<T> {
+    slice(start?: number, stop?: number): RandomRange<T> {
       let len = this.source.length();
       if (start === void 0) start = 0;
       if (stop === void 0) stop = len;
-      return new MutRandRange<T>(this.source.slice(len - stop, len - start));
+      return new RandomRange<T>(this.source.slice(len - stop, len - start));
     }
   }
 
   // Apply the relevant mixin methods.
-  MutRandRange.prototype.setFront = MutRange.prototype.setFront;
-  MutRandRange.prototype.setBack = MutRange.prototype.setBack;
+  RandomRange.prototype.setFront = Range.prototype.setFront;
+  RandomRange.prototype.setBack = Range.prototype.setBack;
 }
