@@ -25,11 +25,13 @@ interface IInputRange<T> {
   /**
    * Get the number of values remaining in the range.
    *
-   * @returns The length of the range. If the length is infinite,
-   *   `Infinity` is returned. If the length is finite but unknown,
-   *   `undefined` is returned.
+   * @returns The current length of the range.
    *
    * #### Notes
+   * If the length is infinite, `Infinity` is returned.
+   *
+   * If the length is finite but unknown, `undefined` is returned.
+   *
    * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number;
