@@ -9,7 +9,7 @@ import {
   IBidirectionalRange, IForwardRange, IInputRange, IMutableBidirectionalRange,
   IMutableForwardRange, IMutableInputRange, IMutableRandomAccessRange,
   IRandomAccessRange
-} from './interfaces';
+} from './types';
 
 
 /**

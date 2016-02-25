@@ -8,7 +8,7 @@
 import {
   IBidirectionalRange, IMutableBidirectionalRange, IMutableRandomAccessRange,
   IRandomAccessRange
-} from './interfaces';
+} from './types';
 
 
 /**

@@ -11,7 +11,7 @@ import {
 
 import {
   IMutableRandomAccessRange, IRandomAccessRange
-} from '../range/interfaces';
+} from '../range/types';
 
 
 /**
