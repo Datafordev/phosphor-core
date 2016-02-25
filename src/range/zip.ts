@@ -134,6 +134,25 @@ class InputZip<T> implements IInputRange<T[]> {
   }
 
   /**
+   * Get the current length of the range.
+   *
+   * @returns The current length of the range.
+   *
+   * #### Notes
+   * This is the minimum of the lengths of the source ranges.
+   *
+   * If any source range has an `undefined` length, the computed
+   * length will be `undefined`.
+   *
+   * If the range is iterated when empty, the behavior is undefined.
+   */
+  length(): number {
+    if (this.sources.length === 0) return 0;
+    let n = this.sources.reduce((v, s) => Math.min(v, s.length()), Infinity);
+    return n === n ? n : void 0; // `n` is `NaN` when a length is `undefined`
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -274,21 +293,6 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
    * The source ranges for the zip range.
    */
   sources: IRandomAccessRange<T>[];
-
-  /**
-   * Get the current length of the range.
-   *
-   * @returns The current length of the range.
-   *
-   * #### Notes
-   * This is the minimum of the lengths of the source ranges.
-   *
-   * If the range is iterated when empty, the behavior is undefined.
-   */
-  length(): number {
-    if (this.sources.length === 0) return 0;
-    return this.sources.reduce((v, s) => Math.min(v, s.length()), Infinity);
-  }
 
   /**
    * Get the value at a specific index in the range.

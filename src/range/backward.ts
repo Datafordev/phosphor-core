@@ -100,6 +100,20 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Get the number of values remaining in the range.
+   *
+   * @returns The current length of the range.
+   *
+   * #### Notes
+   * This returns the length of the source range.
+   *
+   * If the range is iterated when empty, the behavior is undefined.
+   */
+  length(): number {
+    return this.source.length();
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -183,20 +197,6 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * The source range for the backward range.
    */
   source: IRandomAccessRange<T>;
-
-  /**
-   * Get the current length of the range.
-   *
-   * @returns The current length of the range.
-   *
-   * #### Notes
-   * This returns the length of the source range.
-   *
-   * If the range is iterated when empty, the behavior is undefined.
-   */
-  length(): number {
-    return this.source.length();
-  }
 
   /**
    * Get the value at a specific index in the range.

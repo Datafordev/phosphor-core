@@ -19,6 +19,11 @@ interface IInputRange<T> {
    * Test whether the range is empty.
    *
    * @returns `true` if the range is empty, `false` otherwise.
+   *
+   * #### Notes
+   * This function is the authoritative source of truth as to whether a
+   * range is exhausted, since the length of a range may be infinite or
+   * unknown.
    */
   isEmpty(): boolean;
 
