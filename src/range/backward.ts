@@ -209,6 +209,8 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * #### Notes
    * This returns the source range value at the reversed index.
    *
+   * If the range length is indeterminate, the behavior is undefined.
+   *
    * If the index is out of range, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.
@@ -230,6 +232,8 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * @returns A new slice of the current range.
    *
    * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
    * If the start index is out of range, the behavior is undefined.
    *
    * If the stop index out of range, the behavior is undefined.
@@ -361,6 +365,8 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * #### Notes
    * This sets the source range value at the reversed index.
    *
+   * If the range length is indeterminate, the behavior is undefined.
+   *
    * If the index is out of range, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.
@@ -382,6 +388,8 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * @returns A new slice of the current range.
    *
    * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
    * If the start index is out of range, the behavior is undefined.
    *
    * If the stop index out of range, the behavior is undefined.

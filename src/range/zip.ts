@@ -141,8 +141,8 @@ class InputZip<T> implements IInputRange<T[]> {
    * #### Notes
    * This is the minimum of the lengths of the source ranges.
    *
-   * If any source range has an `undefined` length, the computed
-   * length will be `undefined`.
+   * If the length of any source range is `undefined`, the computed
+   * length will also be `undefined`.
    *
    * If the range is iterated when empty, the behavior is undefined.
    */
@@ -326,6 +326,8 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
    * @returns A new slice of the current range.
    *
    * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
    * If the start index is out of range, the behavior is undefined.
    *
    * If the stop index out of range, the behavior is undefined.
@@ -587,6 +589,8 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    * @returns A new slice of the current range.
    *
    * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
    * If the start index is out of range, the behavior is undefined.
    *
    * If the stop index out of range, the behavior is undefined.
