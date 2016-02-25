@@ -36,7 +36,7 @@ function backward<T>(range: any): any {
 
 
 /**
- * The namespace attached to the `backward` function.
+ * The namespace attached to the `backward` range function.
  */
 export
 namespace backward {
@@ -93,7 +93,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * @returns `true` if the range is empty, `false` otherwise.
    *
    * #### Notes
-   * This is equivalent to `isEmpty()` on the source range.
+   * The range will be empty if the source range is empty.
    */
   isEmpty(): boolean {
     return this.source.isEmpty();
@@ -105,7 +105,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * @returns The value at the front of the range.
    *
    * #### Notes
-   * This is equivalent to `back()` on the source range.
+   * This returns the value from the back of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -119,7 +119,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * @returns The value at the back of the range.
    *
    * #### Notes
-   * This is equivalent to `front()` on the source range.
+   * This returns the value from the front of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -131,7 +131,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * Drop the value at the front of the range.
    *
    * #### Notes
-   * This is equivalent to `dropBack()` on the source range.
+   * This drops the value at the back of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -143,7 +143,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * Drop the value at the back of the range.
    *
    * #### Notes
-   * This is equivalent to `dropFront()` on the source range.
+   * This drops the value at the front of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -190,7 +190,7 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * @returns The current length of the range.
    *
    * #### Notes
-   * This is equivalent to `length()` on the source range.
+   * This returns the length of the source range.
    *
    * If the range is iterated when empty, the behavior is undefined.
    */
@@ -207,6 +207,8 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * @returns The value at the specified index.
    *
    * #### Notes
+   * This returns the source range value at the reversed index.
+   *
    * If the index is out of range, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.
@@ -269,7 +271,7 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
    * @param value - The value to set at the front of the range.
    *
    * #### Notes
-   * This is equivalent to `setBack()` on the source range.
+   * This sets the value at the back of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -283,7 +285,7 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
    * @param value - The value to set at the back of the range.
    *
    * #### Notes
-   * This is equivalent to `setFront()` on the source range.
+   * This sets the value at the front of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -330,7 +332,7 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * @param value - The value to set at the front of the range.
    *
    * #### Notes
-   * This is equivalent to `setBack()` on the source range.
+   * This sets the value at the back of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -342,7 +344,7 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * @param value - The value to set at the back of the range.
    *
    * #### Notes
-   * This is equivalent to `setFront()` on the source range.
+   * This sets the value at the front of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -357,6 +359,8 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * @param value - The value to set at the specified index.
    *
    * #### Notes
+   * This sets the source range value at the reversed index.
+   *
    * If the index is out of range, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.

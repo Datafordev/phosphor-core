@@ -33,14 +33,12 @@ interface IInputRange<T> {
   front(): T;
 
   /**
-   * Remove the value at the front of the range.
+   * Discard the value at the front of the range.
    *
    * #### Notes
-   * If the range is empty, the behavior is undefined.
+   * This steps the front of the range to the next value.
    *
-   * This method does not return a value. It can be more efficient for
-   * a range to advance without looking up a value, and simple methods
-   * are easier for the JIT to inline.
+   * If the range is empty, the behavior is undefined.
    */
   dropFront(): void;
 }
@@ -80,14 +78,12 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
   back(): T;
 
   /**
-   * Remove the value at the back of the range.
+   * Discard the value at the back of the range.
    *
    * #### Notes
-   * If the range is empty, the behavior is undefined.
+   * This steps the back of the range to the next value.
    *
-   * This method does not return a value. It can be more efficient for
-   * a range to advance without looking up a value, and simple methods
-   * are easier for the JIT to inline.
+   * If the range is empty, the behavior is undefined.
    */
   dropBack(): void;
 

@@ -13,7 +13,19 @@ import {
 
 
 /**
+ * Iterate several ranges simultaneously.
  *
+ * @param ranges - The ranges of interest.
+ *
+ * @returns A range which yields successive tuples of values where each
+ *   value is taken in turn from the provided ranges.
+ *
+ * #### Notes
+ * The returned range will have the capabilities of the lowest common
+ * denominator of the provided ranges. E.g. the returned range will
+ * support random access iff all provided ranges are random access.
+ *
+ * The returned range is as long as the shortest provided range.
  */
 export
 function zip<T>(...ranges: IRandomAccessRange<T>[]): RandomZip<T[]>;
@@ -39,12 +51,28 @@ function zip<T>(...ranges: any[]): any {
 
 
 /**
- *
+ * The namespace attached to the `zip` range function.
  */
 export
 namespace zip {
   /**
+   * Iterate several mutable ranges simultaneously.
    *
+   * @param ranges - The mutable ranges of interest.
+   *
+   * @returns A range which yields successive tuples of values where each
+   *   value is taken in turn from the provided ranges.
+   *
+   * #### Notes
+   * Mutable zip ranges are useful for modifying two or more ranges in
+   * lockstep. For example, a zip range can be used to sort one range
+   * in concert with another by using a suitable comparison function.
+   *
+   * The returned range will have the capabilities of the lowest common
+   * denominator of the provided ranges. E.g. the returned range will
+   * support random access iff all provided ranges are random access.
+   *
+   * The returned range is as long as the shortest provided range.
    */
   export
   function mutable<T>(...ranges: IMutableRandomAccessRange<T>[]): MutableRandomZip<T[]>;
@@ -71,24 +99,34 @@ namespace zip {
 
 
 /**
+ * An input zip range.
  *
+ * #### Notes
+ * This range iterates several input ranges in lockstep.
  */
 export
 class InputZip<T> implements IInputRange<T[]> {
   /**
+   * Construct a new input zip range.
    *
+   * @param sources - The input ranges to be zipped.
    */
   constructor(sources: IInputRange<T>[]) {
     this.sources = sources;
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IInputRange<T>[];
 
   /**
+   * Test whether the range is empty.
    *
+   * @returns `true` if the range is empty, `false` otherwise.
+   *
+   * #### Notes
+   * This range will be empty when any of the source ranges are empty.
    */
   isEmpty(): boolean {
     if (this.sources.length === 0) return true;
@@ -96,14 +134,26 @@ class InputZip<T> implements IInputRange<T[]> {
   }
 
   /**
+   * Get the value at the front of the range.
    *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This returns a tuple of the front value of each source range.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   front(): T[] {
     return this.sources.map(src => src.front());
   }
 
   /**
+   * Drop the value at the front of the range.
    *
+   * #### Notes
+   * This will drop the value at the front of each source range.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   dropFront(): void {
     this.sources.forEach(src => { src.dropFront(); });
@@ -112,24 +162,31 @@ class InputZip<T> implements IInputRange<T[]> {
 
 
 /**
+ * A forward zip range.
  *
+ * #### Notes
+ * This range iterates several forward ranges in lockstep.
  */
 export
 class ForwardZip<T> extends InputZip<T> implements IForwardRange<T[]> {
   /**
+   * Construct a new forward zip range.
    *
+   * @param sources - The forward ranges to be zipped.
    */
   constructor(sources: IForwardRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IForwardRange<T>[];
 
   /**
+   * Create an independent slice of the range.
    *
+   * @returns A new slice of the current range.
    */
   slice(): ForwardZip<T> {
     return new ForwardZip<T>(this.sources.map(src => src.slice()));
@@ -138,38 +195,57 @@ class ForwardZip<T> extends InputZip<T> implements IForwardRange<T[]> {
 
 
 /**
+ * A bidirectional zip range.
  *
+ * #### Notes
+ * This range iterates several bidirectional ranges in lockstep.
  */
 export
 class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T[]> {
   /**
+   * Construct a new bidirectional zip range.
    *
+   * @param sources - The bidirectional ranges to be zipped.
    */
   constructor(sources: IBidirectionalRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IBidirectionalRange<T>[];
 
   /**
+   * Get the value at the back of the range.
    *
+   * @returns The value at the back of the range.
+   *
+   * #### Notes
+   * This returns a tuple of the back value of each source range.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   back(): T[] {
     return this.sources.map(src => src.back());
   }
 
   /**
+   * Drop the value at the back of the range.
    *
+   * #### Notes
+   * This will drop the value at the back of each source range.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   dropBack(): void {
     this.sources.forEach(src => { src.dropBack(); });
   }
 
   /**
+   * Create an independent slice of the range.
    *
+   * @returns A new slice of the current range.
    */
   slice(): BidirectionalZip<T> {
     return new BidirectionalZip<T>(this.sources.map(src => src.slice()));
@@ -178,24 +254,36 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
 
 
 /**
+ * A random access zip range.
  *
+ * #### Notes
+ * This range iterates several random access ranges in lockstep.
  */
 export
 class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]> {
   /**
+   * Construct a new random access zip range.
    *
+   * @param sources - The random access ranges to be zipped.
    */
   constructor(sources: IRandomAccessRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IRandomAccessRange<T>[];
 
   /**
+   * Get the current length of the range.
    *
+   * @returns The current length of the range.
+   *
+   * #### Notes
+   * This is the minimum of the lengths of the source ranges.
+   *
+   * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number {
     if (this.sources.length === 0) return 0;
@@ -203,14 +291,40 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
   }
 
   /**
+   * Get the value at a specific index in the range.
    *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * This returns a tuple of the indexed value of each source range.
+   *
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   at(index: number): T[] {
     return this.sources.map(src => src.at(index));
   }
 
   /**
+   * Create an independent slice of the range.
    *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): RandomZip<T> {
     return new RandomZip<T>(this.sources.map(src => src.slice(start, stop)));
@@ -219,24 +333,40 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
 
 
 /**
+ * A mutable input zip range.
  *
+ * #### Notes
+ * This range iterates several mutable input ranges in lockstep.
  */
 export
 class MutableInputZip<T> extends InputZip<T> implements IMutableInputRange<T[]> {
   /**
+   * Construct a new mutable input zip range.
    *
+   * @param sources - The mutable input ranges to be zipped.
    */
   constructor(sources: IMutableInputRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IMutableInputRange<T>[];
 
   /**
+   * Set the value at the front of the range.
    *
+   * @param value - The value to set at the front of the range.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the front of the
+   * respective source range.
+   *
+   * If the length of the tuple does not match the number of source
+   * ranges, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setFront(value: T[]): void {
     this.sources.forEach((src, i) => { src.setFront(value[i]); });
@@ -245,29 +375,47 @@ class MutableInputZip<T> extends InputZip<T> implements IMutableInputRange<T[]> 
 
 
 /**
+ * A mutable forward zip range.
  *
+ * #### Notes
+ * This range iterates several mutable forward ranges in lockstep.
  */
 export
 class MutableForwardZip<T> extends ForwardZip<T> implements IMutableForwardRange<T[]> {
   /**
+   * Construct a new mutable forward zip range.
    *
+   * @param sources - The mutable forward ranges to be zipped.
    */
   constructor(sources: IMutableForwardRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IMutableForwardRange<T>[];
 
   /**
+   * Set the value at the front of the range.
    *
+   * @param value - The value to set at the front of the range.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the front of the
+   * respective source range.
+   *
+   * If the length of the tuple does not match the number of source
+   * ranges, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setFront: (value: T[]) => void; // mixin
 
   /**
+   * Create an independent slice of the range.
    *
+   * @returns A new slice of the current range.
    */
   slice(): MutableForwardZip<T> {
     return new MutableForwardZip<T>(this.sources.map(src => src.slice()));
@@ -279,36 +427,65 @@ MutableForwardZip.prototype.setFront = MutableInputZip.prototype.setFront;
 
 
 /**
+ * A mutable bidirectional zip range.
  *
+ * #### Notes
+ * This range iterates several mutable bidirectional ranges in lockstep.
  */
 export
 class MutableBidirectionalZip<T> extends BidirectionalZip<T> implements IMutableBidirectionalRange<T[]> {
   /**
+   * Construct a new mutable bidirectional zip range.
    *
+   * @param sources - The mutable bidirectional ranges to be zipped.
    */
   constructor(sources: IMutableBidirectionalRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IMutableBidirectionalRange<T>[];
 
   /**
+   * Set the value at the front of the range.
    *
+   * @param value - The value to set at the front of the range.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the front of the
+   * respective source range.
+   *
+   * If the length of the tuple does not match the number of source
+   * ranges, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setFront: (value: T[]) => void; // mixin
 
   /**
+   * Set the value at the back of the range.
    *
+   * @param value - The value to set at the back of the range.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the back of the
+   * respective source range.
+   *
+   * If the length of the tuple does not match the number of source
+   * ranges, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setBack(value: T[]): void {
     this.sources.forEach((src, i) => { src.setBack(value[i]); });
   }
 
   /**
+   * Create an independent slice of the range.
    *
+   * @returns A new slice of the current range.
    */
   slice(): MutableBidirectionalZip<T> {
     return new MutableBidirectionalZip<T>(this.sources.map(src => src.slice()));
@@ -320,44 +497,98 @@ MutableBidirectionalZip.prototype.setFront = MutableForwardZip.prototype.setFron
 
 
 /**
+ * A mutable random access zip range.
  *
+ * #### Notes
+ * This range iterates several mutable random access ranges in lockstep.
  */
 export
 class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRange<T[]> {
   /**
+   * Construct a new mutable random access zip range.
    *
+   * @param sources - The mutable random access ranges to be zipped.
    */
   constructor(sources: IMutableRandomAccessRange<T>[]) {
     super(sources);
   }
 
   /**
-   *
+   * The source ranges for the zip range.
    */
   sources: IMutableRandomAccessRange<T>[];
 
   /**
+   * Set the value at the front of the range.
    *
+   * @param value - The value to set at the front of the range.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the front of the
+   * respective source range.
+   *
+   * If the length of the tuple does not match the number of source
+   * ranges, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setFront: (value: T[]) => void; // mixin
 
   /**
+   * Set the value at the back of the range.
    *
+   * @param value - The value to set at the back of the range.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the back of the
+   * respective source range.
+   *
+   * If the length of the tuple does not match the number of source
+   * ranges, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setBack: (value: T[]) => void; // mixin
 
   /**
+   * Set the value at a specific index in the range.
    *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @param value - The value to set at the specified index.
+   *
+   * #### Notes
+   * This unpacks the tuple and sets each value at the index of the
+   * respective source range.
+   *
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   setAt(index: number, value: T[]): void {
     this.sources.forEach((src, i) => { src.setAt(index, value[i]); });
   }
 
   /**
+   * Create an independent slice of the range.
    *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index out of range, the behavior is undefined.
    */
-  slice(): MutableRandomZip<T> {
-    return new MutableRandomZip<T>(this.sources.map(src => src.slice()));
+  slice(start = 0, stop = this.length()): MutableRandomZip<T> {
+    return new MutableRandomZip<T>(this.sources.map(src => src.slice(start, stop)));
   }
 }
 
@@ -367,7 +598,7 @@ MutableRandomZip.prototype.setBack = MutableBidirectionalZip.prototype.setBack;
 
 
 /**
- *
+ * Test whether every object has a method with the given name.
  */
 function haveMethod(objects: any[], name: string): boolean {
   return objects.every(obj => typeof obj[name] === 'function');
