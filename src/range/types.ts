@@ -23,6 +23,18 @@ interface IInputRange<T> {
   isEmpty(): boolean;
 
   /**
+   * Get the number of values remaining in the range.
+   *
+   * @returns The length of the range. If the length is infinite,
+   *   `Infinity` is returned. If the length is finite but unknown,
+   *   `undefined` is returned.
+   *
+   * #### Notes
+   * If the range is iterated when empty, the behavior is undefined.
+   */
+  length(): number;
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -105,16 +117,6 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
  */
 export
 interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
-  /**
-   * Get the number of values remaining in the range.
-   *
-   * @returns The current number of values in the range.
-   *
-   * #### Notes
-   * If the range is iterated when empty, the behavior is undefined.
-   */
-  length(): number;
-
   /**
    * Get the value at a specific index in the range.
    *
