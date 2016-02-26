@@ -36,17 +36,17 @@ function zip<T>(...ranges: IForwardRange<T>[]): ForwardZip<T[]>;
 export
 function zip<T>(...ranges: IInputRange<T>[]): InputZip<T[]>;
 export
-function zip<T>(...ranges: any[]): any {
+function zip(...ranges: any[]): any {
   if (haveMethod(ranges, 'at')) {
-    return new RandomZip<T>(ranges);
+    return new RandomZip(ranges);
   }
   if (haveMethod(ranges, 'back')) {
-    return new BidirectionalZip<T>(ranges);
+    return new BidirectionalZip(ranges);
   }
   if (haveMethod(ranges, 'slice')) {
-    return new ForwardZip<T>(ranges);
+    return new ForwardZip(ranges);
   }
-  return new InputZip<T>(ranges);
+  return new InputZip(ranges);
 }
 
 
@@ -83,17 +83,17 @@ namespace zip {
   export
   function mutable<T>(...ranges: IMutableInputRange<T>[]): MutableInputZip<T[]>;
   export
-  function mutable<T>(...ranges: any[]): any {
+  function mutable(...ranges: any[]): any {
     if (haveMethod(ranges, 'setAt')) {
-      return new MutableRandomZip<T>(ranges);
+      return new MutableRandomZip(ranges);
     }
     if (haveMethod(ranges, 'setBack')) {
-      return new MutableBidirectionalZip<T>(ranges);
+      return new MutableBidirectionalZip(ranges);
     }
     if (haveMethod(ranges, 'slice')) {
-      return new MutableForwardZip<T>(ranges);
+      return new MutableForwardZip(ranges);
     }
-    return new MutableInputZip<T>(ranges);
+    return new MutableInputZip(ranges);
   }
 }
 

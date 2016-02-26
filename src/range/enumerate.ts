@@ -34,7 +34,7 @@ function enumerate<T>(range: IForwardRange<T>, start?: number): ForwardEnumerate
 export
 function enumerate<T>(range: IInputRange<T>, start?: number): InputEnumerate<T>;
 export
-function enumerate<T>(range: any, start = 0): any {
+function enumerate(range: any, start = 0): any {
   if (typeof range.at === 'function') {
     return new RandomEnumerate(range, start);
   }

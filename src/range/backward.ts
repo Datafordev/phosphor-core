@@ -27,11 +27,11 @@ function backward<T>(range: IRandomAccessRange<T>): RandomBackward<T>;
 export
 function backward<T>(range: IBidirectionalRange<T>): BidirectionalBackward<T>;
 export
-function backward<T>(range: any): any {
+function backward(range: any): any {
   if (typeof range.at === 'function') {
-    return new RandomBackward<T>(range);
+    return new RandomBackward(range);
   }
-  return new BidirectionalBackward<T>(range);
+  return new BidirectionalBackward(range);
 }
 
 
@@ -56,11 +56,11 @@ namespace backward {
   export
   function mutable<T>(range: IMutableBidirectionalRange<T>): MutableBidirectionalBackward<T>;
   export
-  function mutable<T>(range: any): any {
+  function mutable(range: any): any {
     if (typeof range.setAt === 'function') {
-      return new MutableRandomBackward<T>(range);
+      return new MutableRandomBackward(range);
     }
-    return new MutableBidirectionalBackward<T>(range);
+    return new MutableBidirectionalBackward(range);
   }
 }
 
