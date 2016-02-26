@@ -290,7 +290,7 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): RandomEnumerate<T> {
     return new RandomEnumerate<T>(this.source.slice(start, stop), this.index + start);

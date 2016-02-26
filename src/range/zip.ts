@@ -330,7 +330,7 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): RandomZip<T> {
     return new RandomZip<T>(this.sources.map(src => src.slice(start, stop)));
@@ -593,7 +593,7 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): MutableRandomZip<T> {
     return new MutableRandomZip<T>(this.sources.map(src => src.slice(start, stop)));

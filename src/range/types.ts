@@ -157,7 +157,7 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start?: number, stop?: number): IRandomAccessRange<T>;
 }
@@ -270,7 +270,7 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start?: number, stop?: number): IMutableRandomAccessRange<T>;
 }

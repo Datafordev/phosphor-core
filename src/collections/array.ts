@@ -36,7 +36,7 @@ namespace ArrayExt {
    * #### Notes
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   export
   function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
@@ -60,7 +60,7 @@ namespace ArrayExt {
    * #### Notes
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   export
   function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
@@ -86,7 +86,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * #### Notes
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   constructor(array: T[], start: number, stop: number) {
     if (__DEBUG__) {
@@ -213,7 +213,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * #### Notes
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): ArrayRange<T> {
     if (__DEBUG__) {
@@ -308,7 +308,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): MutableArrayRange<T> {
     if (__DEBUG__) {

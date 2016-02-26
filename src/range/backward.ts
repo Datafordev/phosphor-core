@@ -236,7 +236,7 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start?: number, stop?: number): RandomBackward<T> {
     let len = this.source.length();
@@ -392,7 +392,7 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    *
    * If the start index is out of range, the behavior is undefined.
    *
-   * If the stop index out of range, the behavior is undefined.
+   * If the stop index is out of range, the behavior is undefined.
    */
   slice(start?: number, stop?: number): MutableRandomBackward<T> {
     let len = this.source.length();
