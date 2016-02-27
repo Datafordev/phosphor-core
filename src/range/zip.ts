@@ -117,6 +117,9 @@ class InputZip<T> implements IInputRange<T[]> {
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IInputRange<T>[];
 
@@ -199,6 +202,9 @@ class ForwardZip<T> extends InputZip<T> implements IForwardRange<T[]> {
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IForwardRange<T>[];
 
@@ -232,6 +238,9 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IBidirectionalRange<T>[];
 
@@ -291,6 +300,9 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IRandomAccessRange<T>[];
 
@@ -357,6 +369,9 @@ class MutableInputZip<T> extends InputZip<T> implements IMutableInputRange<T[]> 
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IMutableInputRange<T>[];
 
@@ -399,6 +414,9 @@ class MutableForwardZip<T> extends ForwardZip<T> implements IMutableForwardRange
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IMutableForwardRange<T>[];
 
@@ -451,6 +469,9 @@ class MutableBidirectionalZip<T> extends BidirectionalZip<T> implements IMutable
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IMutableBidirectionalRange<T>[];
 
@@ -521,6 +542,9 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
 
   /**
    * The source ranges for the zip range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   sources: IMutableRandomAccessRange<T>[];
 

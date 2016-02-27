@@ -23,7 +23,7 @@ import {
  *
  * The returned range will have the capabilities of the provided range.
  * E.g. the returned range will support random access if the provided
- * ranges is random access.
+ * range is random access.
  */
 export
 function enumerate<T>(range: IRandomAccessRange<T>, start?: number): RandomEnumerate<T>;
@@ -70,11 +70,17 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
 
   /**
    * The source range for the enumerate range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IInputRange<T>;
 
   /**
    * The current index for the enumerate range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   index: number;
 
@@ -122,8 +128,7 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
    * Drop the value at the front of the range.
    *
    * #### Notes
-   * This drops the value at the front of the source range and
-   * increments the enumerator index.
+   * This drops the source range front and increments the index.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -147,7 +152,7 @@ class ForwardEnumerate<T> extends InputEnumerate<T> implements IForwardRange<[nu
    *
    * @param source - The forward range to be enumerated.
    *
-   * @param start - The initial value of the enumerator.
+   * @param start - The initial value of the index.
    */
   constructor(source: IForwardRange<T>, start: number) {
     super(source, start);
@@ -155,6 +160,9 @@ class ForwardEnumerate<T> extends InputEnumerate<T> implements IForwardRange<[nu
 
   /**
    * The source range for the enumerate range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IForwardRange<T>;
 
@@ -182,7 +190,7 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
    *
    * @param source - The bidirectional range to be enumerated.
    *
-   * @param start - The initial value of the enumerator.
+   * @param start - The initial value of the index.
    */
   constructor(source: IBidirectionalRange<T>, start: number) {
     super(source, start);
@@ -190,6 +198,9 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
 
   /**
    * The source range for the enumerate range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IBidirectionalRange<T>;
 
@@ -243,7 +254,7 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
    *
    * @param source - The random access range to be enumerated.
    *
-   * @param start - The initial value of the enumerator.
+   * @param start - The initial value of the index.
    */
   constructor(source: IRandomAccessRange<T>, start: number) {
     super(source, start);
@@ -251,6 +262,9 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
 
   /**
    * The source range for the enumerate range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IRandomAccessRange<T>;
 
@@ -263,8 +277,6 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
    * @returns The value at the specified index.
    *
    * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
-   *
    * If the index is out of range, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.

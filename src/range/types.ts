@@ -37,6 +37,8 @@ interface IInputRange<T> {
    *
    * If the length is finite but unknown, `undefined` is returned.
    *
+   * If the length is finite and known, a positive integer is returned.
+   *
    * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number;

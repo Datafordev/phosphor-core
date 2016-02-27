@@ -84,6 +84,9 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
 
   /**
    * The source range for the backward range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IBidirectionalRange<T>;
 
@@ -119,7 +122,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * @returns The value at the front of the range.
    *
    * #### Notes
-   * This returns the value from the back of the source range.
+   * This returns the value at the back of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -133,7 +136,7 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * @returns The value at the back of the range.
    *
    * #### Notes
-   * This returns the value from the front of the source range.
+   * This returns the value at the front of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -195,6 +198,9 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
 
   /**
    * The source range for the backward range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IRandomAccessRange<T>;
 
@@ -266,6 +272,9 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
 
   /**
    * The source range for the backward range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IMutableBidirectionalRange<T>;
 
@@ -327,6 +336,9 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
 
   /**
    * The source range for the backward range.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
    */
   source: IMutableRandomAccessRange<T>;
 
