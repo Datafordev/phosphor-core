@@ -102,7 +102,8 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * @returns `true` if the range is empty, `false` otherwise.
    */
   isEmpty(): boolean {
-    return this._count <= 0;
+    assert(this._count >= 0, 'Range Violation!');
+    return this._count === 0;
   }
 
   /**
