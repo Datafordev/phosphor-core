@@ -15,57 +15,52 @@ import {
 
 
 /**
- * A namespace which holds extended array functionality.
+ * Create a range which is a view on a subset of an array.
+ *
+ * @param array - The array of interest.
+ *
+ * @param start - The starting index of the slice, inclusive.
+ *   The default is zero. Negative indices are not supported.
+ *
+ * @param stop - The ending index of the slice, exclusive. The
+ *   default is the length of the array. Negative indices are
+ *   not supported.
+ *
+ * @returns A new range which views a slice of the array.
+ *
+ * #### Notes
+ * If the start index is out of range, the behavior is undefined.
+ *
+ * If the stop index is out of range, the behavior is undefined.
  */
 export
-namespace ArrayExt {
-  /**
-   * Create a range which is a view on a subset of an array.
-   *
-   * @param array - The array of interest.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the array. Negative indices are
-   *   not supported.
-   *
-   * @returns A new range which views a slice of the array.
-   *
-   * #### Notes
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  export
-  function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
-    return new ArrayRange<T>(array, start, stop);
-  }
+function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
+  return new ArrayRange<T>(array, start, stop);
+}
 
-  /**
-   * Create a mutable range which is a view on a subset of an array.
-   *
-   * @param array - The array of interest.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the array. Negative indices are
-   *   not supported.
-   *
-   * @returns A new mutable range which views a slice of the array.
-   *
-   * #### Notes
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  export
-  function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
-    return new MutableArrayRange<T>(array, start, stop);
-  }
+
+/**
+ * Create a mutable range which is a view on a subset of an array.
+ *
+ * @param array - The array of interest.
+ *
+ * @param start - The starting index of the slice, inclusive.
+ *   The default is zero. Negative indices are not supported.
+ *
+ * @param stop - The ending index of the slice, exclusive. The
+ *   default is the length of the array. Negative indices are
+ *   not supported.
+ *
+ * @returns A new mutable range which views a slice of the array.
+ *
+ * #### Notes
+ * If the start index is out of range, the behavior is undefined.
+ *
+ * If the stop index is out of range, the behavior is undefined.
+ */
+export
+function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
+  return new MutableArrayRange<T>(array, start, stop);
 }
 
 
