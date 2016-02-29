@@ -69,11 +69,10 @@ function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArr
  *
  * @param range - The finite input range of values.
  *
- * @returns A new array of values from the given range.
+ * @returns A new array of values taken from the range.
  */
 export
 function asArray<T>(range: IInputRange<T>): T[] {
-  assert(range.length() !== Infinity, 'cannot realize an infinite range');
   let result = new Array<T>(range.length() || 0);
   for (let i = 0; !range.isEmpty(); ++i) {
     result[i] = range.front();
