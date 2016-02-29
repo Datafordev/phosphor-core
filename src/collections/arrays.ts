@@ -102,8 +102,8 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the stop index is out of range, the behavior is undefined.
    */
   constructor(array: T[], start: number, stop: number) {
-    assert(isInt(start) && start >= 0 && start <= array.length, 'Invalid Index!');
-    assert(isInt(stop) && stop >= start && stop <= array.length, 'Invalid Index!');
+    assert(isInt(start) && start >= 0 && start <= array.length, 'Invalid index');
+    assert(isInt(stop) && stop >= start && stop <= array.length, 'Invalid index');
     this._array = array;
     this._index = start;
     this._count = stop - start;
@@ -115,7 +115,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * @returns `true` if the range is empty, `false` otherwise.
    */
   isEmpty(): boolean {
-    assert(this._count >= 0, 'Range Violation!');
+    assert(this._count >= 0, 'Range violation');
     return this._count === 0;
   }
 
@@ -128,7 +128,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number {
-    assert(this._count >= 0, 'Range Violation!');
+    assert(this._count >= 0, 'Range violation');
     return this._count;
   }
 
@@ -141,7 +141,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   front(): T {
-    assert(!this.isEmpty(), 'Range Violation!');
+    assert(!this.isEmpty(), 'Range violation');
     return this._array[this._index];
   }
 
@@ -154,7 +154,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   back(): T {
-    assert(!this.isEmpty(), 'Range Violation!');
+    assert(!this.isEmpty(), 'Range violation');
     return this._array[this._index + this._count - 1];
   }
 
@@ -172,7 +172,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   at(index: number): T {
-    assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid Index!');
+    assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid index');
     return this._array[this._index + index];
   }
 
@@ -183,7 +183,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   dropFront(): void {
-    assert(!this.isEmpty(), 'Range Violation!');
+    assert(!this.isEmpty(), 'Range violation');
     this._index++;
     this._count--;
   }
@@ -195,7 +195,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   dropBack(): void {
-    assert(!this.isEmpty(), 'Range Violation!');
+    assert(!this.isEmpty(), 'Range violation');
     this._count--;
   }
 
@@ -217,8 +217,8 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): ArrayRange<T> {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid Index!');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid Index!');
+    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
+    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
     return new ArrayRange(this._array, this._index + start, this._index + stop);
   }
 
@@ -244,7 +244,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * If the range is empty, the behavior is undefined.
    */
   setFront(value: T): void {
-    assert(!this.isEmpty(), 'Range Violation!');
+    assert(!this.isEmpty(), 'Range violation');
     this._array[this._index] = value;
   }
 
@@ -259,7 +259,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * If the range is empty, the behavior is undefined.
    */
   setBack(value: T): void {
-    assert(!this.isEmpty(), 'Range Violation!');
+    assert(!this.isEmpty(), 'Range violation');
     this._array[this._index + this._count - 1] = value;
   }
 
@@ -279,7 +279,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * If the range is empty, the behavior is undefined.
    */
   setAt(index: number, value: T): void {
-    assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid Index!');
+    assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid index');
     this._array[this._index + index] = value;
   }
 
@@ -304,8 +304,8 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * If the stop index is out of range, the behavior is undefined.
    */
   slice(start = 0, stop = this.length()): MutableArrayRange<T> {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid Index!');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid Index!');
+    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
+    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
     return new MutableArrayRange(this._array, this._index + start, this._index + stop);
   }
 }
