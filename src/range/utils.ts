@@ -7,7 +7,7 @@
 |----------------------------------------------------------------------------*/
 import {
   IInputRange, IBidirectionalRange
-} from '../types';
+} from './types';
 
 
 /**
