@@ -155,9 +155,11 @@ class Iota implements IRandomAccessRange<number> {
    * Remove the value at the front of the range.
    *
    * #### Notes
+   * This reduces the range length by one.
+   *
    * If the range is empty, the behavior is undefined.
    */
-  dropFront(): void {
+  popFront(): void {
     assert(!this.isEmpty(), 'Range violation');
     this._index++;
     this._count--;
@@ -167,9 +169,11 @@ class Iota implements IRandomAccessRange<number> {
    * Remove the value at the back of the range.
    *
    * #### Notes
+   * This reduces the range length by one.
+   *
    * If the range is empty, the behavior is undefined.
    */
-  dropBack(): void {
+  popBack(): void {
     assert(!this.isEmpty(), 'Range violation');
     this._count--;
   }

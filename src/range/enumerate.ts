@@ -127,15 +127,15 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
   }
 
   /**
-   * Drop the value at the front of the range.
+   * Remove the value at the front of the range.
    *
    * #### Notes
-   * This drops the source range front and increments the index.
+   * This pops the front of the source range and increments the index.
    *
    * If the range is empty, the behavior is undefined.
    */
-  dropFront(): void {
-    this.source.dropFront();
+  popFront(): void {
+    this.source.popFront();
     this.index++;
   }
 }
@@ -223,13 +223,15 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
   }
 
   /**
-   * Drop the value at the back of the range.
+   * Remove the value at the back of the range.
    *
    * #### Notes
+   * This pops the back of the source range.
+   *
    * If the range is empty, the behavior is undefined.
    */
-  dropBack(): void {
-    this.source.dropBack();
+  popBack(): void {
+    this.source.popBack();
   }
 
   /**

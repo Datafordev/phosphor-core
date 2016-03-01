@@ -145,27 +145,27 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
   }
 
   /**
-   * Drop the value at the front of the range.
+   * Remove the value at the front of the range.
    *
    * #### Notes
-   * This drops the value at the back of the source range.
+   * This pops the value at the back of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
-  dropFront(): void {
-    this.source.dropBack();
+  popFront(): void {
+    this.source.popBack();
   }
 
   /**
-   * Drop the value at the back of the range.
+   * Remove the value at the back of the range.
    *
    * #### Notes
-   * This drops the value at the front of the source range.
+   * This pops the value at the front of the source range.
    *
    * If the range is empty, the behavior is undefined.
    */
-  dropBack(): void {
-    this.source.dropFront();
+  popBack(): void {
+    this.source.popFront();
   }
 
   /**
