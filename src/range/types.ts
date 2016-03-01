@@ -49,19 +49,22 @@ interface IInputRange<T> {
    * @returns The value at the front of the range.
    *
    * #### Notes
+   * This does not change the length of the range, and will return the
+   * same value on each call until the front of the range is consumed.
+   *
    * If the range is empty, the behavior is undefined.
    */
   front(): T;
 
   /**
-   * Discard the value at the front of the range.
+   * Remove the value at the front of the range.
    *
    * #### Notes
-   * This steps the front of the range to the next value.
+   * If the range length is finite, it is reduced by one.
    *
    * If the range is empty, the behavior is undefined.
    */
-  dropFront(): void;
+  popFront(): void;
 }
 
 
@@ -94,19 +97,22 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * @returns The value at the back of the range.
    *
    * #### Notes
+   * This does not change the length of the range, and will return the
+   * same value on each call until the back of the range is consumed.
+   *
    * If the range is empty, the behavior is undefined.
    */
   back(): T;
 
   /**
-   * Discard the value at the back of the range.
+   * Remove the value at the back of the range.
    *
    * #### Notes
-   * This steps the back of the range to the next value.
+   * If the range length is finite, it is reduced by one.
    *
    * If the range is empty, the behavior is undefined.
    */
-  dropBack(): void;
+  popBack(): void;
 
   /**
    * Create an independent slice of the range.

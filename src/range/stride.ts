@@ -16,7 +16,7 @@ import {
 } from './types';
 
 import {
-  dropBack, dropFront
+  popBackN, popFrontN
 } from './utils';
 
 
@@ -193,15 +193,15 @@ class InputStride<T> implements IInputRange<T> {
   }
 
   /**
-   * Drop the value at the front of the range.
+   * Remove the value at the front of the range.
    *
    * #### Notes
-   * This drops the front of the source range `step` number of times.
+   * This pops the front of the source range `step` number of times.
    *
    * The source range will not be modified if it becomes empty.
    */
-  dropFront(): void {
-    dropFront(this.source, this.step);
+  popFront(): void {
+    popFrontN(this.source, this.step);
   }
 }
 
@@ -287,15 +287,15 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
   }
 
   /**
-   * Drop the value at the back of the range.
+   * Remove the value at the back of the range.
    *
    * #### Notes
-   * This drops the back of the source range `step` number of times.
+   * This pops the back of the source range `step` number of times.
    *
    * The source range will not be modified if it becomes empty.
    */
-  dropBack(): void {
-    dropBack(this.source, this.step);
+  popBack(): void {
+    popBackN(this.source, this.step);
   }
 
   /**
@@ -672,5 +672,5 @@ function trimExtraValues(source: IBidirectionalRange<any>, step: number): void {
   } else {
     extra = 0;
   }
-  if (extra > 0) dropBack(source, extra);
+  if (extra > 0) popBackN(source, extra);
 }
