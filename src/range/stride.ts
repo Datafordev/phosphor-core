@@ -21,7 +21,22 @@ import {
 
 
 /**
+ * Iterate a range in stepped increments.
  *
+ * @param range - The range of interest.
+ *
+ * @param step - The distance to step on each iteration. This must be
+ *   an integer greater than zero.
+ *
+ * @returns A range which iterates the source range step-wise.
+ *
+ * #### Notes
+ * Each iteration of the stride range iterates the underlying source
+ * range `step` number of times, subject to its limits.
+ *
+ * The returned range will have the capabilities of the provided range.
+ * E.g. the returned range will support random access if the provided
+ * range is random access.
  */
 export
 function stride<T>(range: IRandomAccessRange<T>, step: number): RandomStride<T>;
@@ -47,12 +62,27 @@ function stride(range: any, step: number): any {
 
 
 /**
- *
+ * The namespace attached to the `stride` range function.
  */
 export
 namespace stride {
   /**
+   * Iterate a mutable range in stepped increments.
    *
+   * @param range - The mutable range of interest.
+   *
+   * @param step - The distance to step on each iteration. This must be
+   *   an integer greater than zero.
+   *
+   * @returns A mutable range which iterates the source range step-wise.
+   *
+   * #### Notes
+   * Each iteration of the stride range iterates the underlying source
+   * range `step` number of times, subject to its limits.
+   *
+   * The returned range will have the capabilities of the provided range.
+   * E.g. the returned range will support random access if the provided
+   * range is random access.
    */
   export
   function mutable<T>(range: IMutableRandomAccessRange<T>, step: number): MutableRandomStride<T>;
@@ -91,7 +121,7 @@ class InputStride<T> implements IInputRange<T> {
    *
    * @param source - The input range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    *   This must be an integer greater than zero.
    */
   constructor(source: IInputRange<T>, step: number) {
@@ -109,7 +139,7 @@ class InputStride<T> implements IInputRange<T> {
   source: IInputRange<T>;
 
   /**
-   * The number of values to drop on each iteration.
+   * The distance to step on each iteration.
    *
    * #### Notes
    * This must be an integer greater than zero.
@@ -189,7 +219,7 @@ class ForwardStride<T> extends InputStride<T> implements IForwardRange<T> {
    *
    * @param source - The forward range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IForwardRange<T>, step: number) {
     super(source, step);
@@ -227,7 +257,7 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
    *
    * @param source - The bidirectional range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IBidirectionalRange<T>, step: number) {
     super(source, step);
@@ -292,7 +322,7 @@ class RandomStride<T> extends BidirectionalStride<T> implements IRandomAccessRan
    *
    * @param source - The random access range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IRandomAccessRange<T>, step: number) {
     super(source, step);
@@ -366,7 +396,7 @@ class MutableInputStride<T> extends InputStride<T> implements IMutableInputRange
    *
    * @param source - The mutable input range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IMutableInputRange<T>, step: number) {
     super(source, step);
@@ -409,7 +439,7 @@ class MutableForwardStride<T> extends ForwardStride<T> implements IMutableForwar
    *
    * @param source - The mutable forward range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IMutableForwardRange<T>, step: number) {
     super(source, step);
@@ -462,7 +492,7 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
    *
    * @param source - The mutable bidirectional range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IMutableBidirectionalRange<T>, step: number) {
     super(source, step);
@@ -530,7 +560,7 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    *
    * @param source - The mutable random access range to be strided.
    *
-   * @param step - The number of values to drop on each iteration.
+   * @param step - The distance to step on each iteration.
    */
   constructor(source: IMutableRandomAccessRange<T>, step: number) {
     super(source, step);
