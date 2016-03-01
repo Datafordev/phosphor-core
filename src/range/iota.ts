@@ -23,6 +23,8 @@ import {
  *
  * @param step - The distance between each generated value.
  *
+ * @returns A range which generates evenly spaced values.
+ *
  * #### Notes
  * In the single argument form of `iota(stop)`, `start` defaults to
  * `0` and `step` defaults to `1`.

@@ -17,6 +17,8 @@ import {
  *
  * @param start - The initial value of the index. The default is zero.
  *
+ * @returns A range which iterates the source with an attached index.
+ *
  * #### Notes
  * Each element produced by an enumerate range is a 2-tuple of the form
  * `[index, value]` where the index is incremented on each iteration.
