@@ -252,7 +252,8 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
    * If the range is empty, the behavior is undefined.
    */
   back(): T {
-    //
+    trimExtraValues(this.source, this.step);
+    return this.source.back();
   }
 
   /**
@@ -498,7 +499,8 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
    * If the range is empty, the behavior is undefined.
    */
   setBack(value: T): void {
-
+    trimExtraValues(this.source, this.step);
+    this.source.setBack(value);
   }
 
   /**
@@ -615,3 +617,30 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
 // Apply the mixin methods.
 MutableRandomStride.prototype.setFront = MutableBidirectionalStride.prototype.setFront;
 MutableRandomStride.prototype.setBack = MutableBidirectionalStride.prototype.setBack;
+
+
+/**
+ * Trim any extra values from the back of the source range.
+ *
+ * @param source - The bidirectional range of interest.
+ *
+ * @param step - The step value for the stride.
+ *
+ * #### Notes
+ * This ensures the `back()` of the source range will be an evenly
+ * strided modulo of the step size.
+ *
+ * If the source length is indeterminate, the behavior is undefined.
+ */
+function trimExtraValues(source: IBidirectionalRange<any>, step: number): void {
+  let len = source.length();
+  let extra = len % step;
+  if (extra > 0) {
+    extra--;
+  } else if (len > 0) {
+    extra = Math.min(step, len) - 1;
+  } else {
+    extra = 0;
+  }
+  if (extra > 0) dropBack(source, extra);
+}
