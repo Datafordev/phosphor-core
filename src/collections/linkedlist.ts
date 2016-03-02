@@ -41,7 +41,7 @@ class LinkedList<T> {
    * This has `O(1)` complexity.
    */
   isEmpty(): boolean {
-    assert(this._length >= 0);
+    assert(this._length >= 0, 'LinkedList#isEmpty(): Invalid state');
     return this._length === 0;
   }
 
@@ -54,7 +54,7 @@ class LinkedList<T> {
    * This has `O(1)` complexity.
    */
   length(): number {
-    assert(this._length >= 0);
+    assert(this._length >= 0, 'LinkedList#length(): Invalid state');
     return this._length;
   }
 
@@ -69,7 +69,7 @@ class LinkedList<T> {
    * This has `O(1)` complexity.
    */
   front(): T {
-    assert(!this.isEmpty());
+    assert(!this.isEmpty(), 'LinkedList#front(): List is empty');
     return this._front.value;
   }
 
@@ -84,7 +84,7 @@ class LinkedList<T> {
    * This has `O(1)` complexity.
    */
   back(): T {
-    assert(!this.isEmpty());
+    assert(!this.isEmpty(), 'LinkedList#back(): List is empty');
     return this._back.value;
   }
 
@@ -152,7 +152,7 @@ class LinkedList<T> {
    * This has `O(1)` complexity.
    */
   removeFront(): void {
-    assert(!this.isEmpty());
+    assert(!this.isEmpty(), 'LinkedList#removeFront(): List is empty');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -166,7 +166,7 @@ class LinkedList<T> {
   }
 
   /**
-   * Remove the value at the front of the list.
+   * Remove the value at the back of the list.
    *
    * #### Notes
    * This decreases the list length by one.
@@ -176,7 +176,7 @@ class LinkedList<T> {
    * This has `O(1)` complexity.
    */
   removeBack(): void {
-    assert(!this.isEmpty());
+    assert(!this.isEmpty(), 'LinkedList#removeBack(): List is empty');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -195,7 +195,7 @@ class LinkedList<T> {
    * #### Notes
    * This resets the list length to zero.
    *
-   * If the list is empty, the behavior is undefined.
+   * This is a no-op if the list is empty.
    *
    * This has `O(1)` complexity.
    */
@@ -215,7 +215,7 @@ class LinkedList<T> {
  * The node type for a linked list.
  *
  * #### Notes
- * User code will not typically interact will type directly.
+ * User code will not typically interact with this type directly.
  */
 class LinkedListNode<T> {
   /**
