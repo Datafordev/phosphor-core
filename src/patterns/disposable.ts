@@ -79,8 +79,8 @@ class DisposableSet implements IDisposable {
    *
    * @param items - An input range of initial disposable items.
    */
-  constructor(range?: IInputRange<IDisposable>) {
-    if (range) forEach(range, item => { this._set.add(item); });
+  constructor(items?: IInputRange<IDisposable>) {
+    if (items) forEach(items, item => { this._set.add(item); });
   }
 
   /**
