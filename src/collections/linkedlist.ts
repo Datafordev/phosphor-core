@@ -10,7 +10,7 @@ import {
 } from '../algorithm/iteration';
 
 import {
-  assert
+  assert, isInt
 } from '../patterns/assertion';
 
 import {
@@ -208,6 +208,95 @@ class LinkedList<T> {
   private _length = 0;
   private _front: LinkedListNode<T> = null;
   private _back: LinkedListNode<T> = null;
+}
+
+
+/**
+ *
+ */
+export
+class LinkedListRange<T> implements IBidirectionalRange<T> {
+  /**
+   *
+   */
+  constructor(length: number, front: LinkedListNode<T>, back: LinkedListNode<T>) {
+    assert(isInt(length) && length >= 0, 'LinkedListRange: Invalid length');
+    assert(!!front === !!back, 'LinkedListRange: Invalid arguments');
+    this._length = length;
+    this._front = front;
+    this._back = back;
+  }
+
+  /**
+   *
+   */
+  isEmpty(): boolean {
+    assert(this._length >= 0, 'LinkedListRange: Invalid state');
+    return this._length === 0;
+  }
+
+  /**
+   *
+   */
+  length(): number {
+    assert(this._length >= 0, 'LinkedListRange: Invalid state');
+    return this._length;
+  }
+
+  /**
+   *
+   */
+  front(): T {
+    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    return this._front.value;
+  }
+
+  /**
+   *
+   */
+  back(): T {
+    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    return this._back.value;
+  }
+
+  /**
+   *
+   */
+  popFront(): void {
+    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    if (this._length === 1) {
+      this._front = null;
+      this._back = null;
+    } else {
+      this._front = this._front.next;
+    }
+    this._length--;
+  }
+
+  /**
+   *
+   */
+  popBack(): void {
+    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    if (this._length === 1) {
+      this._front = null;
+      this._back = null;
+    } else {
+      this._back = this._back.prev;
+    }
+    this._length--;
+  }
+
+  /**
+   *
+   */
+  slice(): LinkedListRange<T> {
+    return new LinkedListRange(this._length, this._front, this._back);
+  }
+
+  private _length: number;
+  private _front: LinkedListNode<T>;
+  private _back: LinkedListNode<T>;
 }
 
 
