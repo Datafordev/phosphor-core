@@ -20,9 +20,12 @@ import {
  * @param range - The finite input range of values.
  *
  * @returns A new array of values taken from the range.
+ *
+ * #### Notes
+ * This greedily consumes the input range until it is empty.
  */
 export
-function asArray<T>(range: IInputRange<T>): T[] {
+function toArray<T>(range: IInputRange<T>): T[] {
   let result = new Array<T>(range.length() || 0);
   for (let i = 0; !range.isEmpty(); ++i) {
     result[i] = range.popFront();
