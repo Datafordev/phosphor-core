@@ -225,16 +225,22 @@ class LinkedList<T> {
 
 
 /**
- *
+ * A bidirectional range for a linked list.
  */
 export
 class LinkedListRange<T> implements IBidirectionalRange<T> {
   /**
+   * Construct a new linked list range.
    *
+   * @param length - The current length of the list.
+   *
+   * @param front - The front of the list.
+   *
+   * @param back - The back of the list.
    */
   constructor(length: number, front: LinkedListNode<T>, back: LinkedListNode<T>) {
-    assert(isInt(length) && length >= 0, 'LinkedListRange: Invalid length');
-    assert(!!front === !!back, 'LinkedListRange: Invalid arguments');
+    assert(isInt(length) && length >= 0, 'LinkedListRange(): Invalid length');
+    assert(!!front === !!back, 'LinkedListRange(): Invalid arguments');
     this._length = length;
     this._front = front;
     this._back = back;
@@ -244,7 +250,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    */
   isEmpty(): boolean {
-    assert(this._length >= 0, 'LinkedListRange: Invalid state');
+    assert(this._length >= 0, 'LinkedListRange#isEmpty(): Invalid state');
     return this._length === 0;
   }
 
@@ -252,7 +258,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    */
   length(): number {
-    assert(this._length >= 0, 'LinkedListRange: Invalid state');
+    assert(this._length >= 0, 'LinkedListRange#length(): Invalid state');
     return this._length;
   }
 
@@ -260,7 +266,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    */
   front(): T {
-    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    assert(!this.isEmpty(), 'LinkedListRange#front(): Invalid state');
     return this._front.value;
   }
 
@@ -268,7 +274,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    */
   back(): T {
-    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    assert(!this.isEmpty(), 'LinkedListRange#back(): Invalid state');
     return this._back.value;
   }
 
@@ -276,7 +282,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    */
   popFront(): void {
-    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    assert(!this.isEmpty(), 'LinkedListRange#popFront(): Invalid state');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -290,7 +296,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    */
   popBack(): void {
-    assert(!this.isEmpty(), 'LinkedListRange: Invalid state');
+    assert(!this.isEmpty(), 'LinkedListRange#popBack(): Invalid state');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
