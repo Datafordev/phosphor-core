@@ -93,8 +93,8 @@ class LinkedList<T> {
    *
    * @returns A new bidirectional range for the list.
    */
-  slice(): LinkedListRange {
-    return new LinkedListRange(this._length, this._front, this._back);
+  slice(): LinkedListRange<T> {
+    return new LinkedListRange<T>(this._length, this._front, this._back);
   }
 
   /**
@@ -249,7 +249,9 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Test whether the range is empty.
    *
+   * @returns `true` if the range is empty, `false` otherwise.
    */
   isEmpty(): boolean {
     assert(this._length >= 0, 'LinkedListRange#isEmpty(): Invalid state');
@@ -257,7 +259,9 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Get the number of values remaining in the range.
    *
+   * @returns The current length of the range.
    */
   length(): number {
     assert(this._length >= 0, 'LinkedListRange#length(): Invalid state');
@@ -265,7 +269,14 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Get the value at the front of the range.
    *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This does not change the length of the range.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   front(): T {
     assert(!this.isEmpty(), 'LinkedListRange#front(): Invalid state');
@@ -273,7 +284,14 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Get the value at the back of the range.
    *
+   * @returns The value at the back of the range.
+   *
+   * #### Notes
+   * This does not change the length of the range.
+   *
+   * If the range is empty, the behavior is undefined.
    */
   back(): T {
     assert(!this.isEmpty(), 'LinkedListRange#back(): Invalid state');
@@ -281,10 +299,47 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Remove and return the value at the front of the range.
    *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
    */
-  popFront(): void {
-    assert(!this.isEmpty(), 'LinkedListRange#popFront(): Invalid state');
+  popFront(): T {
+    let front = this.front();
+    this.dropFront();
+    return front;
+  }
+
+  /**
+   * Remove and return the value at the back of the range.
+   *
+   * @returns The value at the back of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  popBack(): T {
+    let back = this.back();
+    this.dropBack();
+    return back;
+  }
+
+  /**
+   * Remove the value at the front of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropFront(): void {
+    assert(!this.isEmpty(), 'LinkedListRange#dropFront(): Invalid state');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -295,10 +350,15 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Remove the value at the back of the range.
    *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
    */
-  popBack(): void {
-    assert(!this.isEmpty(), 'LinkedListRange#popBack(): Invalid state');
+  dropBack(): void {
+    assert(!this.isEmpty(), 'LinkedListRange#dropBack(): Invalid state');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -309,10 +369,12 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Create an independent slice of the range.
    *
+   * @returns A new slice of the current range.
    */
   slice(): LinkedListRange<T> {
-    return new LinkedListRange(this._length, this._front, this._back);
+    return new LinkedListRange<T>(this._length, this._front, this._back);
   }
 
   private _length: number;
