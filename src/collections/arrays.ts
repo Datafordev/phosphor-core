@@ -176,6 +176,36 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
   }
 
   /**
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  popFront(): T {
+    assert(!this.isEmpty(), 'Range violation');
+    return this._array[this._start++];
+  }
+
+  /**
+   * Remove and return the value at the back of the range.
+   *
+   * @returns The value at the back of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  popBack(): T {
+    assert(!this.isEmpty(), 'Range violation');
+    return this._array[--this._stop];
+  }
+
+  /**
    * Remove the value at the front of the range.
    *
    * #### Notes
@@ -183,7 +213,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    *
    * If the range is empty, the behavior is undefined.
    */
-  popFront(): void {
+  dropFront(): void {
     assert(!this.isEmpty(), 'Range violation');
     this._start++;
   }
@@ -196,7 +226,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    *
    * If the range is empty, the behavior is undefined.
    */
-  popBack(): void {
+  dropBack(): void {
     assert(!this.isEmpty(), 'Range violation');
     this._stop--;
   }
