@@ -54,14 +54,29 @@ interface IInputRange<T> {
   front(): T;
 
   /**
-   * Remove the value at the front of the range.
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
    *
    * #### Notes
    * If the range length is finite, it is reduced by one.
    *
    * If the range is empty, the behavior is undefined.
    */
-  popFront(): void;
+  popFront(): T;
+
+  /**
+   * Remove the value at the front of the range.
+   *
+   * #### Notes
+   * When the value is not needed, this can be a more efficient
+   * operation than `popFront()`.
+   *
+   * If the range length is finite, it is reduced by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropFront(): void;
 }
 
 
@@ -100,14 +115,29 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
   back(): T;
 
   /**
-   * Remove the value at the back of the range.
+   * Remove and return the value at the back of the range.
+   *
+   * @returns The value at the back of the range.
    *
    * #### Notes
    * If the range length is finite, it is reduced by one.
    *
    * If the range is empty, the behavior is undefined.
    */
-  popBack(): void;
+  popBack(): T;
+
+  /**
+   * Remove the value at the back of the range.
+   *
+   * #### Notes
+   * When the value is not needed, this can be a more efficient
+   * operation than `popBack()`.
+   *
+   * If the range length is finite, it is reduced by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropBack(): void;
 
   /**
    * Create an independent slice of the range.
