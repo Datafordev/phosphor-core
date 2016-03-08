@@ -11,32 +11,32 @@ import {
 
 
 /**
- * Pop the front of an input range `n` times.
+ * Drop the front of an input range `n` times.
  *
  * @param range - The input range of interest.
  *
  * @param n - The number of times to pop the front of the range.
  *
  * #### Notes
- * This function will not attempt to pop an empty range.
+ * This function will not attempt to drop from an empty range.
  */
 export
-function popFrontN(range: IInputRange<any>, n: number): void {
-  for (let i = 0; i < n && !range.isEmpty(); ++i) range.popFront();
+function dropFrontN(range: IInputRange<any>, n: number): void {
+  for (let i = 0; i < n && !range.isEmpty(); ++i) range.dropFront();
 }
 
 
 /**
- * Pop the back of a bidirectional range `n` times.
+ * Drop the back of a bidirectional range `n` times.
  *
  * @param range - The bidirectional range of interest.
  *
  * @param n - The number of times to pop the back of the range.
  *
  * #### Notes
- * This function will not attempt to pop an empty range.
+ * This function will not attempt to drop from an empty range.
  */
 export
-function popBackN(range: IBidirectionalRange<any>, n: number): void {
-  for (let i = 0; i < n && !range.isEmpty(); ++i) range.popBack();
+function dropBackN(range: IBidirectionalRange<any>, n: number): void {
+  for (let i = 0; i < n && !range.isEmpty(); ++i) range.dropBack();
 }
