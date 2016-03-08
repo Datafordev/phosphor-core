@@ -88,12 +88,14 @@ class LinkedList<T> {
     return this._back.value;
   }
 
-  // /**
-  //  *
-  //  */
-  // slice(): LinkedListRange {
-
-  // }
+  /**
+   * Create a range which is a view on the list.
+   *
+   * @returns A new bidirectional range for the list.
+   */
+  slice(): LinkedListRange {
+    return new LinkedListRange(this._length, this._front, this._back);
+  }
 
   /**
    * Insert a value at the front of the list.
@@ -325,6 +327,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
  * #### Notes
  * User code will not typically interact with this type directly.
  */
+export
 class LinkedListNode<T> {
   /**
    * The next node the chain.
