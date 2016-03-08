@@ -52,6 +52,8 @@ function toArray<T>(range: IInputRange<T>): T[] {
  * If the start index is out of range, the behavior is undefined.
  *
  * If the stop index is out of range, the behavior is undefined.
+ *
+ * Modifying the array length invalidates all outstanding ranges.
  */
 export
 function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
@@ -77,6 +79,8 @@ function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
  * If the start index is out of range, the behavior is undefined.
  *
  * If the stop index is out of range, the behavior is undefined.
+ *
+ * Modifying the array length invalidates all outstanding ranges.
  */
 export
 function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
