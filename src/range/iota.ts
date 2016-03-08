@@ -78,10 +78,10 @@ class Iota implements IRandomAccessRange<number> {
    */
   constructor(start: number, stop: number, step: number) {
     assert(step !== 0, 'Step cannot be zero');
-    this._index = 0;
+    this._start = 0;
     this._step = step;
-    this._start = start;
-    this._count = getStepCount(start, stop, step);
+    this._base = start;
+    this._stop = getStepCount(start, stop, step);
   }
 
   /**
@@ -90,8 +90,8 @@ class Iota implements IRandomAccessRange<number> {
    * @returns `true` if the range is empty, `false` otherwise.
    */
   isEmpty(): boolean {
-    assert(this._count >= 0, 'Range violation');
-    return this._count === 0;
+    assert(this._stop >= this._start, 'Range violation');
+    return this._stop === this._start;
   }
 
   /**
@@ -103,8 +103,8 @@ class Iota implements IRandomAccessRange<number> {
    * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number {
-    assert(this._count >= 0, 'Range violation');
-    return this._count;
+    assert(this._stop >= this._start, 'Range violation');
+    return this._stop - this._start;
   }
 
   /**
@@ -117,7 +117,7 @@ class Iota implements IRandomAccessRange<number> {
    */
   front(): number {
     assert(!this.isEmpty(), 'Range violation');
-    return this._start + this._step * this._index;
+    return this._base + this._step * this._start;
   }
 
   /**
@@ -130,7 +130,7 @@ class Iota implements IRandomAccessRange<number> {
    */
   back(): number {
     assert(!this.isEmpty(), 'Range violation');
-    return this._start + this._step * (this._index + this._count - 1);
+    return this._base + this._step * (this._stop - 1);
   }
 
   /**
@@ -148,7 +148,37 @@ class Iota implements IRandomAccessRange<number> {
    */
   at(index: number): number {
     assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid index');
-    return this._start + this._step * (this._index + index);
+    return this._base + this._step * (this._start + index);
+  }
+
+  /**
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  popFront(): number {
+    assert(!this.isEmpty(), 'Range violation');
+    return this._base + this._step * this._start++;
+  }
+
+  /**
+   * Remove and return the value at the back of the range.
+   *
+   * @returns The value at the back of the range.
+   *
+   * #### Notes
+   * This reduces the range length by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  popBack(): number {
+    assert(!this.isEmpty(), 'Range violation');
+    return this._base + this._step * --this._stop;
   }
 
   /**
@@ -159,10 +189,9 @@ class Iota implements IRandomAccessRange<number> {
    *
    * If the range is empty, the behavior is undefined.
    */
-  popFront(): void {
+  dropFront(): void {
     assert(!this.isEmpty(), 'Range violation');
-    this._index++;
-    this._count--;
+    this._start++;
   }
 
   /**
@@ -173,9 +202,9 @@ class Iota implements IRandomAccessRange<number> {
    *
    * If the range is empty, the behavior is undefined.
    */
-  popBack(): void {
+  dropBack(): void {
     assert(!this.isEmpty(), 'Range violation');
-    this._count--;
+    this._stop--;
   }
 
   /**
@@ -198,15 +227,15 @@ class Iota implements IRandomAccessRange<number> {
   slice(start = 0, stop = this.length()): Iota {
     assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
     assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
-    let begin = this._start + this._step * (this._index + start);
-    let end = this._start + this._step * (this._index + stop);
+    let begin = this._base + this._step * (this._start + start);
+    let end = this._base + this._step * (this._start + stop);
     return new Iota(begin, end, this._step);
   }
 
   private _step: number;
+  private _base: number;
   private _start: number;
-  private _index: number;
-  private _count: number;
+  private _stop: number;
 }
 
 
