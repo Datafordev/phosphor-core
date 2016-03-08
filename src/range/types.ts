@@ -8,7 +8,7 @@
 
 
 /**
- * A range which provides single-use iteration.
+ * A range which provides single-pass iteration.
  *
  * #### Notes
  * This is the most basic type of range.
@@ -21,9 +21,7 @@ interface IInputRange<T> {
    * @returns `true` if the range is empty, `false` otherwise.
    *
    * #### Notes
-   * This function is the authoritative source of truth as to whether a
-   * range is exhausted, since the length of a range may be infinite or
-   * unknown.
+   * This is always determinate, even if `length()` is `undefined`.
    */
   isEmpty(): boolean;
 
@@ -49,8 +47,7 @@ interface IInputRange<T> {
    * @returns The value at the front of the range.
    *
    * #### Notes
-   * This does not change the length of the range, and will return the
-   * same value on each call until the front of the range is consumed.
+   * This does not change the length of the range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -69,7 +66,7 @@ interface IInputRange<T> {
 
 
 /**
- * An input range which can be sliced into a new range.
+ * An input range which supports multi-pass iteration.
  */
 export
 interface IForwardRange<T> extends IInputRange<T> {
@@ -79,15 +76,14 @@ interface IForwardRange<T> extends IInputRange<T> {
    * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
+   * The slice can be iterated independently of this range.
    */
   slice(): IForwardRange<T>;
 }
 
 
 /**
- * A forward range which can also be iterated from the back.
+ * A forward range which supports backward iteration.
  */
 export
 interface IBidirectionalRange<T> extends IForwardRange<T> {
@@ -97,8 +93,7 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * @returns The value at the back of the range.
    *
    * #### Notes
-   * This does not change the length of the range, and will return the
-   * same value on each call until the back of the range is consumed.
+   * This does not change the length of the range.
    *
    * If the range is empty, the behavior is undefined.
    */
@@ -120,15 +115,14 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
+   * The slice can be iterated independently of this range.
    */
   slice(): IBidirectionalRange<T>;
 }
 
 
 /**
- * A bidirectional range which also supports random access.
+ * A bidirectional range which supports random access.
  */
 export
 interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
@@ -160,8 +154,7 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
+   * The slice can be iterated independently of this range.
    *
    * If the start index is out of range, the behavior is undefined.
    *
@@ -201,8 +194,7 @@ interface IMutableForwardRange<T> extends IMutableInputRange<T>, IForwardRange<T
    * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
+   * The slice can be iterated independently of this range.
    */
   slice(): IMutableForwardRange<T>;
 }
@@ -231,8 +223,7 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
    * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
+   * The slice can be iterated independently of this range.
    */
   slice(): IMutableBidirectionalRange<T>;
 }
@@ -273,8 +264,7 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    * @returns A new slice of the current range.
    *
    * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
+   * The slice can be iterated independently of this range.
    *
    * If the start index is out of range, the behavior is undefined.
    *
