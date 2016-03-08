@@ -15,6 +15,23 @@ import {
 
 
 /**
+ * Convert a finite input range into an array.
+ *
+ * @param range - The finite input range of values.
+ *
+ * @returns A new array of values taken from the range.
+ */
+export
+function asArray<T>(range: IInputRange<T>): T[] {
+  let result = new Array<T>(range.length() || 0);
+  for (let i = 0; !range.isEmpty(); ++i) {
+    result[i] = range.popFront();
+  }
+  return result;
+}
+
+
+/**
  * Create a range which is a view on a subset of an array.
  *
  * @param array - The array of interest.
@@ -61,24 +78,6 @@ function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
 export
 function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
   return new MutableArrayRange<T>(array, start, stop);
-}
-
-
-/**
- * Convert a finite input range into an array.
- *
- * @param range - The finite input range of values.
- *
- * @returns A new array of values taken from the range.
- */
-export
-function asArray<T>(range: IInputRange<T>): T[] {
-  let result = new Array<T>(range.length() || 0);
-  for (let i = 0; !range.isEmpty(); ++i) {
-    result[i] = range.front();
-    range.popFront();
-  }
-  return result;
 }
 
 
