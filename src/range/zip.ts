@@ -170,15 +170,29 @@ class InputZip<T> implements IInputRange<T[]> {
   }
 
   /**
-   * Remove the value at the front of the range.
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
    *
    * #### Notes
    * This will pop the front of each source range.
    *
    * If the range is empty, the behavior is undefined.
    */
-  popFront(): void {
-    this.sources.forEach(src => { src.popFront(); });
+  popFront(): T[] {
+    return this.sources.map(src => src.popFront());
+  }
+
+  /**
+   * Remove the value at the front of the range.
+   *
+   * #### Notes
+   * This will drop the front of each source range.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropFront(): void {
+    this.sources.forEach(src => { src.dropFront(); });
   }
 }
 
@@ -259,15 +273,29 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
   }
 
   /**
-   * Remove the value at the back of the range.
+   * Remove and return value at the back of the range.
+   *
+   * @returns The value at the back of the range.
    *
    * #### Notes
    * This will pop the back of each source range.
    *
    * If the range is empty, the behavior is undefined.
    */
-  popBack(): void {
-    this.sources.forEach(src => { src.popBack(); });
+  popBack(): T[] {
+    return this.sources.map(src => src.popBack());
+  }
+
+  /**
+   * Remove the value at the back of the range.
+   *
+   * #### Notes
+   * This will drop the back of each source range.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropBack(): void {
+    this.sources.forEach(src => { src.dropBack(); });
   }
 
   /**

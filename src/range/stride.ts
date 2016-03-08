@@ -16,7 +16,7 @@ import {
 } from './types';
 
 import {
-  popBackN, popFrontN
+  dropBackN, dropFrontN
 } from './utils';
 
 
@@ -193,15 +193,32 @@ class InputStride<T> implements IInputRange<T> {
   }
 
   /**
-   * Remove the value at the front of the range.
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
    *
    * #### Notes
-   * This pops the front of the source range `step` number of times.
+   * This fetches the value at the front of the source range, then
+   * drops the front of the source range `step` number of times.
    *
    * The source range will not be modified if it becomes empty.
    */
-  popFront(): void {
-    popFrontN(this.source, this.step);
+  popFront(): T {
+    let front = this.front();
+    this.dropFront();
+    return front;
+  }
+
+  /**
+   * Remove the value at the front of the range.
+   *
+   * #### Notes
+   * This drops the front of the source range `step` number of times.
+   *
+   * The source range will not be modified if it becomes empty.
+   */
+  dropFront(): void {
+    dropFrontN(this.source, this.step);
   }
 }
 
@@ -287,15 +304,34 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
   }
 
   /**
-   * Remove the value at the back of the range.
+   * Remove and return the value at the back of the range.
+   *
+   * @returns The value at the back of the range.
    *
    * #### Notes
-   * This pops the back of the source range `step` number of times.
+   * This fetches the value at the back of the source range, then
+   * drops the back of the source range `step` number of times.
+   *
+   * If the range length is indeterminate, the behavior is undefined.
    *
    * The source range will not be modified if it becomes empty.
    */
-  popBack(): void {
-    popBackN(this.source, this.step);
+  popBack(): T {
+    let back = this.back();
+    this.dropBack();
+    return back;
+  }
+
+  /**
+   * Remove the value at the back of the range.
+   *
+   * #### Notes
+   * This drops the back of the source range `step` number of times.
+   *
+   * The source range will not be modified if it becomes empty.
+   */
+  dropBack(): void {
+    dropBackN(this.source, this.step);
   }
 
   /**
@@ -672,5 +708,5 @@ function trimExtraValues(source: IBidirectionalRange<any>, step: number): void {
   } else {
     extra = 0;
   }
-  if (extra > 0) popBackN(source, extra);
+  if (extra > 0) dropBackN(source, extra);
 }

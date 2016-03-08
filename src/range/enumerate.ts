@@ -127,16 +127,31 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
   }
 
   /**
-   * Remove the value at the front of the range.
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
    *
    * #### Notes
-   * This pops the front of the source range and increments the index.
+   * This pops the front of the source range, increments the index,
+   * and returns a tuple of the enumerated `[index, value]`.
    *
    * If the range is empty, the behavior is undefined.
    */
-  popFront(): void {
-    this.source.popFront();
+  popFront(): [number, T] {
+    return [this.index++, this.source.popFront()];
+  }
+
+  /**
+   * Remove the value at the front of the range.
+   *
+   * #### Notes
+   * This drops the front of the source range and increments the index.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropFront(): void {
     this.index++;
+    this.source.dropFront();
   }
 }
 
@@ -223,15 +238,32 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
   }
 
   /**
-   * Remove the value at the back of the range.
+   * Remove and return the value at the back of the range.
+   *
+   * @returns The value at the back of the range.
    *
    * #### Notes
-   * This pops the back of the source range.
+   * This pops the back of the source range and returns a tuple of the
+   * enumerated `[index, value]`.
+   *
+   * If the range length is indeterminate, the behavior is undefined.
    *
    * If the range is empty, the behavior is undefined.
    */
-  popBack(): void {
-    this.source.popBack();
+  popBack(): [number, T] {
+    return [this.index + this.source.length() - 1, this.source.popBack()];
+  }
+
+  /**
+   * Remove the value at the back of the range.
+   *
+   * #### Notes
+   * This drops the back of the source range.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropBack(): void {
+    this.source.dropBack();
   }
 
   /**

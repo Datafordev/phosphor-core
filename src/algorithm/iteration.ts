@@ -29,7 +29,6 @@ import {
 export
 function forEach<T>(range: IInputRange<T>, fn: (value: T, index: number) => void): void {
   for (let i = 0; !range.isEmpty(); ++i) {
-    fn(range.front(), i);
-    range.popFront();
+    fn(range.popFront(), i);
   }
 }
