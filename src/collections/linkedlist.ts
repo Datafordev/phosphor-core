@@ -149,6 +149,8 @@ class LinkedList<T> {
    *
    * If the list is empty, the behavior is undefined.
    *
+   * This invalidates all outstanding ranges for the list.
+   *
    * This has `O(1)` complexity.
    */
   removeFront(): void {
@@ -172,6 +174,8 @@ class LinkedList<T> {
    * This decreases the list length by one.
    *
    * If the list is empty, the behavior is undefined.
+   *
+   * This invalidates all outstanding ranges for the list.
    *
    * This has `O(1)` complexity.
    */
@@ -197,9 +201,18 @@ class LinkedList<T> {
    *
    * This is a no-op if the list is empty.
    *
-   * This has `O(1)` complexity.
+   * This invalidates all outstanding ranges for the list.
+   *
+   * This has `O(n)` complexity.
    */
   clear(): void {
+    let node = this._front;
+    while (node) {
+      let next = node.next;
+      node.prev = null;
+      node.next = null;
+      node = next;
+    }
     this._length = 0;
     this._front = null;
     this._back = null;
