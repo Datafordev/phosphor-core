@@ -92,6 +92,11 @@ class LinkedList<T> {
    * Create a range which is a view on the list.
    *
    * @returns A new bidirectional range for the list.
+   *
+   * #### Notes
+   * Modifying the list invalidates all outstanding ranges.
+   *
+   * Use of an invalidated range is undefined behavior.
    */
   slice(): LinkedListRange<T> {
     return new LinkedListRange<T>(this._length, this._front, this._back);
@@ -104,6 +109,8 @@ class LinkedList<T> {
    *
    * #### Notes
    * This increases the list length by one.
+   *
+   * This invalidates all outstanding ranges for the list.
    *
    * This has `O(1)` complexity.
    */
@@ -127,6 +134,8 @@ class LinkedList<T> {
    *
    * #### Notes
    * This increases the list length by one.
+   *
+   * This invalidates all outstanding ranges for the list.
    *
    * This has `O(1)` complexity.
    */
