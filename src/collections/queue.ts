@@ -10,11 +10,11 @@ import {
 } from '../algorithm/iteration';
 
 import {
-  assert, isInt
+  assert
 } from '../patterns/assertion';
 
 import {
-  IInputRange
+  IForwardRange, IInputRange
 } from '../range/types';
 
 
@@ -167,4 +167,100 @@ class QueueNode<T> {
   constructor(value: T) {
     this.value = value;
   }
+}
+
+
+/**
+ * A forward range for a queue.
+ */
+export
+class QueueRange<T> implements IForwardRange<T> {
+  /**
+   * Construct a new queue range.
+   *
+   * @param length - The current length of the queue.
+   *
+   * @param front - The first node in the queue.
+   */
+  constructor(length: number, front: QueueNode<T>) {
+    this._length = length;
+    this._front = front;
+  }
+
+  /**
+   * Test whether the range is empty.
+   *
+   * @returns `true` if the range is empty, `false` otherwise.
+   */
+  isEmpty(): boolean {
+    return this._length === 0;
+  }
+
+  /**
+   * Get the number of values remaining in the range.
+   *
+   * @returns The current length of the range.
+   */
+  length(): number {
+    return this._length;
+  }
+
+  /**
+   * Get the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This does not change the length of the range.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  front(): T {
+    assert(!this.isEmpty(), 'QueueRange#front(): Range is empty');
+    return this._front.value;
+  }
+
+  /**
+   * Remove and return the value at the front of the range.
+   *
+   * @returns The value at the front of the range.
+   *
+   * #### Notes
+   * This reduces the length of the array by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  popFront(): T {
+    assert(!this.isEmpty(), 'QueueRange#popFront(): Range is empty');
+    let node = this._front;
+    this._front = node.next;
+    this._length--;
+    return node.value;
+  }
+
+  /**
+   * Remove the value at the front of the range.
+   *
+   * #### Notes
+   * This reduces the length of the array by one.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  dropFront(): void {
+    assert(!this.isEmpty(), 'QueueRange#dropFront(): Range is empty');
+    this._front = this._front.next;
+    this._length--;
+  }
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): QueueRange<T> {
+    return new QueueRange<T>(this._length, this._front);
+  }
+
+  private _length: number;
+  private _front: QueueNode<T>;
 }
