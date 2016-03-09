@@ -401,12 +401,12 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
 export
 class LinkedListNode<T> {
   /**
-   * The next node the chain.
+   * The next node the list.
    */
   next: LinkedListNode<T> = null;
 
   /**
-   * The previous node in the chain.
+   * The previous node in the list.
    */
   prev: LinkedListNode<T> = null;
 
