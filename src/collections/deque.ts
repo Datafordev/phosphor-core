@@ -19,103 +19,100 @@ import {
 
 
 /**
- * A generic doubly linked list container.
+ * A generic double ended queue data structure.
  */
 export
-class LinkedList<T> {
+class Deque<T> {
   /**
-   * Construct a new linked list.
+   * Construct a new deque.
    *
-   * @param items - An input range of initial items for the list.
+   * @param values - A range of initial values for the deque.
    */
-  constructor(items?: IInputRange<T>) {
-    if (items) forEach(items, item => { this.insertBack(item); });
+  constructor(values?: IInputRange<T>) {
+    if (values) forEach(values, value => { this.pushBack(value); });
   }
 
   /**
-   * Test whether the list is empty.
+   * Test whether the deque is empty.
    *
-   * @returns `true` if the list is empty, `false` otherwise.
+   * @returns `true` if the deque is empty, `false` otherwise.
    *
-   * #### Notes
-   * This has `O(1)` complexity.
+   * #### Complexity
+   * Constant.
    */
   isEmpty(): boolean {
-    assert(this._length >= 0, 'LinkedList#isEmpty(): Invalid state');
     return this._length === 0;
   }
 
   /**
-   * Get the length of the list.
+   * Get the length of the deque.
    *
-   * @return The number of values in the list.
+   * @return The number of values in the deque.
    *
-   * #### Notes
-   * This has `O(1)` complexity.
+   * #### Complexity
+   * Constant.
    */
   length(): number {
-    assert(this._length >= 0, 'LinkedList#length(): Invalid state');
     return this._length;
   }
 
   /**
-   * Get the value at the front of the list.
+   * Create a range over the values in the deque.
    *
-   * @returns The value at the front of the list.
+   * @returns A new bidirectional range for the deque.
    *
-   * #### Notes
-   * If the list is empty, the behavior is undefined.
-   *
-   * This has `O(1)` complexity.
+   * #### Complexity
+   * Constant.
    */
-  front(): T {
-    assert(!this.isEmpty(), 'LinkedList#front(): List is empty');
+  slice(): DequeRange<T> {
+    return new DequeRange<T>(this._front, this._back, this._length);
+  }
+
+  /**
+   * Get the value at the front of the deque.
+   *
+   * @returns The value at the front of the deque.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Undefined Behavior
+   * Calling `peekFront()` on an empty deque is undefined.
+   */
+  peekFront(): T {
+    assert(!this.isEmpty(), 'Deque#peekFront(): Deque is empty');
     return this._front.value;
   }
 
   /**
-   * Get the value at the back of the list.
+   * Get the value at the back of the deque.
    *
-   * @returns The value at the back of the list.
+   * @returns The value at the back of the deque.
    *
-   * #### Notes
-   * If the list is empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    *
-   * This has `O(1)` complexity.
+   * #### Undefined Behavior
+   * Calling `peekBack()` on an empty deque is undefined.
    */
-  back(): T {
-    assert(!this.isEmpty(), 'LinkedList#back(): List is empty');
+  peekBack(): T {
+    assert(!this.isEmpty(), 'Deque#peekBack(): Deque is empty');
     return this._back.value;
   }
 
   /**
-   * Create a range which is a view on the list.
+   * Add a value to the front of the deque.
    *
-   * @returns A new bidirectional range for the list.
+   * @param value - The value to add to the front of the deque.
    *
-   * #### Notes
-   * Modifying the list invalidates all outstanding ranges.
+   * #### Complexity
+   * Constant.
    *
-   * Use of an invalidated range is undefined behavior.
+   * #### Range Validity
+   * No changes.
    */
-  slice(): LinkedListRange<T> {
-    return new LinkedListRange<T>(this._length, this._front, this._back);
-  }
-
-  /**
-   * Insert a value at the front of the list.
-   *
-   * @param value - The value to insert at the front of the list.
-   *
-   * #### Notes
-   * This increases the list length by one.
-   *
-   * This invalidates all outstanding ranges for the list.
-   *
-   * This has `O(1)` complexity.
-   */
-  insertFront(value: T): void {
-    let node = new LinkedListNode(value);
+  pushFront(value: T): void {
+    let node = new DequeNode(value);
     if (this._length === 0) {
       this._front = node;
       this._back = node;
@@ -128,19 +125,18 @@ class LinkedList<T> {
   }
 
   /**
-   * Insert a value at the back of the list.
+   * Add a value to the back of the deque.
    *
-   * @param value - The value to insert at the back of the list.
+   * @param value - The value to add to the back of the deque.
    *
-   * #### Notes
-   * This increases the list length by one.
+   * #### Complexity
+   * Constant.
    *
-   * This invalidates all outstanding ranges for the list.
-   *
-   * This has `O(1)` complexity.
+   * #### Range Validity
+   * No changes.
    */
-  insertBack(value: T): void {
-    let node = new LinkedListNode(value);
+  pushBack(value: T): void {
+    let node = new DequeNode(value);
     if (this._length === 0) {
       this._front = node;
       this._back = node;
@@ -153,105 +149,134 @@ class LinkedList<T> {
   }
 
   /**
-   * Remove the value at the front of the list.
+   * Remove and return the value at the front of the deque.
    *
-   * #### Notes
-   * This decreases the list length by one.
+   * @returns The value at the front of the deque.
    *
-   * If the list is empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    *
-   * This invalidates all outstanding ranges for the list.
+   * #### Range Validity
+   * Ranges pointing at the removed value are invalidated.
    *
-   * This has `O(1)` complexity.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty deque is undefined.
    */
-  removeFront(): void {
-    assert(!this.isEmpty(), 'LinkedList#removeFront(): List is empty');
+  popFront(): T {
+    assert(!this.isEmpty(), 'Deque#popFront(): Deque is empty');
+    let node = this._front;
     if (this._length === 1) {
       this._front = null;
       this._back = null;
     } else {
-      let node = this._front;
       this._front = node.next;
       this._front.prev = null;
       node.next = null;
     }
     this._length--;
+    return node.value;
   }
 
   /**
-   * Remove the value at the back of the list.
+   * Remove and return the value at the back of the deque.
    *
-   * #### Notes
-   * This decreases the list length by one.
+   * @returns The value at the back of the deque.
    *
-   * If the list is empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    *
-   * This invalidates all outstanding ranges for the list.
+   * #### Range Validity
+   * Ranges pointing at the removed value are invalidated.
    *
-   * This has `O(1)` complexity.
+   * #### Undefined Behavior
+   * Calling `popBack()` on an empty deque is undefined.
    */
-  removeBack(): void {
-    assert(!this.isEmpty(), 'LinkedList#removeBack(): List is empty');
+  popBack(): T {
+    assert(!this.isEmpty(), 'Deque#popBack(): Deque is empty');
+    let node = this._back;
     if (this._length === 1) {
       this._front = null;
       this._back = null;
     } else {
-      let node = this._back;
       this._back = node.prev;
       this._back.next = null;
       node.prev = null;
     }
     this._length--;
+    return node.value;
   }
 
   /**
-   * Remove all values in the list.
+   * Remove all values from the deque.
    *
-   * #### Notes
-   * This resets the list length to zero.
+   * #### Complexity
+   * Constant (excluding GC).
    *
-   * This is a no-op if the list is empty.
-   *
-   * This invalidates all outstanding ranges for the list.
-   *
-   * This has `O(n)` complexity.
+   * #### Range Validity
+   * All ranges pointing to the deque are invalidated.
    */
   clear(): void {
-    let node = this._front;
-    while (node) {
-      let next = node.next;
-      node.prev = null;
-      node.next = null;
-      node = next;
-    }
     this._length = 0;
     this._front = null;
     this._back = null;
   }
 
   private _length = 0;
-  private _front: LinkedListNode<T> = null;
-  private _back: LinkedListNode<T> = null;
+  private _front: DequeNode<T> = null;
+  private _back: DequeNode<T> = null;
 }
 
 
 /**
- * A bidirectional range for a linked list.
+ * The node type for a deque.
+ *
+ * #### Notes
+ * User code will not typically interact with this type directly.
  */
 export
-class LinkedListRange<T> implements IBidirectionalRange<T> {
+class DequeNode<T> {
   /**
-   * Construct a new linked list range.
-   *
-   * @param length - The current length of the list.
-   *
-   * @param front - The front of the list.
-   *
-   * @param back - The back of the list.
+   * The next node the deque.
    */
-  constructor(length: number, front: LinkedListNode<T>, back: LinkedListNode<T>) {
-    assert(isInt(length) && length >= 0, 'LinkedListRange(): Invalid length');
-    assert(!!front === !!back, 'LinkedListRange(): Invalid arguments');
+  next: DequeNode<T> = null;
+
+  /**
+   * The previous node in the deque.
+   */
+  prev: DequeNode<T> = null;
+
+  /**
+   * The value for the node.
+   */
+  value: T;
+
+  /**
+   * Construct a new deque node.
+   *
+   * @param value - The value for the node.
+   */
+  constructor(value: T) {
+    this.value = value;
+  }
+}
+
+
+/**
+ * A bidirectional range for a deque.
+ */
+export
+class DequeRange<T> implements IBidirectionalRange<T> {
+  /**
+   * Construct a new deque range.
+   *
+   * @param front - The front of the deque.
+   *
+   * @param back - The back of the deque.
+   *
+   * @param length - The length of the deque.
+   */
+  constructor(front: DequeNode<T>, back: DequeNode<T>, length: number) {
+    assert(isInt(length) && length >= 0, 'DequeRange(): Invalid length');
     this._length = length;
     this._front = front;
     this._back = back;
@@ -261,9 +286,11 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    * Test whether the range is empty.
    *
    * @returns `true` if the range is empty, `false` otherwise.
+   *
+   * #### Complexity
+   * Constant.
    */
   isEmpty(): boolean {
-    assert(this._length >= 0, 'LinkedListRange#isEmpty(): Invalid state');
     return this._length === 0;
   }
 
@@ -271,10 +298,24 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    * Get the number of values remaining in the range.
    *
    * @returns The current length of the range.
+   *
+   * #### Complexity
+   * Constant.
    */
   length(): number {
-    assert(this._length >= 0, 'LinkedListRange#length(): Invalid state');
     return this._length;
+  }
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Complexity
+   * Constant.
+   */
+  slice(): DequeRange<T> {
+    return new DequeRange<T>(this._front, this._back, this._length);
   }
 
   /**
@@ -282,13 +323,14 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    * @returns The value at the front of the range.
    *
-   * #### Notes
-   * This does not change the length of the range.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range is undefined.
    */
   front(): T {
-    assert(!this.isEmpty(), 'LinkedListRange#front(): Invalid state');
+    assert(!this.isEmpty(), 'DequeRange#front(): Range is empty');
     return this._front.value;
   }
 
@@ -297,13 +339,14 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    * @returns The value at the back of the range.
    *
-   * #### Notes
-   * This does not change the length of the range.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `back()` on an empty range is undefined.
    */
   back(): T {
-    assert(!this.isEmpty(), 'LinkedListRange#back(): Invalid state');
+    assert(!this.isEmpty(), 'DequeRange#back(): Range is empty');
     return this._back.value;
   }
 
@@ -312,15 +355,23 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    * @returns The value at the front of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range is undefined.
    */
   popFront(): T {
-    let front = this.front();
-    this.dropFront();
-    return front;
+    assert(!this.isEmpty(), 'DequeRange#popFront(): Range is empty');
+    let node = this._front;
+    if (this._length === 1) {
+      this._front = null;
+      this._back = null;
+    } else {
+      this._front = node.next;
+    }
+    this._length--;
+    return node.value;
   }
 
   /**
@@ -328,27 +379,36 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
    *
    * @returns The value at the back of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popBack()` on an empty range is undefined.
    */
   popBack(): T {
-    let back = this.back();
-    this.dropBack();
-    return back;
+    assert(!this.isEmpty(), 'DequeRange#popBack(): Range is empty');
+    let node = this._back;
+    if (this._length === 1) {
+      this._front = null;
+      this._back = null;
+    } else {
+      this._back = node.prev;
+    }
+    this._length--;
+    return node.value;
   }
 
   /**
    * Remove the value at the front of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range is undefined.
    */
   dropFront(): void {
-    assert(!this.isEmpty(), 'LinkedListRange#dropFront(): Invalid state');
+    assert(!this.isEmpty(), 'DequeRange#dropFront(): Range is empty');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -361,13 +421,14 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
   /**
    * Remove the value at the back of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropBack()` on an empty range is undefined.
    */
   dropBack(): void {
-    assert(!this.isEmpty(), 'LinkedListRange#dropBack(): Invalid state');
+    assert(!this.isEmpty(), 'DequeRange#dropBack(): Range is empty');
     if (this._length === 1) {
       this._front = null;
       this._back = null;
@@ -377,50 +438,7 @@ class LinkedListRange<T> implements IBidirectionalRange<T> {
     this._length--;
   }
 
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): LinkedListRange<T> {
-    return new LinkedListRange<T>(this._length, this._front, this._back);
-  }
-
   private _length: number;
-  private _front: LinkedListNode<T>;
-  private _back: LinkedListNode<T>;
-}
-
-
-/**
- * The node type for a linked list.
- *
- * #### Notes
- * User code will not typically interact with this type directly.
- */
-export
-class LinkedListNode<T> {
-  /**
-   * The next node the list.
-   */
-  next: LinkedListNode<T> = null;
-
-  /**
-   * The previous node in the list.
-   */
-  prev: LinkedListNode<T> = null;
-
-  /**
-   * The value for the node.
-   */
-  value: T;
-
-  /**
-   * Construct a new linked list node.
-   *
-   * @param value - The value for the node.
-   */
-  constructor(value: T) {
-    this.value = value;
-  }
+  private _front: DequeNode<T>;
+  private _back: DequeNode<T>;
 }
