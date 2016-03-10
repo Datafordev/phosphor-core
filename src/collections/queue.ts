@@ -228,6 +228,18 @@ class QueueRange<T> implements IForwardRange<T> {
   }
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Complexity
+   * Constant.
+   */
+  slice(): QueueRange<T> {
+    return new QueueRange<T>(this._front, this._length);
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -275,18 +287,6 @@ class QueueRange<T> implements IForwardRange<T> {
     assert(!this.isEmpty(), 'QueueRange#dropFront(): Range is empty');
     this._front = this._front.next;
     this._length--;
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  slice(): QueueRange<T> {
-    return new QueueRange<T>(this._front, this._length);
   }
 
   private _length: number;

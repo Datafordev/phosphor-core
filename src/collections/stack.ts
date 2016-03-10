@@ -178,6 +178,18 @@ class StackRange<T> implements IForwardRange<T> {
   }
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Complexity
+   * Constant.
+   */
+  slice(): StackRange<T> {
+    return new StackRange<T>(this._stack, this._length);
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -221,18 +233,6 @@ class StackRange<T> implements IForwardRange<T> {
   dropFront(): void {
     assert(!this.isEmpty(), 'StackRange#dropFront(): Range is empty');
     this._length--;
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  slice(): StackRange<T> {
-    return new StackRange<T>(this._stack, this._length);
   }
 
   private _length: number;
