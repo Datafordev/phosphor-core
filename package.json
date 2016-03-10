@@ -4,6 +4,7 @@
   "description": "The core non-ui functionality of the PhosphorJS project.",
   "dependencies": {},
   "devDependencies": {
+    "rimraf": "^2.5.2",
     "typescript": "^1.8.0"
   },
   "scripts": {
