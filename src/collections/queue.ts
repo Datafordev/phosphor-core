@@ -10,7 +10,7 @@ import {
 } from '../algorithm/iteration';
 
 import {
-  assert
+  assert, isInt
 } from '../patterns/assertion';
 
 import {
@@ -183,6 +183,7 @@ class QueueRange<T> implements IForwardRange<T> {
    * @param front - The first node in the queue.
    */
   constructor(length: number, front: QueueNode<T>) {
+    assert(isInt(length) && length >= 0, 'QueueRange(): Invalid length');
     this._length = length;
     this._front = front;
   }
