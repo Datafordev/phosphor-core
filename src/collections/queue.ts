@@ -37,8 +37,8 @@ class Queue<T> {
    *
    * @returns `true` if the queue is empty, `false` otherwise.
    *
-   * #### Notes
-   * This has `O(1)` complexity.
+   * #### Complexity
+   * Constant.
    */
   isEmpty(): boolean {
     return this._length === 0;
@@ -49,11 +49,23 @@ class Queue<T> {
    *
    * @return The number of values in the queue.
    *
-   * #### Notes
-   * This has `O(1)` complexity.
+   * #### Complexity
+   * Constant.
    */
   length(): number {
     return this._length;
+  }
+
+  /**
+   * Create a range over the values in the queue.
+   *
+   * @returns A new forward range for the queue.
+   *
+   * #### Complexity
+   * Constant.
+   */
+  slice(): QueueRange<T> {
+    return new QueueRange<T>(this._length, this._front);
   }
 
   /**
@@ -61,10 +73,11 @@ class Queue<T> {
    *
    * @returns The value at the front of the queue.
    *
-   * #### Notes
-   * If the queue is empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    *
-   * This has `O(1)` complexity.
+   * #### Undefined Behavior
+   * Calling `peek()` on an empty queue is undefined.
    */
   peek(): T {
     assert(!this.isEmpty(), 'Queue#peek(): Queue is empty');
@@ -76,10 +89,11 @@ class Queue<T> {
    *
    * @param value - The value to add to the back of the queue.
    *
-   * #### Notes
-   * This increases the queue length by one.
+   * #### Complexity
+   * Constant.
    *
-   * This has `O(1)` complexity.
+   * #### Range Validity
+   * No changes.
    */
   push(value: T): void {
     let node = new QueueNode(value);
@@ -98,12 +112,14 @@ class Queue<T> {
    *
    * @returns The value at the front of the queue.
    *
-   * #### Notes
-   * This decreases the queue length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the queue is empty, the behavior is undefined.
+   * #### Range Validity
+   * Ranges pointing at the removed value are invalidated.
    *
-   * This has `O(1)` complexity.
+   * #### Undefined Behavior
+   * Calling `pop()` on an empty queue is undefined.
    */
   pop(): T {
     assert(!this.isEmpty(), 'Queue#pop(): Queue is empty');
@@ -122,12 +138,11 @@ class Queue<T> {
   /**
    * Remove all values from the queue.
    *
-   * #### Notes
-   * This resets the queue length to zero.
+   * #### Complexity
+   * Constant (excluding GC).
    *
-   * This is a no-op if the queue is empty.
-   *
-   * This has `O(1)` complexity.
+   * #### Range Validity
+   * All ranges pointing to the queue are invalidated.
    */
   clear(): void {
     this._length = 0;
@@ -192,6 +207,9 @@ class QueueRange<T> implements IForwardRange<T> {
    * Test whether the range is empty.
    *
    * @returns `true` if the range is empty, `false` otherwise.
+   *
+   * #### Complexity
+   * Constant.
    */
   isEmpty(): boolean {
     return this._length === 0;
@@ -201,6 +219,9 @@ class QueueRange<T> implements IForwardRange<T> {
    * Get the number of values remaining in the range.
    *
    * @returns The current length of the range.
+   *
+   * #### Complexity
+   * Constant.
    */
   length(): number {
     return this._length;
@@ -211,10 +232,11 @@ class QueueRange<T> implements IForwardRange<T> {
    *
    * @returns The value at the front of the range.
    *
-   * #### Notes
-   * This does not change the length of the range.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range is undefined.
    */
   front(): T {
     assert(!this.isEmpty(), 'QueueRange#front(): Range is empty');
@@ -226,10 +248,11 @@ class QueueRange<T> implements IForwardRange<T> {
    *
    * @returns The value at the front of the range.
    *
-   * #### Notes
-   * This reduces the length of the array by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range is undefined.
    */
   popFront(): T {
     assert(!this.isEmpty(), 'QueueRange#popFront(): Range is empty');
@@ -242,10 +265,11 @@ class QueueRange<T> implements IForwardRange<T> {
   /**
    * Remove the value at the front of the range.
    *
-   * #### Notes
-   * This reduces the length of the array by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range is undefined.
    */
   dropFront(): void {
     assert(!this.isEmpty(), 'QueueRange#dropFront(): Range is empty');
@@ -257,6 +281,9 @@ class QueueRange<T> implements IForwardRange<T> {
    * Create an independent slice of the range.
    *
    * @returns A new slice of the current range.
+   *
+   * #### Complexity
+   * Constant.
    */
   slice(): QueueRange<T> {
     return new QueueRange<T>(this._length, this._front);
