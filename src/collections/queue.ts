@@ -65,7 +65,7 @@ class Queue<T> {
    * Constant.
    */
   slice(): QueueRange<T> {
-    return new QueueRange<T>(this._length, this._front);
+    return new QueueRange<T>(this._front, this._length);
   }
 
   /**
@@ -193,11 +193,11 @@ class QueueRange<T> implements IForwardRange<T> {
   /**
    * Construct a new queue range.
    *
-   * @param length - The current length of the queue.
-   *
    * @param front - The first node in the queue.
+   *
+   * @param length - The length of the queue.
    */
-  constructor(length: number, front: QueueNode<T>) {
+  constructor(front: QueueNode<T>, length: number) {
     assert(isInt(length) && length >= 0, 'QueueRange(): Invalid length');
     this._length = length;
     this._front = front;
@@ -286,7 +286,7 @@ class QueueRange<T> implements IForwardRange<T> {
    * Constant.
    */
   slice(): QueueRange<T> {
-    return new QueueRange<T>(this._length, this._front);
+    return new QueueRange<T>(this._front, this._length);
   }
 
   private _length: number;
