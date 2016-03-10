@@ -139,6 +139,29 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
   }
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index is out of range, the behavior is undefined.
+   */
+  slice(start = 0, stop = this.length()): ArrayRange<T> {
+    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
+    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
+    return new ArrayRange(this._array, this._start + start, this._start + stop);
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -238,6 +261,17 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
     this._stop--;
   }
 
+  protected _array: T[];
+  protected _start: number;
+  protected _stop: number;
+}
+
+
+/**
+ * A mutable random access range for an array.
+ */
+export
+class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccessRange<T> {
   /**
    * Create an independent slice of the range.
    *
@@ -251,27 +285,19 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * @returns A new slice of the current range.
    *
    * #### Notes
+   * The returned range can be iterated independently of the current
+   * range. This can be useful for lookahead and range duplication.
+   *
    * If the start index is out of range, the behavior is undefined.
    *
    * If the stop index is out of range, the behavior is undefined.
    */
-  slice(start = 0, stop = this.length()): ArrayRange<T> {
+  slice(start = 0, stop = this.length()): MutableArrayRange<T> {
     assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
     assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
-    return new ArrayRange(this._array, this._start + start, this._start + stop);
+    return new MutableArrayRange(this._array, this._start + start, this._start + stop);
   }
 
-  protected _array: T[];
-  protected _start: number;
-  protected _stop: number;
-}
-
-
-/**
- * A mutable random access range for an array.
- */
-export
-class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccessRange<T> {
   /**
    * Set the value at the front of the range.
    *
@@ -320,31 +346,5 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
   setAt(index: number, value: T): void {
     assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid index');
     this._array[this._start + index] = value;
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * The returned range can be iterated independently of the current
-   * range. This can be useful for lookahead and range duplication.
-   *
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  slice(start = 0, stop = this.length()): MutableArrayRange<T> {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
-    return new MutableArrayRange(this._array, this._start + start, this._start + stop);
   }
 }

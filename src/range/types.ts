@@ -103,6 +103,16 @@ interface IForwardRange<T> extends IInputRange<T> {
 export
 interface IBidirectionalRange<T> extends IForwardRange<T> {
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The slice can be iterated independently of this range.
+   */
+  slice(): IBidirectionalRange<T>;
+
+  /**
    * Get the value at the back of the range.
    *
    * @returns The value at the back of the range.
@@ -138,16 +148,6 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * If the range is empty, the behavior is undefined.
    */
   dropBack(): void;
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * The slice can be iterated independently of this range.
-   */
-  slice(): IBidirectionalRange<T>;
 }
 
 
@@ -156,21 +156,6 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
  */
 export
 interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
-  /**
-   * Get the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
-   *
-   * @returns The value at the specified index.
-   *
-   * #### Notes
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
-   */
-  at(index: number): T;
-
   /**
    * Create an independent slice of the range.
    *
@@ -191,6 +176,21 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    * If the stop index is out of range, the behavior is undefined.
    */
   slice(start?: number, stop?: number): IRandomAccessRange<T>;
+
+  /**
+   * Get the value at a specific index in the range.
+   *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  at(index: number): T;
 }
 
 
@@ -236,6 +236,16 @@ interface IMutableForwardRange<T> extends IMutableInputRange<T>, IForwardRange<T
 export
 interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidirectionalRange<T> {
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * The slice can be iterated independently of this range.
+   */
+  slice(): IMutableBidirectionalRange<T>;
+
+  /**
    * Set the value at the back of the range.
    *
    * @param value - The value to set at the back of the range.
@@ -246,16 +256,6 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
    * If the range is empty, the behavior is undefined.
    */
   setBack(value: T): void;
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * The slice can be iterated independently of this range.
-   */
-  slice(): IMutableBidirectionalRange<T>;
 }
 
 
@@ -264,23 +264,6 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
  */
 export
 interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IRandomAccessRange<T> {
-  /**
-   * Set the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
-   *
-   * @param value - The value to set at the specified index.
-   *
-   * #### Notes
-   * This overwrites the current value at the specified index.
-   *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
-   */
-  setAt(index: number, value: T): void;
-
   /**
    * Create an independent slice of the range.
    *
@@ -301,4 +284,21 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    * If the stop index is out of range, the behavior is undefined.
    */
   slice(start?: number, stop?: number): IMutableRandomAccessRange<T>;
+
+  /**
+   * Set the value at a specific index in the range.
+   *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @param value - The value to set at the specified index.
+   *
+   * #### Notes
+   * This overwrites the current value at the specified index.
+   *
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  setAt(index: number, value: T): void;
 }

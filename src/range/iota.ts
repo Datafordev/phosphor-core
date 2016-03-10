@@ -108,6 +108,31 @@ class Iota implements IRandomAccessRange<number> {
   }
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index is out of range, the behavior is undefined.
+   */
+  slice(start = 0, stop = this.length()): Iota {
+    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
+    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
+    let begin = this._base + this._step * (this._start + start);
+    let end = this._base + this._step * (this._start + stop);
+    return new Iota(begin, end, this._step);
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -205,31 +230,6 @@ class Iota implements IRandomAccessRange<number> {
   dropBack(): void {
     assert(!this.isEmpty(), 'Range violation');
     this._stop--;
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  slice(start = 0, stop = this.length()): Iota {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
-    let begin = this._base + this._step * (this._start + start);
-    let end = this._base + this._step * (this._start + stop);
-    return new Iota(begin, end, this._step);
   }
 
   private _step: number;

@@ -222,6 +222,15 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
   source: IBidirectionalRange<T>;
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): BidirectionalEnumerate<T> {
+    return new BidirectionalEnumerate<T>(this.source.slice(), this.index);
+  }
+
+  /**
    * Get the value at the back of the range.
    *
    * @returns The value at the back of the range.
@@ -265,15 +274,6 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
   dropBack(): void {
     this.source.dropBack();
   }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): BidirectionalEnumerate<T> {
-    return new BidirectionalEnumerate<T>(this.source.slice(), this.index);
-  }
 }
 
 
@@ -305,23 +305,6 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
   source: IRandomAccessRange<T>;
 
   /**
-   * Get the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
-   *
-   * @returns The value at the specified index.
-   *
-   * #### Notes
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
-   */
-  at(index: number): [number, T] {
-    return [this.index + index, this.source.at(index)];
-  }
-
-  /**
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
@@ -342,5 +325,22 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
    */
   slice(start = 0, stop = this.length()): RandomEnumerate<T> {
     return new RandomEnumerate<T>(this.source.slice(start, stop), this.index + start);
+  }
+
+  /**
+   * Get the value at a specific index in the range.
+   *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  at(index: number): [number, T] {
+    return [this.index + index, this.source.at(index)];
   }
 }

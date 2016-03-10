@@ -117,6 +117,15 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
   }
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): BidirectionalBackward<T> {
+    return new BidirectionalBackward<T>(this.source.slice());
+  }
+
+  /**
    * Get the value at the front of the range.
    *
    * @returns The value at the front of the range.
@@ -195,15 +204,6 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
   dropBack(): void {
     this.source.dropFront();
   }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): BidirectionalBackward<T> {
-    return new BidirectionalBackward<T>(this.source.slice());
-  }
 }
 
 
@@ -233,27 +233,6 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
   source: IRandomAccessRange<T>;
 
   /**
-   * Get the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
-   *
-   * @returns The value at the specified index.
-   *
-   * #### Notes
-   * This returns the source range value at the reversed index.
-   *
-   * If the range length is indeterminate, the behavior is undefined.
-   *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
-   */
-  at(index: number): T {
-    return this.source.at(this.source.length() - index - 1);
-  }
-
-  /**
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
@@ -277,6 +256,27 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
     if (start === void 0) start = 0;
     if (stop === void 0) stop = len;
     return new RandomBackward<T>(this.source.slice(len - stop, len - start));
+  }
+
+  /**
+   * Get the value at a specific index in the range.
+   *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * This returns the source range value at the reversed index.
+   *
+   * If the range length is indeterminate, the behavior is undefined.
+   *
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  at(index: number): T {
+    return this.source.at(this.source.length() - index - 1);
   }
 }
 
@@ -307,6 +307,15 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
   source: IMutableBidirectionalRange<T>;
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): MutableBidirectionalBackward<T> {
+    return new MutableBidirectionalBackward<T>(this.source.slice());
+  }
+
+  /**
    * Set the value at the front of the range.
    *
    * @param value - The value to set at the front of the range.
@@ -332,15 +341,6 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
    */
   setBack(value: T): void {
     this.source.setFront(value);
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): MutableBidirectionalBackward<T> {
-    return new MutableBidirectionalBackward<T>(this.source.slice());
   }
 }
 
@@ -369,6 +369,32 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * User code can get/set this value for advanced use cases.
    */
   source: IMutableRandomAccessRange<T>;
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index is out of range, the behavior is undefined.
+   */
+  slice(start?: number, stop?: number): MutableRandomBackward<T> {
+    let len = this.source.length();
+    if (start === void 0) start = 0;
+    if (stop === void 0) stop = len;
+    return new MutableRandomBackward<T>(this.source.slice(len - stop, len - start));
+  }
 
   /**
    * Set the value at the front of the range.
@@ -413,32 +439,6 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    */
   setAt(index: number, value: T): void {
     this.source.setAt(this.source.length() - index - 1, value);
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
-   *
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  slice(start?: number, stop?: number): MutableRandomBackward<T> {
-    let len = this.source.length();
-    if (start === void 0) start = 0;
-    if (stop === void 0) stop = len;
-    return new MutableRandomBackward<T>(this.source.slice(len - stop, len - start));
   }
 }
 

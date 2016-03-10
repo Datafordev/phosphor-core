@@ -259,6 +259,15 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
   sources: IBidirectionalRange<T>[];
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): BidirectionalZip<T> {
+    return new BidirectionalZip<T>(this.sources.map(src => src.slice()));
+  }
+
+  /**
    * Get the value at the back of the range.
    *
    * @returns The value at the back of the range.
@@ -297,15 +306,6 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
   dropBack(): void {
     this.sources.forEach(src => { src.dropBack(); });
   }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): BidirectionalZip<T> {
-    return new BidirectionalZip<T>(this.sources.map(src => src.slice()));
-  }
 }
 
 
@@ -335,25 +335,6 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
   sources: IRandomAccessRange<T>[];
 
   /**
-   * Get the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
-   *
-   * @returns The value at the specified index.
-   *
-   * #### Notes
-   * This returns a tuple of the indexed value of each source range.
-   *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
-   */
-  at(index: number): T[] {
-    return this.sources.map(src => src.at(index));
-  }
-
-  /**
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
@@ -374,6 +355,25 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
    */
   slice(start = 0, stop = this.length()): RandomZip<T> {
     return new RandomZip<T>(this.sources.map(src => src.slice(start, stop)));
+  }
+
+  /**
+   * Get the value at a specific index in the range.
+   *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * This returns a tuple of the indexed value of each source range.
+   *
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  at(index: number): T[] {
+    return this.sources.map(src => src.at(index));
   }
 }
 
@@ -449,6 +449,15 @@ class MutableForwardZip<T> extends ForwardZip<T> implements IMutableForwardRange
   sources: IMutableForwardRange<T>[];
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): MutableForwardZip<T> {
+    return new MutableForwardZip<T>(this.sources.map(src => src.slice()));
+  }
+
+  /**
    * Set the value at the front of the range.
    *
    * @param value - The value to set at the front of the range.
@@ -463,15 +472,6 @@ class MutableForwardZip<T> extends ForwardZip<T> implements IMutableForwardRange
    * If the range is empty, the behavior is undefined.
    */
   setFront: (value: T[]) => void; // mixin
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): MutableForwardZip<T> {
-    return new MutableForwardZip<T>(this.sources.map(src => src.slice()));
-  }
 }
 
 // Apply the mixin methods.
@@ -502,6 +502,15 @@ class MutableBidirectionalZip<T> extends BidirectionalZip<T> implements IMutable
    * User code can get/set this value for advanced use cases.
    */
   sources: IMutableBidirectionalRange<T>[];
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): MutableBidirectionalZip<T> {
+    return new MutableBidirectionalZip<T>(this.sources.map(src => src.slice()));
+  }
 
   /**
    * Set the value at the front of the range.
@@ -536,15 +545,6 @@ class MutableBidirectionalZip<T> extends BidirectionalZip<T> implements IMutable
   setBack(value: T[]): void {
     this.sources.forEach((src, i) => { src.setBack(value[i]); });
   }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): MutableBidirectionalZip<T> {
-    return new MutableBidirectionalZip<T>(this.sources.map(src => src.slice()));
-  }
 }
 
 // Apply the mixin methods.
@@ -575,6 +575,29 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    * User code can get/set this value for advanced use cases.
    */
   sources: IMutableRandomAccessRange<T>[];
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index is out of range, the behavior is undefined.
+   */
+  slice(start = 0, stop = this.length()): MutableRandomZip<T> {
+    return new MutableRandomZip<T>(this.sources.map(src => src.slice(start, stop)));
+  }
 
   /**
    * Set the value at the front of the range.
@@ -626,29 +649,6 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    */
   setAt(index: number, value: T[]): void {
     this.sources.forEach((src, i) => { src.setAt(index, value[i]); });
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
-   *
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  slice(start = 0, stop = this.length()): MutableRandomZip<T> {
-    return new MutableRandomZip<T>(this.sources.map(src => src.slice(start, stop)));
   }
 }
 

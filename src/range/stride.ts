@@ -289,6 +289,15 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
   source: IBidirectionalRange<T>;
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): BidirectionalStride<T> {
+    return new BidirectionalStride(this.source.slice(), this.step);
+  }
+
+  /**
    * Get the value at the back of the range.
    *
    * @returns The value at the back of the range.
@@ -333,15 +342,6 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
   dropBack(): void {
     dropBackN(this.source, this.step);
   }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): BidirectionalStride<T> {
-    return new BidirectionalStride(this.source.slice(), this.step);
-  }
 }
 
 
@@ -373,25 +373,6 @@ class RandomStride<T> extends BidirectionalStride<T> implements IRandomAccessRan
   source: IRandomAccessRange<T>;
 
   /**
-   * Get the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
-   *
-   * @returns The value at the specified index.
-   *
-   * #### Notes
-   * This returns the source range value at the stepped index.
-   *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
-   */
-  at(index: number): T {
-    return this.source.at(this.step * index);
-  }
-
-  /**
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
@@ -415,6 +396,25 @@ class RandomStride<T> extends BidirectionalStride<T> implements IRandomAccessRan
     let end = this.step * stop;
     if (start !== stop) end -= (this.step - 1);
     return new RandomStride(this.source.slice(begin, end), this.step);
+  }
+
+  /**
+   * Get the value at a specific index in the range.
+   *
+   * @param index - The index of the value of interest. Negative
+   *   indices are not supported.
+   *
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * This returns the source range value at the stepped index.
+   *
+   * If the index is out of range, the behavior is undefined.
+   *
+   * If the range is empty, the behavior is undefined.
+   */
+  at(index: number): T {
+    return this.source.at(this.step * index);
   }
 }
 
@@ -490,6 +490,15 @@ class MutableForwardStride<T> extends ForwardStride<T> implements IMutableForwar
   source: IMutableForwardRange<T>;
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): MutableForwardStride<T> {
+    return new MutableForwardStride(this.source.slice(), this.step);
+  }
+
+  /**
    * Set the value at the front of the range.
    *
    * @param value - The value to set at the front of the range.
@@ -500,15 +509,6 @@ class MutableForwardStride<T> extends ForwardStride<T> implements IMutableForwar
    * If the range is empty, the behavior is undefined.
    */
   setFront: (value: T) => void; // mixin
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): MutableForwardStride<T> {
-    return new MutableForwardStride(this.source.slice(), this.step);
-  }
 }
 
 // Apply the mixin methods.
@@ -543,6 +543,15 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
   source: IMutableBidirectionalRange<T>;
 
   /**
+   * Create an independent slice of the range.
+   *
+   * @returns A new slice of the current range.
+   */
+  slice(): MutableBidirectionalStride<T> {
+    return new MutableBidirectionalStride(this.source.slice(), this.step);
+  }
+
+  /**
    * Set the value at the front of the range.
    *
    * @param value - The value to set at the front of the range.
@@ -567,15 +576,6 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
   setBack(value: T): void {
     trimExtraValues(this.source, this.step);
     this.source.setBack(value);
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   */
-  slice(): MutableBidirectionalStride<T> {
-    return new MutableBidirectionalStride(this.source.slice(), this.step);
   }
 }
 
@@ -609,6 +609,32 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    * User code can get/set this value for advanced use cases.
    */
   source: IMutableRandomAccessRange<T>;
+
+  /**
+   * Create an independent slice of the range.
+   *
+   * @param start - The starting index of the slice, inclusive.
+   *   The default is zero. Negative indices are not supported.
+   *
+   * @param stop - The ending index of the slice, exclusive. The
+   *   default is the length of the range. Negative indices are
+   *   not supported.
+   *
+   * @returns A new slice of the current range.
+   *
+   * #### Notes
+   * If the range length is indeterminate, the behavior is undefined.
+   *
+   * If the start index is out of range, the behavior is undefined.
+   *
+   * If the stop index is out of range, the behavior is undefined.
+   */
+  slice(start = 0, stop = this.length()): MutableRandomStride<T> {
+    let begin = this.step * start;
+    let end = this.step * stop;
+    if (start !== stop) end -= (this.step - 1);
+    return new MutableRandomStride(this.source.slice(begin, end), this.step);
+  }
 
   /**
    * Set the value at the front of the range.
@@ -651,32 +677,6 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    */
   setAt(index: number, value: T): void {
     this.source.setAt(this.step * index, value);
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
-   *
-   * If the start index is out of range, the behavior is undefined.
-   *
-   * If the stop index is out of range, the behavior is undefined.
-   */
-  slice(start = 0, stop = this.length()): MutableRandomStride<T> {
-    let begin = this.step * start;
-    let end = this.step * stop;
-    if (start !== stop) end -= (this.step - 1);
-    return new MutableRandomStride(this.source.slice(begin, end), this.step);
   }
 }
 
