@@ -77,7 +77,7 @@ class Deque<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `peekFront()` on an empty deque is undefined.
+   * Calling `peekFront()` on an empty deque.
    */
   peekFront(): T {
     assert(!this.isEmpty(), 'Deque#peekFront(): Deque is empty');
@@ -93,7 +93,7 @@ class Deque<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `peekBack()` on an empty deque is undefined.
+   * Calling `peekBack()` on an empty deque.
    */
   peekBack(): T {
     assert(!this.isEmpty(), 'Deque#peekBack(): Deque is empty');
@@ -160,7 +160,7 @@ class Deque<T> {
    * Ranges pointing at the removed value are invalidated.
    *
    * #### Undefined Behavior
-   * Calling `popFront()` on an empty deque is undefined.
+   * Calling `popFront()` on an empty deque.
    */
   popFront(): T {
     assert(!this.isEmpty(), 'Deque#popFront(): Deque is empty');
@@ -189,7 +189,7 @@ class Deque<T> {
    * Ranges pointing at the removed value are invalidated.
    *
    * #### Undefined Behavior
-   * Calling `popBack()` on an empty deque is undefined.
+   * Calling `popBack()` on an empty deque.
    */
   popBack(): T {
     assert(!this.isEmpty(), 'Deque#popBack(): Deque is empty');
@@ -274,6 +274,11 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * @param back - The back of the deque.
    *
    * @param length - The length of the deque.
+   *
+   * #### Undefined Behavior
+   * A back node which cannot be reached from the front node.
+   *
+   * A non-integer, negative, or invalid length.
    */
   constructor(front: DequeNode<T>, back: DequeNode<T>, length: number) {
     assert(isInt(length) && length >= 0, 'DequeRange(): Invalid length');
@@ -327,7 +332,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `front()` on an empty range is undefined.
+   * Calling `front()` on an empty range.
    */
   front(): T {
     assert(!this.isEmpty(), 'DequeRange#front(): Range is empty');
@@ -343,7 +348,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `back()` on an empty range is undefined.
+   * Calling `back()` on an empty range.
    */
   back(): T {
     assert(!this.isEmpty(), 'DequeRange#back(): Range is empty');
@@ -359,7 +364,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `popFront()` on an empty range is undefined.
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T {
     assert(!this.isEmpty(), 'DequeRange#popFront(): Range is empty');
@@ -383,7 +388,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `popBack()` on an empty range is undefined.
+   * Calling `popBack()` on an empty range.
    */
   popBack(): T {
     assert(!this.isEmpty(), 'DequeRange#popBack(): Range is empty');
@@ -405,7 +410,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range is undefined.
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
     assert(!this.isEmpty(), 'DequeRange#dropFront(): Range is empty');
@@ -425,7 +430,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `dropBack()` on an empty range is undefined.
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void {
     assert(!this.isEmpty(), 'DequeRange#dropBack(): Range is empty');
