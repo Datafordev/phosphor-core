@@ -77,7 +77,7 @@ class Stack<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `peek()` on an empty stack is undefined.
+   * Calling `peek()` on an empty stack.
    */
   peek(): T {
     assert(!this.isEmpty(), 'Stack#peek(): Stack is empty');
@@ -111,7 +111,7 @@ class Stack<T> {
    * Ranges pointing at the removed value are invalidated.
    *
    * #### Undefined Behavior
-   * Calling `pop()` on an empty stack is undefined.
+   * Calling `pop()` on an empty stack.
    */
   pop(): T {
     assert(!this.isEmpty(), 'Stack#pop(): Stack is empty');
@@ -146,6 +146,9 @@ class StackRange<T> implements IForwardRange<T> {
    * @param stack - The stack of values.
    *
    * @param length - The length of the stack.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or invalid length.
    */
   constructor(stack: T[], length: number) {
     assert(isInt(length) && length >= 0, 'StackRange(): Invalid length');
@@ -198,7 +201,7 @@ class StackRange<T> implements IForwardRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `front()` on an empty range is undefined.
+   * Calling `front()` on an empty range.
    */
   front(): T {
     assert(!this.isEmpty(), 'StackRange#front(): Range is empty');
@@ -214,7 +217,7 @@ class StackRange<T> implements IForwardRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `popFront()` on an empty range is undefined.
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T {
     assert(!this.isEmpty(), 'StackRange#popFront(): Range is empty');
@@ -228,7 +231,7 @@ class StackRange<T> implements IForwardRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range is undefined.
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
     assert(!this.isEmpty(), 'StackRange#dropFront(): Range is empty');
