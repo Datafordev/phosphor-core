@@ -27,7 +27,7 @@ import {
  * The callback should not modify the length of the range.
  */
 export
-function forEach<T>(range: IInputRange<T>, fn: (value: T, index: number) => void): void {
+function each<T>(range: IInputRange<T>, fn: (value: T, index: number) => void): void {
   for (let i = 0; !range.isEmpty(); ++i) {
     fn(range.popFront(), i);
   }

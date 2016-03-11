@@ -6,7 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  forEach
+  each
 } from '../algorithm/iteration';
 
 import {
@@ -29,7 +29,7 @@ class Stack<T> {
    * @param values - A range of initial values for the stack.
    */
   constructor(values?: IInputRange<T>) {
-    if (values) forEach(values, value => { this.push(value); });
+    if (values) each(values, value => { this.push(value); });
   }
 
   /**

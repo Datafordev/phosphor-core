@@ -6,7 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  forEach
+  each
 } from '../algorithm/iteration';
 
 import {
@@ -80,7 +80,7 @@ class DisposableSet implements IDisposable {
    * @param items - An input range of initial disposable items.
    */
   constructor(items?: IInputRange<IDisposable>) {
-    if (items) forEach(items, item => { this._set.add(item); });
+    if (items) each(items, item => { this._set.add(item); });
   }
 
   /**
