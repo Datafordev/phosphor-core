@@ -103,6 +103,11 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * @param start - The start index of the range, inclusive.
    *
    * @param stop - The end index of the range, exclusive.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
+   *
+   * A stop value less than the start value.
    */
   constructor(array: T[], start: number, stop: number) {
     assert(isInt(start) && start >= 0 && start <= array.length, 'ArrayRange(): Invalid index');
