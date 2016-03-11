@@ -77,7 +77,7 @@ class Queue<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `peek()` on an empty queue is undefined.
+   * Calling `peek()` on an empty queue.
    */
   peek(): T {
     assert(!this.isEmpty(), 'Queue#peek(): Queue is empty');
@@ -119,7 +119,7 @@ class Queue<T> {
    * Ranges pointing at the removed value are invalidated.
    *
    * #### Undefined Behavior
-   * Calling `pop()` on an empty queue is undefined.
+   * Calling `pop()` on an empty queue.
    */
   pop(): T {
     assert(!this.isEmpty(), 'Queue#pop(): Queue is empty');
@@ -196,6 +196,9 @@ class QueueRange<T> implements IForwardRange<T> {
    * @param front - The first node in the queue.
    *
    * @param length - The length of the queue.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or invalid length.
    */
   constructor(front: QueueNode<T>, length: number) {
     assert(isInt(length) && length >= 0, 'QueueRange(): Invalid length');
@@ -248,7 +251,7 @@ class QueueRange<T> implements IForwardRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `front()` on an empty range is undefined.
+   * Calling `front()` on an empty range.
    */
   front(): T {
     assert(!this.isEmpty(), 'QueueRange#front(): Range is empty');
@@ -264,7 +267,7 @@ class QueueRange<T> implements IForwardRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `popFront()` on an empty range is undefined.
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T {
     assert(!this.isEmpty(), 'QueueRange#popFront(): Range is empty');
@@ -281,7 +284,7 @@ class QueueRange<T> implements IForwardRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range is undefined.
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
     assert(!this.isEmpty(), 'QueueRange#dropFront(): Range is empty');
