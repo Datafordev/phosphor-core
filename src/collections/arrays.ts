@@ -40,11 +40,10 @@ function toArray<T>(range: IInputRange<T>): T[] {
  * @param array - The array of interest.
  *
  * @param start - The starting index of the slice, inclusive.
- *   The default is zero. Negative indices are not supported.
+ *   The default is zero.
  *
  * @param stop - The ending index of the slice, exclusive. The
- *   default is the length of the array. Negative indices are
- *   not supported.
+ *   default is the length of the array.
  *
  * @returns A new range for a slice of the array.
  *
@@ -53,7 +52,9 @@ function toArray<T>(range: IInputRange<T>): T[] {
  * point to the removed value or any following value.
  *
  * #### Undefined Behavior
- * An out of range start or stop index is undefined.
+ * A non-integer, negative, or out of range index.
+ *
+ * A stop value less than the start value.
  */
 export
 function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
@@ -67,11 +68,10 @@ function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
  * @param array - The array of interest.
  *
  * @param start - The starting index of the slice, inclusive.
- *   The default is zero. Negative indices are not supported.
+ *   The default is zero.
  *
  * @param stop - The ending index of the slice, exclusive. The
- *   default is the length of the array. Negative indices are
- *   not supported.
+ *   default is the length of the array.
  *
  * @returns A new mutable range for a slice of the array.
  *
@@ -80,7 +80,9 @@ function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
  * point to the removed value or any following value.
  *
  * #### Undefined Behavior
- * An out of range start or stop index is undefined.
+ * A non-integer, negative, or out of range index.
+ *
+ * A stop value less than the start value.
  */
 export
 function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
@@ -138,11 +140,10 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
@@ -150,7 +151,9 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * An out of range start or stop index is undefined.
+   * A non-integer, negative, or out of range index.
+   *
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): ArrayRange<T> {
     assert(isInt(start) && start >= 0 && start <= this.length(), 'ArrayRange#slice(): Invalid index');
@@ -167,7 +170,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `front()` on an empty range is undefined.
+   * Calling `front()` on an empty range.
    */
   front(): T {
     assert(!this.isEmpty(), 'ArrayRange#front(): Range is empty');
@@ -183,7 +186,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `back()` on an empty range is undefined.
+   * Calling `back()` on an empty range.
    */
   back(): T {
     assert(!this.isEmpty(), 'ArrayRange#back(): Range is empty');
@@ -193,8 +196,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
@@ -202,9 +204,9 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `at()` on an empty range is undefined.
+   * Calling `at()` on an empty range.
    *
-   * An out of range index is undefined.
+   * A non-integer, negative, or out of range index.
    */
   at(index: number): T {
     assert(isInt(index) && index >= 0 && index < this.length(), 'ArrayRange#at(): Invalid index');
@@ -220,7 +222,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `popFront()` on an empty range is undefined.
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T {
     assert(!this.isEmpty(), 'ArrayRange#popFront(): Range is empty');
@@ -236,7 +238,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `popBack()` on an empty range is undefined.
+   * Calling `popBack()` on an empty range.
    */
   popBack(): T {
     assert(!this.isEmpty(), 'ArrayRange#popBack(): Range is empty');
@@ -250,7 +252,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range is undefined.
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
     assert(!this.isEmpty(), 'ArrayRange#dropFront(): Range is empty');
@@ -264,7 +266,7 @@ class ArrayRange<T> implements IRandomAccessRange<T> {
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `dropBack()` on an empty range is undefined.
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void {
     assert(!this.isEmpty(), 'ArrayRange#dropBack(): Range is empty');
@@ -286,11 +288,10 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
@@ -298,7 +299,9 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * Constant.
    *
    * #### Undefined Behavior
-   * An out of range start or stop index is undefined.
+   * A non-integer, negative, or out of range index.
+   *
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): MutableArrayRange<T> {
     assert(isInt(start) && start >= 0 && start <= this.length(), 'MutableArrayRange#slice(): Invalid index');
@@ -315,7 +318,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `setFront()` on an empty range is undefined.
+   * Calling `setFront()` on an empty range.
    */
   setFront(value: T): void {
     assert(!this.isEmpty(), 'MutableArrayRange#setFront(): Range is empty');
@@ -331,7 +334,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `setBack()` on an empty range is undefined.
+   * Calling `setBack()` on an empty range.
    */
   setBack(value: T): void {
     assert(!this.isEmpty(), 'MutableArrayRange#setBack(): Range is empty');
@@ -341,8 +344,7 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
   /**
    * Set the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @param value - The value to set at the specified index.
    *
@@ -350,9 +352,9 @@ class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccess
    * Constant.
    *
    * #### Undefined Behavior
-   * Calling `setAt()` on an empty range is undefined.
+   * Calling `setAt()` on an empty range.
    *
-   * An out of range index is undefined.
+   * A non-integer, negative, or out of range index.
    */
   setAt(index: number, value: T): void {
     assert(isInt(index) && index >= 0 && index < this.length(), 'MutableArrayRange#setAt(): Invalid index');
