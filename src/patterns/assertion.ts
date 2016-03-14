@@ -18,7 +18,7 @@
  * If the test is `false`, an error will be thrown.
  */
 export
-function assert(test: boolean, message = 'Assertion failed.'): void {
+function assert(test: boolean, message = 'Assertion failed'): void {
   if (!test) throw new AssertionError(message);
 }
 
