@@ -19,7 +19,9 @@ import {
  * @returns A range which iterates the given range in reverse.
  *
  * #### Notes
- * The returned range will have the capabilities of the source range.
+ * The returned range will have the capabilities of the provided range.
+ * E.g. the returned range will support random access if the provided
+ * range is random access.
  */
 export
 function backward<T>(range: IRandomAccessRange<T>): RandomBackward<T>;
@@ -47,7 +49,9 @@ namespace backward {
    * @returns A mutable range which iterates the given range in reverse.
    *
    * #### Notes
-   * The returned range will have the capabilities of the source range.
+   * The returned range will have the capabilities of the provided range.
+   * E.g. the returned range will support random access if the provided
+   * range is random access.
    */
   export
   function mutable<T>(range: IMutableRandomAccessRange<T>): MutableRandomBackward<T>;
@@ -107,9 +111,6 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    *
    * #### Notes
    * This returns the length of the source range.
-   *
-   * #### Undefined Behavior
-   * Calling `length()` on an empty range.
    */
   length(): number {
     return this.source.length();
@@ -276,8 +277,6 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * An indeterminate range length.
    *
    * A non-integer, negative, or out of range index.
-   *
-   * A stop value less than the start value.
    */
   at(index: number): T {
     return this.source.at(this.source.length() - index - 1);
@@ -442,8 +441,6 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * An indeterminate range length.
    *
    * A non-integer, negative, or out of range index.
-   *
-   * A stop value less than the start value.
    */
   setAt(index: number, value: T): void {
     this.source.setAt(this.source.length() - index - 1, value);

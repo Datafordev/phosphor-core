@@ -105,8 +105,6 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
    *
    * #### Notes
    * This returns the length of the source range.
-   *
-   * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number {
     return this.source.length();
@@ -120,7 +118,8 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
    * #### Notes
    * This returns a tuple of the enumerated `[index, value]`.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range.
    */
   front(): [number, T] {
     return [this.index, this.source.front()];
@@ -135,7 +134,8 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
    * This pops the front of the source range, increments the index,
    * and returns a tuple of the enumerated `[index, value]`.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range.
    */
   popFront(): [number, T] {
     return [this.index++, this.source.popFront()];
@@ -147,11 +147,11 @@ class InputEnumerate<T> implements IInputRange<[number, T]> {
    * #### Notes
    * This drops the front of the source range and increments the index.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
-    this.index++;
-    this.source.dropFront();
+    this.index++, this.source.dropFront();
   }
 }
 
@@ -238,9 +238,10 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
    * #### Notes
    * This returns a tuple of the enumerated `[index, value]`.
    *
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the range is empty, the behavior is undefined.
+   * Calling `back()` on an empty range.
    */
   back(): [number, T] {
     return [this.index + this.source.length() - 1, this.source.back()];
@@ -255,9 +256,10 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
    * This pops the back of the source range and returns a tuple of the
    * enumerated `[index, value]`.
    *
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the range is empty, the behavior is undefined.
+   * Calling `popBack()` on an empty range.
    */
   popBack(): [number, T] {
     return [this.index + this.source.length() - 1, this.source.popBack()];
@@ -269,7 +271,8 @@ class BidirectionalEnumerate<T> extends ForwardEnumerate<T> implements IBidirect
    * #### Notes
    * This drops the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void {
     this.source.dropBack();
@@ -308,20 +311,19 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): RandomEnumerate<T> {
     return new RandomEnumerate<T>(this.source.slice(start, stop), this.index + start);
@@ -330,15 +332,12 @@ class RandomEnumerate<T> extends BidirectionalEnumerate<T> implements IRandomAcc
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
-   * #### Notes
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    */
   at(index: number): [number, T] {
     return [this.index + index, this.source.at(index)];
