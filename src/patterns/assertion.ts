@@ -18,8 +18,8 @@
  * If the test is `false`, an error will be thrown.
  */
 export
-function assert(test: boolean, message = 'Assertion failed'): void {
-  if (!test) throw new Error(message);
+function assert(test: boolean, message = 'Assertion failed.'): void {
+  if (!test) throw new AssertionError(message);
 }
 
 
@@ -33,4 +33,23 @@ function assert(test: boolean, message = 'Assertion failed'): void {
 export
 function isInt(value: number): boolean {
   return Math.floor(value) === value;
+}
+
+
+/**
+ * A custom assertion error class.
+ */
+export
+class AssertionError extends Error {
+  /**
+   * Construct a new assertion error.
+   *
+   * @param message - The message for the error.
+   */
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+    this.name = 'AssertionError';
+    (this as any).stack = (new Error() as any).stack;
+  }
 }
