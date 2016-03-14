@@ -122,10 +122,12 @@ class InputStride<T> implements IInputRange<T> {
    * @param source - The input range to be strided.
    *
    * @param step - The distance to step on each iteration.
-   *   This must be an integer greater than zero.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IInputRange<T>, step: number) {
-    assert(isInt(step) && step > 0, 'Invalid step');
+    assert(isInt(step) && step > 0, 'InputStride(): Invalid step');
     this.source = source;
     this.step = step;
   }
@@ -169,8 +171,6 @@ class InputStride<T> implements IInputRange<T> {
    * The length is `undefined` if the source length is `undefined`, and
    * infinite if the source length is infinite. Otherwise, the length
    * is the finite number of steps remaining.
-   *
-   * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number {
     let len = this.source.length();
@@ -186,7 +186,8 @@ class InputStride<T> implements IInputRange<T> {
    * #### Notes
    * This returns the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range.
    */
   front(): T {
     return this.source.front();
@@ -201,7 +202,8 @@ class InputStride<T> implements IInputRange<T> {
    * This fetches the value at the front of the source range, then
    * drops the front of the source range `step` number of times.
    *
-   * The source range will not be modified if it becomes empty.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T {
     let front = this.front();
@@ -237,6 +239,9 @@ class ForwardStride<T> extends InputStride<T> implements IForwardRange<T> {
    * @param source - The forward range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IForwardRange<T>, step: number) {
     super(source, step);
@@ -275,6 +280,9 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
    * @param source - The bidirectional range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IBidirectionalRange<T>, step: number) {
     super(source, step);
@@ -302,10 +310,10 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
    *
    * @returns The value at the back of the range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the range is empty, the behavior is undefined.
+   * Calling `back()` on an empty range.
    */
   back(): T {
     trimExtraValues(this.source, this.step);
@@ -321,9 +329,10 @@ class BidirectionalStride<T> extends ForwardStride<T> implements IBidirectionalR
    * This fetches the value at the back of the source range, then
    * drops the back of the source range `step` number of times.
    *
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * The source range will not be modified if it becomes empty.
+   * Calling `popBack()` on an empty range.
    */
   popBack(): T {
     let back = this.back();
@@ -359,6 +368,9 @@ class RandomStride<T> extends BidirectionalStride<T> implements IRandomAccessRan
    * @param source - The random access range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IRandomAccessRange<T>, step: number) {
     super(source, step);
@@ -376,20 +388,19 @@ class RandomStride<T> extends BidirectionalStride<T> implements IRandomAccessRan
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): RandomStride<T> {
     let begin = this.step * start;
@@ -401,17 +412,15 @@ class RandomStride<T> extends BidirectionalStride<T> implements IRandomAccessRan
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
    * #### Notes
    * This returns the source range value at the stepped index.
    *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    */
   at(index: number): T {
     return this.source.at(this.step * index);
@@ -433,6 +442,9 @@ class MutableInputStride<T> extends InputStride<T> implements IMutableInputRange
    * @param source - The mutable input range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IMutableInputRange<T>, step: number) {
     super(source, step);
@@ -454,7 +466,8 @@ class MutableInputStride<T> extends InputStride<T> implements IMutableInputRange
    * #### Notes
    * This sets the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront(value: T): void {
     this.source.setFront(value);
@@ -476,6 +489,9 @@ class MutableForwardStride<T> extends ForwardStride<T> implements IMutableForwar
    * @param source - The mutable forward range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IMutableForwardRange<T>, step: number) {
     super(source, step);
@@ -506,7 +522,8 @@ class MutableForwardStride<T> extends ForwardStride<T> implements IMutableForwar
    * #### Notes
    * This sets the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront: (value: T) => void; // mixin
 }
@@ -529,6 +546,9 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
    * @param source - The mutable bidirectional range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IMutableBidirectionalRange<T>, step: number) {
     super(source, step);
@@ -559,7 +579,8 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
    * #### Notes
    * This sets the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront: (value: T) => void; // mixin
 
@@ -571,7 +592,8 @@ class MutableBidirectionalStride<T> extends BidirectionalStride<T> implements IM
    * #### Notes
    * This sets the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    */
   setBack(value: T): void {
     trimExtraValues(this.source, this.step);
@@ -597,6 +619,9 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    * @param source - The mutable random access range to be strided.
    *
    * @param step - The distance to step on each iteration.
+   *
+   * #### Undefined Behavior
+   * A non-integer, negative, or zero step.
    */
   constructor(source: IMutableRandomAccessRange<T>, step: number) {
     super(source, step);
@@ -614,20 +639,19 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): MutableRandomStride<T> {
     let begin = this.step * start;
@@ -644,7 +668,8 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    * #### Notes
    * This sets the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront: (value: T) => void; // mixin
 
@@ -656,24 +681,23 @@ class MutableRandomStride<T> extends RandomStride<T> implements IMutableRandomAc
    * #### Notes
    * This sets the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    */
   setBack: (value: T) => void; // mixin
 
   /**
    * Set the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @param value - The value to set at the specified index.
    *
    * #### Notes
    * This sets the source range value at the stepped index.
    *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    */
   setAt(index: number, value: T): void {
     this.source.setAt(this.step * index, value);
@@ -696,7 +720,8 @@ MutableRandomStride.prototype.setBack = MutableBidirectionalStride.prototype.set
  * This ensures the `back()` of the source range will be an evenly
  * strided modulo of the step size.
  *
- * If the source length is indeterminate, the behavior is undefined.
+ * #### Undefined Behavior
+ * An indeterminate range length.
  */
 function trimExtraValues(source: IBidirectionalRange<any>, step: number): void {
   let len = source.length();
