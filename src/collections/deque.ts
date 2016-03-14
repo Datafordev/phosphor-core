@@ -281,6 +281,7 @@ class DequeRange<T> implements IBidirectionalRange<T> {
    * A non-integer, negative, or invalid length.
    */
   constructor(front: DequeNode<T>, back: DequeNode<T>, length: number) {
+    assert(!!front === !!back, 'DequeRange(): Invalid nodes');
     assert(isInt(length) && length >= 0, 'DequeRange(): Invalid length');
     this._length = length;
     this._front = front;
