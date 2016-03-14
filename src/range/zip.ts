@@ -146,8 +146,6 @@ class InputZip<T> implements IInputRange<T[]> {
    *
    * If the length of any source range is `undefined`, the computed
    * length will also be `undefined`.
-   *
-   * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number {
     if (this.sources.length === 0) return 0;
@@ -163,7 +161,8 @@ class InputZip<T> implements IInputRange<T[]> {
    * #### Notes
    * This returns a tuple of the front value of each source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range.
    */
   front(): T[] {
     return this.sources.map(src => src.front());
@@ -177,7 +176,8 @@ class InputZip<T> implements IInputRange<T[]> {
    * #### Notes
    * This will pop the front of each source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T[] {
     return this.sources.map(src => src.popFront());
@@ -189,7 +189,8 @@ class InputZip<T> implements IInputRange<T[]> {
    * #### Notes
    * This will drop the front of each source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
     this.sources.forEach(src => { src.dropFront(); });
@@ -275,7 +276,8 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
    * #### Notes
    * This returns a tuple of the back value of each source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `back()` on an empty range.
    */
   back(): T[] {
     return this.sources.map(src => src.back());
@@ -289,7 +291,8 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
    * #### Notes
    * This will pop the back of each source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popBack()` on an empty range.
    */
   popBack(): T[] {
     return this.sources.map(src => src.popBack());
@@ -301,7 +304,8 @@ class BidirectionalZip<T> extends ForwardZip<T> implements IBidirectionalRange<T
    * #### Notes
    * This will drop the back of each source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void {
     this.sources.forEach(src => { src.dropBack(); });
@@ -338,20 +342,19 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): RandomZip<T> {
     return new RandomZip<T>(this.sources.map(src => src.slice(start, stop)));
@@ -360,17 +363,15 @@ class RandomZip<T> extends BidirectionalZip<T> implements IRandomAccessRange<T[]
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
    * #### Notes
    * This returns a tuple of the indexed value of each source range.
    *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    */
   at(index: number): T[] {
     return this.sources.map(src => src.at(index));
@@ -415,7 +416,10 @@ class MutableInputZip<T> extends InputZip<T> implements IMutableInputRange<T[]> 
    * If the length of the tuple does not match the number of source
    * ranges, the behavior is undefined.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
+   *
+   * A tuple length which is less than the sources length.
    */
   setFront(value: T[]): void {
     this.sources.forEach((src, i) => { src.setFront(value[i]); });
@@ -469,7 +473,10 @@ class MutableForwardZip<T> extends ForwardZip<T> implements IMutableForwardRange
    * If the length of the tuple does not match the number of source
    * ranges, the behavior is undefined.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
+   *
+   * A tuple length which is less than the sources length.
    */
   setFront: (value: T[]) => void; // mixin
 }
@@ -524,7 +531,10 @@ class MutableBidirectionalZip<T> extends BidirectionalZip<T> implements IMutable
    * If the length of the tuple does not match the number of source
    * ranges, the behavior is undefined.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
+   *
+   * A tuple length which is less than the sources length.
    */
   setFront: (value: T[]) => void; // mixin
 
@@ -537,10 +547,10 @@ class MutableBidirectionalZip<T> extends BidirectionalZip<T> implements IMutable
    * This unpacks the tuple and sets each value at the back of the
    * respective source range.
    *
-   * If the length of the tuple does not match the number of source
-   * ranges, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    *
-   * If the range is empty, the behavior is undefined.
+   * A tuple length which is less than the sources length.
    */
   setBack(value: T[]): void {
     this.sources.forEach((src, i) => { src.setBack(value[i]); });
@@ -580,20 +590,19 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): MutableRandomZip<T> {
     return new MutableRandomZip<T>(this.sources.map(src => src.slice(start, stop)));
@@ -611,7 +620,10 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    * If the length of the tuple does not match the number of source
    * ranges, the behavior is undefined.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
+   *
+   * A tuple length which is less than the sources length.
    */
   setFront: (value: T[]) => void; // mixin
 
@@ -624,18 +636,17 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    * This unpacks the tuple and sets each value at the back of the
    * respective source range.
    *
-   * If the length of the tuple does not match the number of source
-   * ranges, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    *
-   * If the range is empty, the behavior is undefined.
+   * A tuple length which is less than the sources length.
    */
   setBack: (value: T[]) => void; // mixin
 
   /**
    * Set the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @param value - The value to set at the specified index.
    *
@@ -643,9 +654,10 @@ class MutableRandomZip<T> extends RandomZip<T> implements IMutableRandomAccessRa
    * This unpacks the tuple and sets each value at the index of the
    * respective source range.
    *
-   * If the index is out of range, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    *
-   * If the range is empty, the behavior is undefined.
+   * A tuple length which is less than the sources length.
    */
   setAt(index: number, value: T[]): void {
     this.sources.forEach((src, i) => { src.setAt(index, value[i]); });
