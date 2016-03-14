@@ -36,8 +36,6 @@ interface IInputRange<T> {
    * If the length is finite but unknown, `undefined` is returned.
    *
    * If the length is finite and known, a positive integer is returned.
-   *
-   * If the range is iterated when empty, the behavior is undefined.
    */
   length(): number;
 
@@ -49,7 +47,8 @@ interface IInputRange<T> {
    * #### Notes
    * This does not change the length of the range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range.
    */
   front(): T;
 
@@ -61,7 +60,8 @@ interface IInputRange<T> {
    * #### Notes
    * If the range length is finite, it is reduced by one.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T;
 
@@ -74,7 +74,8 @@ interface IInputRange<T> {
    *
    * If the range length is finite, it is reduced by one.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void;
 }
@@ -120,7 +121,8 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * #### Notes
    * This does not change the length of the range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `back()` on an empty range.
    */
   back(): T;
 
@@ -132,7 +134,8 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    * #### Notes
    * If the range length is finite, it is reduced by one.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popBack()` on an empty range.
    */
   popBack(): T;
 
@@ -145,7 +148,8 @@ interface IBidirectionalRange<T> extends IForwardRange<T> {
    *
    * If the range length is finite, it is reduced by one.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void;
 }
@@ -160,35 +164,32 @@ interface IRandomAccessRange<T> extends IBidirectionalRange<T> {
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
    * #### Notes
    * The slice can be iterated independently of this range.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start?: number, stop?: number): IRandomAccessRange<T>;
 
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
-   * #### Notes
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    */
   at(index: number): T;
 }
@@ -207,7 +208,8 @@ interface IMutableInputRange<T> extends IInputRange<T> {
    * #### Notes
    * This overwrites the current value at the front of the range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront(value: T): void;
 }
@@ -253,7 +255,8 @@ interface IMutableBidirectionalRange<T> extends IMutableForwardRange<T>, IBidire
    * #### Notes
    * This overwrites the current value at the back of the range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    */
   setBack(value: T): void;
 }
@@ -268,37 +271,35 @@ interface IMutableRandomAccessRange<T> extends IMutableBidirectionalRange<T>, IR
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
    * #### Notes
    * The slice can be iterated independently of this range.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start?: number, stop?: number): IMutableRandomAccessRange<T>;
 
   /**
    * Set the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @param value - The value to set at the specified index.
    *
    * #### Notes
    * This overwrites the current value at the specified index.
    *
-   * If the index is out of range, the behavior is undefined.
-   *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
    */
   setAt(index: number, value: T): void;
 }
