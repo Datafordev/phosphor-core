@@ -19,8 +19,7 @@ import {
  * @returns A range which iterates the given range in reverse.
  *
  * #### Notes
- * If a random access range is provided, the returned range will also
- * support random access.
+ * The returned range will have the capabilities of the source range.
  */
 export
 function backward<T>(range: IRandomAccessRange<T>): RandomBackward<T>;
@@ -48,8 +47,7 @@ namespace backward {
    * @returns A mutable range which iterates the given range in reverse.
    *
    * #### Notes
-   * If a random access range is provided, the returned range will also
-   * support random access.
+   * The returned range will have the capabilities of the source range.
    */
   export
   function mutable<T>(range: IMutableRandomAccessRange<T>): MutableRandomBackward<T>;
@@ -110,7 +108,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This returns the length of the source range.
    *
-   * If the range is iterated when empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `length()` on an empty range.
    */
   length(): number {
     return this.source.length();
@@ -133,7 +132,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This returns the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range.
    */
   front(): T {
     return this.source.back();
@@ -147,7 +147,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This returns the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `back()` on an empty range.
    */
   back(): T {
     return this.source.front();
@@ -161,7 +162,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This pops the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range.
    */
   popFront(): T {
     return this.source.popBack();
@@ -175,7 +177,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This pops the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popBack()` on an empty range.
    */
   popBack(): T {
     return this.source.popFront();
@@ -187,7 +190,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This drops the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
     this.source.dropBack();
@@ -199,7 +203,8 @@ class BidirectionalBackward<T> implements IBidirectionalRange<T> {
    * #### Notes
    * This drops the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void {
     this.source.dropFront();
@@ -236,20 +241,19 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start?: number, stop?: number): RandomBackward<T> {
     let len = this.source.length();
@@ -261,19 +265,19 @@ class RandomBackward<T> extends BidirectionalBackward<T> implements IRandomAcces
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
    * #### Notes
    * This returns the source range value at the reversed index.
    *
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the range is empty, the behavior is undefined.
+   * A stop value less than the start value.
    */
   at(index: number): T {
     return this.source.at(this.source.length() - index - 1);
@@ -323,7 +327,8 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
    * #### Notes
    * This sets the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront(value: T): void {
     this.source.setBack(value);
@@ -337,7 +342,8 @@ class MutableBidirectionalBackward<T> extends BidirectionalBackward<T> implement
    * #### Notes
    * This sets the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    */
   setBack(value: T): void {
     this.source.setFront(value);
@@ -374,20 +380,19 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the start index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * A stop value less than the start value.
    */
   slice(start?: number, stop?: number): MutableRandomBackward<T> {
     let len = this.source.length();
@@ -404,7 +409,8 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * #### Notes
    * This sets the value at the back of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setFront()` on an empty range.
    */
   setFront: (value: T) => void; // mixin
 
@@ -416,7 +422,8 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * #### Notes
    * This sets the value at the front of the source range.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `setBack()` on an empty range.
    */
   setBack: (value: T) => void; // mixin
 
@@ -431,11 +438,12 @@ class MutableRandomBackward<T> extends RandomBackward<T> implements IMutableRand
    * #### Notes
    * This sets the source range value at the reversed index.
    *
-   * If the range length is indeterminate, the behavior is undefined.
+   * #### Undefined Behavior
+   * An indeterminate range length.
    *
-   * If the index is out of range, the behavior is undefined.
+   * A non-integer, negative, or out of range index.
    *
-   * If the range is empty, the behavior is undefined.
+   * A stop value less than the start value.
    */
   setAt(index: number, value: T): void {
     this.source.setAt(this.source.length() - index - 1, value);
