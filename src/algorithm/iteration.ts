@@ -15,14 +15,12 @@ import {
  *
  * @param range - The input range of values to iterate.
  *
- * @param fn - The callback function to invoke for each value.
+ * @param fn - The callback function to invoke for each value. It is
+ *   provided the value and zero-based index of the current iteration.
  *
  * #### Notes
  * This function greedily iterates the range and invokes the callback
  * once for each value. Iteration cannot be terminated early.
- *
- * The callback is provided the value and the zero-based index of the
- * current iteration.
  */
 export
 function each<T>(range: IInputRange<T>, fn: (value: T, index: number) => void): void {
@@ -37,16 +35,15 @@ function each<T>(range: IInputRange<T>, fn: (value: T, index: number) => void): 
  *
  * @param range - The input range of values to iterate.
  *
- * @param fn - The predicate function to invoke for each value.
+ * @param fn - The predicate function to invoke for each value. It is
+ *   provided the value and zero-based index of the current iteration.
+ *   It returns `true` if the value passes the test, `false` otherwise.
  *
- * @returns `true` if all values pass, `false` otherwise.
+ * @returns `true` if all values pass the test, `false` otherwise.
  *
  * #### Notes
  * This function greedily iterates the range and invokes the predicate
  * once for each value. Iteration terminates on the first non-match.
- *
- * The predicate is provided the value and the zero-based index of the
- * current iteration.
  */
 export
 function every<T>(range: IInputRange<T>, fn: (value: T, index: number) => boolean): boolean {
@@ -62,16 +59,15 @@ function every<T>(range: IInputRange<T>, fn: (value: T, index: number) => boolea
  *
  * @param range - The input range of values to iterate.
  *
- * @param fn - The predicate function to invoke for each value.
+ * @param fn - The predicate function to invoke for each value. It is
+ *   provided the value and zero-based index of the current iteration.
+ *   It returns `true` if the value passes the test, `false` otherwise.
  *
- * @returns `true` if any value passes, `false` otherwise.
+ * @returns `true` if any value passes the test, `false` otherwise.
  *
  * #### Notes
  * This function greedily iterates the range and invokes the predicate
  * once for each value. Iteration terminates on the first match.
- *
- * The predicate is provided the value and the zero-based index of the
- * current iteration.
  */
 export
 function some<T>(range: IInputRange<T>, fn: (value: T, index: number) => boolean): boolean {
