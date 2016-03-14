@@ -77,7 +77,7 @@ class Iota implements IRandomAccessRange<number> {
    * @param step - The non-zero distance between each value.
    */
   constructor(start: number, stop: number, step: number) {
-    assert(step !== 0, 'Step cannot be zero');
+    assert(step !== 0, 'Iota(): Step cannot be zero');
     this._start = 0;
     this._step = step;
     this._base = start;
@@ -88,9 +88,11 @@ class Iota implements IRandomAccessRange<number> {
    * Test whether the range is empty.
    *
    * @returns `true` if the range is empty, `false` otherwise.
+   *
+   * #### Complexity
+   * Constant.
    */
   isEmpty(): boolean {
-    assert(this._stop >= this._start, 'Range violation');
     return this._stop === this._start;
   }
 
@@ -99,11 +101,10 @@ class Iota implements IRandomAccessRange<number> {
    *
    * @returns The current number of values in the range.
    *
-   * #### Notes
-   * If the range is iterated when empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    */
   length(): number {
-    assert(this._stop >= this._start, 'Range violation');
     return this._stop - this._start;
   }
 
@@ -111,22 +112,24 @@ class Iota implements IRandomAccessRange<number> {
    * Create an independent slice of the range.
    *
    * @param start - The starting index of the slice, inclusive.
-   *   The default is zero. Negative indices are not supported.
+   *   The default is zero.
    *
    * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range. Negative indices are
-   *   not supported.
+   *   default is the length of the range.
    *
    * @returns A new slice of the current range.
    *
-   * #### Notes
-   * If the start index is out of range, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    *
-   * If the stop index is out of range, the behavior is undefined.
+   * #### Undefined Behavior
+   * A non-integer, negative, or out of range index.
+   *
+   * A stop value less than the start value.
    */
   slice(start = 0, stop = this.length()): Iota {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'Invalid index');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Invalid index');
+    assert(isInt(start) && start >= 0 && start <= this.length(), 'Iota#slice(): Invalid index');
+    assert(isInt(stop) && stop >= start && stop <= this.length(), 'Iota#slice(): Invalid index');
     let begin = this._base + this._step * (this._start + start);
     let end = this._base + this._step * (this._start + stop);
     return new Iota(begin, end, this._step);
@@ -137,11 +140,14 @@ class Iota implements IRandomAccessRange<number> {
    *
    * @returns The value at the front of the range.
    *
-   * #### Notes
-   * If the range is empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
+   *
+   * #### Undefined Behavior
+   * Calling `front()` on an empty range.
    */
   front(): number {
-    assert(!this.isEmpty(), 'Range violation');
+    assert(!this.isEmpty(), 'Iota#front(): Range is empty');
     return this._base + this._step * this._start;
   }
 
@@ -150,29 +156,34 @@ class Iota implements IRandomAccessRange<number> {
    *
    * @returns The value at the back of the range.
    *
-   * #### Notes
-   * If the range is empty, the behavior is undefined.
+   * #### Complexity
+   * Constant.
+   *
+   * #### Undefined Behavior
+   * Calling `back()` on an empty range.
    */
   back(): number {
-    assert(!this.isEmpty(), 'Range violation');
+    assert(!this.isEmpty(), 'Iota#back(): Range is empty');
     return this._base + this._step * (this._stop - 1);
   }
 
   /**
    * Get the value at a specific index in the range.
    *
-   * @param index - The index of the value of interest. Negative
-   *   indices are not supported.
+   * @param index - The index of the value of interest.
    *
    * @returns The value at the specified index.
    *
-   * #### Notes
-   * If the index is out of range, the behavior is undefined.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `at()` on an empty range.
+   *
+   * A non-integer, negative, or out of range index.
    */
   at(index: number): number {
-    assert(isInt(index) && index >= 0 && index < this.length(), 'Invalid index');
+    assert(isInt(index) && index >= 0 && index < this.length(), 'Iota#at(): Invalid index');
     return this._base + this._step * (this._start + index);
   }
 
@@ -181,13 +192,14 @@ class Iota implements IRandomAccessRange<number> {
    *
    * @returns The value at the front of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popFront()` on an empty range.
    */
   popFront(): number {
-    assert(!this.isEmpty(), 'Range violation');
+    assert(!this.isEmpty(), 'Iota#popFront(): Range is empty');
     return this._base + this._step * this._start++;
   }
 
@@ -196,39 +208,42 @@ class Iota implements IRandomAccessRange<number> {
    *
    * @returns The value at the back of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `popBack()` on an empty range.
    */
   popBack(): number {
-    assert(!this.isEmpty(), 'Range violation');
+    assert(!this.isEmpty(), 'Iota#popBack(): Range is empty');
     return this._base + this._step * --this._stop;
   }
 
   /**
    * Remove the value at the front of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropFront()` on an empty range.
    */
   dropFront(): void {
-    assert(!this.isEmpty(), 'Range violation');
+    assert(!this.isEmpty(), 'Iota#dropFront(): Range is empty');
     this._start++;
   }
 
   /**
    * Remove the value at the back of the range.
    *
-   * #### Notes
-   * This reduces the range length by one.
+   * #### Complexity
+   * Constant.
    *
-   * If the range is empty, the behavior is undefined.
+   * #### Undefined Behavior
+   * Calling `dropBack()` on an empty range.
    */
   dropBack(): void {
-    assert(!this.isEmpty(), 'Range violation');
+    assert(!this.isEmpty(), 'Iota#dropBack(): Range is empty');
     this._stop--;
   }
 
