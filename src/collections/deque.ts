@@ -243,7 +243,7 @@ class DequeIterator<T> implements IIterator<T> {
   /**
    * Construct a new deque iterator.
    *
-   * @param node - The front node of the deque.
+   * @param node - The first node for the iterated range.
    */
   constructor(node: DequeNode<T>) {
     this._node = node;
