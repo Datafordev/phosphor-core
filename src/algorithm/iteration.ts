@@ -142,6 +142,7 @@ function some<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
  *
  * @returns An iterator which yields the values which pass the test.
  */
+export
 function filter<T>(iter: IIterator<T>, fn: (value: T) => boolean): FilterIterator<T> {
   return new FilterIterator<T>(iter, fn);
 }
@@ -227,6 +228,7 @@ class FilterIterator<T> implements IIterator<T> {
  *
  * @returns An iterator which yields the transformed values.
  */
+export
 function map<T, U>(iter: IIterator<T>, fn: (value: T) => U): MapIterator<T, U> {
   return new MapIterator<T, U>(iter, fn);
 }
