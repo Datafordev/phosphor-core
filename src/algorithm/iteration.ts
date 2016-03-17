@@ -218,7 +218,7 @@ class FilterIterator<T> implements IIterator<T> {
 
 
 /**
- * Transform iterator values by applying a mapping function.
+ * Transform the values of an iterator with a mapping function.
  *
  * @param iter - The iterator of values of interest.
  *
@@ -288,7 +288,9 @@ class MapIterator<T, U> implements IIterator<U> {
    */
   next(): U {
     let value = this.source.next();
-    if (value === void 0) return void 0;
+    if (value === void 0) {
+      return void 0;
+    }
     return this.fn.call(void 0, value);
   }
 }
@@ -388,7 +390,9 @@ class RangeIterator implements IIterator<number> {
    *   iterator is exhausted.
    */
   next(): number {
-    if (this._index >= this._count) return void 0;
+    if (this._index >= this._count) {
+      return void 0;
+    }
     return this._base + this._step * this._index++;
   }
 
