@@ -265,7 +265,9 @@ class DequeIterator<T> implements IIterator<T> {
    *   iterator is exhausted.
    */
   next(): T {
-    if (!this._node) return void 0;
+    if (!this._node) {
+      return void 0;
+    }
     let value = this._node.value;
     this._node = this._node.next;
     return value;
