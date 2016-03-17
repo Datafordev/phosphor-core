@@ -477,3 +477,73 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
     return [this.index++, value];
   }
 }
+
+
+/**
+ * Iterate several iterators in lockstep.
+ *
+ * @param iters - The iterators of interest.
+ *
+ * @returns An iterator which yields successive tuples of values where
+ *   each value is taken in turn from the provided iterators. It will
+ *   be as long as the shortest provided iterator.
+ */
+export
+function zip<T>(...iters: IIterator<T>[]): ZipIterator<T> {
+  return new ZipIterator<T>(iters);
+}
+
+
+/**
+ * An iterator which iterates several sources in lockstep.
+ */
+export
+class ZipIterator<T> implements IIterator<T[]> {
+  /**
+   * Construct a new zip iterator.
+   *
+   * @param iters - The iterators of interest.
+   */
+  constructor(iters: IIterator<T>[]) {
+    this.sources = iters;
+  }
+
+  /**
+   * The source iterators for the zip iterator.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
+   */
+  sources: IIterator<T>[];
+
+  /**
+   * Create an independent clone of the zip iterator.
+   *
+   * @returns A new iterator starting with the current value.
+   *
+   * #### Notes
+   * The source iterators must be cloneable.
+   */
+  clone(): ZipIterator<T> {
+    return new ZipIterator<T>(this.sources.map(iter => iter.clone()));
+  }
+
+  /**
+   * Get the next zipped value from the iterator.
+   *
+   * @returns The next zipped value from the iterator, or `undefined`
+   *   when the first source iterator is exhausted.
+   */
+  next(): T[] {
+    let iters = this.sources;
+    let result = new Array<T>(iters.length);
+    for (let i = 0, n = iters.length; i < n; ++i) {
+      let value = iters[i].next();
+      if (value === void 0) {
+        return void 0;
+      }
+      result[i] = value;
+    }
+    return result;
+  }
+}
