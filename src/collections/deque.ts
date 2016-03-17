@@ -250,7 +250,7 @@ class DequeIterator<T> implements IIterator<T> {
   }
 
   /**
-   * Create an indepencent clone of the deque iterator.
+   * Create an independent clone of the deque iterator.
    *
    * @returns A new independent clone of the deque iterator.
    */
