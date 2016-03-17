@@ -547,3 +547,87 @@ class ZipIterator<T> implements IIterator<T[]> {
     return result;
   }
 }
+
+
+/**
+ * Iterate over values using a stepped increment.
+ *
+ * @param iter - The iterator of values interest.
+ *
+ * @param step - The distance to step on each iteration. A value
+ *   of less than `1` will behave the same as a value of `1`.
+ *
+ * @returns An iterator which traverses the values step-wise.
+ */
+export
+function stride<T>(iter: IIterator<T>, step: number): StrideIterator<T> {
+  return new StrideIterator<T>(iter, step);
+}
+
+
+/**
+ * An iterator which traverses a source iterator step-wise.
+ */
+export
+class StrideIterator<T> implements IIterator<T> {
+  /**
+   * Construct a new stride iterator.
+   *
+   * @param iter - The iterator of values interest.
+   *
+   * @param step - The distance to step on each iteration. A value
+   *   of less than `1` will behave the same as a value of `1`.
+   */
+  constructor(iter: IIterator<T>, step: number) {
+    this.source = iter;
+    this.step = step;
+  }
+
+  /**
+   * The source iterator for the stride iterator.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
+   */
+  source: IIterator<T>;
+
+  /**
+   * The distance to step on each iteration.
+   *
+   * #### Notes
+   * A value of less than `1` will behave the same as a value of `1`.
+   *
+   * User code can get/set this value for advanced use cases.
+   */
+  step: number;
+
+  /**
+   * Create an independent clone of the stride iterator.
+   *
+   * @returns A new iterator starting with the current value.
+   *
+   * #### Notes
+   * The source iterator must be cloneable.
+   */
+  clone(): StrideIterator<T> {
+    return new StrideIterator<T>(this.source.clone(), this.step);
+  }
+
+  /**
+   * Get the next stepped value from the iterator.
+   *
+   * @returns The next stepped value from the iterator, or `undefined`
+   *   when the source iterator is exhausted.
+   */
+  next(): T {
+    let value = this.source.next();
+    if (value === void 0) {
+      return void 0;
+    }
+    let step = this.step;
+    while (--step > 0) {
+      this.source.next();
+    }
+    return value;
+  }
+}
