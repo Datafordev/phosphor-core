@@ -214,7 +214,7 @@ class Deque<T> {
    * Linear.
    *
    * #### Iterator Validity
-   * All iterators pointing to the deque are invalidated.
+   * All current iterators are invalidated.
    */
   clear(): void {
     let node = this._front;
