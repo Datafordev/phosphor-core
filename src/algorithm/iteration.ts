@@ -292,3 +292,108 @@ class MapIterator<T, U> implements IIterator<U> {
     return this.fn.call(void 0, value);
   }
 }
+
+
+/**
+ * Create an iterator of evenly spaced values.
+ *
+ * @param start - The starting value for the range, inclusive.
+ *
+ * @param stop - The stopping value for the range, exclusive.
+ *
+ * @param step - The distance between each generated value.
+ *
+ * @returns An iterator which generates evenly spaced values.
+ *
+ * #### Notes
+ * In the single argument form of `range(stop)`, `start` defaults to
+ * `0` and `step` defaults to `1`.
+ *
+ * In the two argument form of `range(start, stop)`, `step` defaults
+ * to `1`.
+ *
+ * All values can be any real number, but `step` cannot be `0`.
+ */
+export
+function range(start: number, stop?: number, step?: number): RangeIterator {
+  if (stop === void 0) {
+    stop = start;
+    start = 0;
+  }
+  if (step === void 0) {
+    step = 1;
+  }
+  return new RangeIterator(start, stop, step);
+}
+
+
+/**
+ * An iterator which generates evenly spaced values.
+ */
+export
+class RangeIterator implements IIterator<number> {
+  /**
+   * Get the number of steps needed to traverse a range.
+   *
+   * @param start - The starting value for the range, inclusive.
+   *
+   * @param stop - The stopping value for the range, exclusive.
+   *
+   * @param step - The non-zero distance between each value.
+   *
+   * @returns The number of steps need to traverse the range.
+   */
+  static stepCount(start: number, stop: number, step: number): number {
+    if (start > stop && step > 0) {
+      return 0;
+    }
+    if (start < stop && step < 0) {
+      return 0;
+    }
+    return Math.ceil((stop - start) / step);
+  }
+
+  /**
+   * Construct a new range iterator.
+   *
+   * @param start - The starting value for the range, inclusive.
+   *
+   * @param stop - The stopping value for the range, exclusive.
+   *
+   * @param step - The non-zero distance between each value.
+   */
+  constructor(start: number, stop: number, step: number) {
+    if (step === 0) throw new Error('RangeIterator(): Step cannot be zero');
+    this._index = 0;
+    this._step = step;
+    this._base = start;
+    this._count = RangeIterator.stepCount(start, stop, step);
+  }
+
+  /**
+   * Create an independent clone of the range iterator.
+   *
+   * @returns A new iterator starting with the current value.
+   */
+  clone(): RangeIterator {
+    let start = this._base + this._step * this._index;
+    let stop = this._base + this._step * this._count;
+    return new RangeIterator(start, stop, this._step);
+  }
+
+  /**
+   * Get the next value from the range.
+   *
+   * @returns The next value from the range, or `undefined` if the
+   *   iterator is exhausted.
+   */
+  next(): number {
+    if (this._index >= this._count) return void 0;
+    return this._base + this._step * this._index++;
+  }
+
+  private _base: number;
+  private _step: number;
+  private _index: number;
+  private _count: number;
+}
