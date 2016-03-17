@@ -401,3 +401,79 @@ class RangeIterator implements IIterator<number> {
   private _index: number;
   private _count: number;
 }
+
+
+/**
+ * Attach an incremental index to an iterator.
+ *
+ * @param iter - The iterator of values of interest.
+ *
+ * @param start - The initial value of the index. The default is zero.
+ *
+ * @returns An iterator which yields `[index, value]` tuples.
+ */
+export
+function enumerate<T>(iter: IIterator<T>, start = 0): EnumerateIterator<T> {
+  return new EnumerateIterator<T>(iter, start);
+}
+
+
+/**
+ * An iterator which attaches an incremental index to a source.
+ */
+export
+class EnumerateIterator<T> implements IIterator<[number, T]> {
+  /**
+   * Construct a new enumerate iterator.
+   *
+   * @param iter - The iterator of values of interest.
+   *
+   * @param start - The initial value of the index.
+   */
+  constructor(iter: IIterator<T>, start: number) {
+    this.source = iter;
+    this.index = start;
+  }
+
+  /**
+   * The source iterator for the enumerate iterator.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
+   */
+  source: IIterator<T>;
+
+  /**
+   * The current index for the enumerate iterator.
+   *
+   * #### Notes
+   * User code can get/set this value for advanced use cases.
+   */
+  index: number;
+
+  /**
+   * Create an independent clone of the enumerate iterator.
+   *
+   * @returns A new iterator starting with the current value.
+   *
+   * #### Notes
+   * The source iterator must be cloneable.
+   */
+  clone(): EnumerateIterator<T> {
+    return new EnumerateIterator<T>(this.source.clone(), this.index);
+  }
+
+  /**
+   * Get the next value from the enumeration.
+   *
+   * @returns The next value from the enumeration, or `undefined` if
+   *   the iterator is exhausted.
+   */
+  next(): [number, T] {
+    let value = this.source.next();
+    if (value === void 0) {
+      return void 0;
+    }
+    return [this.index++, value];
+  }
+}
