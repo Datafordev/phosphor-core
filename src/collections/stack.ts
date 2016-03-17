@@ -35,7 +35,7 @@ class Stack<T> {
    * #### Iterator Validity
    * No changes.
    */
-  empty(): boolean {
+  isEmpty(): boolean {
     return this._stack.length === 0;
   }
 

@@ -35,7 +35,7 @@ class Deque<T> {
    * #### Iterator Validity
    * No changes.
    */
-  empty(): boolean {
+  isEmpty(): boolean {
     return this._length === 0;
   }
 
