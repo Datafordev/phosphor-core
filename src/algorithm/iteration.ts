@@ -13,7 +13,7 @@
 export
 interface IIterator<T> {
   /**
-   * Create an indepencent clone of the current iterator.
+   * Create an independent clone of the current iterator.
    *
    * @returns A new independent clone of the current iterator.
    *
@@ -182,12 +182,12 @@ class FilterIterator<T> implements IIterator<T> {
   fn: (value: T) => boolean;
 
   /**
-   * Create an indepencent clone of the current iterator.
+   * Create an independent clone of the current iterator.
    *
    * @returns A new independent clone of the current iterator.
    *
    * #### Notes
-   * The source iterator must be clonable.
+   * The source iterator must be cloneable.
    *
    * The predicate function is shared among clones.
    */
@@ -223,7 +223,7 @@ class FilterIterator<T> implements IIterator<T> {
  * @param iter - The iterator of values of interest.
  *
  * @param fn - The mapping function to invoke for each value in the
- *   iterator. It returns the tranformed value.
+ *   iterator. It returns the transformed value.
  *
  * @returns An iterator which yields the transformed values.
  */
@@ -243,7 +243,7 @@ class MapIterator<T, U> implements IIterator<U> {
    * @param iter - The iterator of values of interest.
    *
    * @param fn - The mapping function to invoke for each value in the
-   *   iterator. It returns the tranformed value.
+   *   iterator. It returns the transformed value.
    */
   constructor(iter: IIterator<T>, fn: (value: T) => U) {
     this.source = iter;
@@ -267,12 +267,12 @@ class MapIterator<T, U> implements IIterator<U> {
   fn: (value: T) => U;
 
   /**
-   * Create an indepencent clone of the current iterator.
+   * Create an independent clone of the current iterator.
    *
    * @returns A new independent clone of the current iterator.
    *
    * #### Notes
-   * The source iterator must be clonable.
+   * The source iterator must be cloneable.
    *
    * The mapping function is shared among clones.
    */
