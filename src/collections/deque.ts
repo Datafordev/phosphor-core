@@ -252,7 +252,7 @@ class DequeIterator<T> implements IIterator<T> {
   /**
    * Create an independent clone of the deque iterator.
    *
-   * @returns A new independent clone of the deque iterator.
+   * @returns A new iterator starting with the current value.
    */
   clone(): DequeIterator<T> {
     return new DequeIterator<T>(this._node);
