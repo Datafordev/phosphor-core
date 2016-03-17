@@ -6,16 +6,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  each, IIterator
 } from '../algorithm/iteration';
-
-import {
-  assert, isInt
-} from '../patterns/assertion';
-
-import {
-  IForwardRange, IInputRange
-} from '../range/types';
 
 
 /**
@@ -26,9 +18,9 @@ class Queue<T> {
   /**
    * Construct a new queue.
    *
-   * @param values - A range of initial values for the queue.
+   * @param values - An iterator of initial values for the queue.
    */
-  constructor(values?: IInputRange<T>) {
+  constructor(values?: IIterator<T>) {
     if (values) each(values, value => { this.push(value); });
   }
 
@@ -39,8 +31,11 @@ class Queue<T> {
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
-  isEmpty(): boolean {
+  empty(): boolean {
     return this._length === 0;
   }
 
@@ -51,37 +46,43 @@ class Queue<T> {
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
   length(): number {
     return this._length;
   }
 
   /**
-   * Create a range over the values in the queue.
+   * Create an iterator over the values in the queue.
    *
-   * @returns A new forward range for the queue.
+   * @returns A new iterator starting at the front of the queue.
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
-  slice(): QueueRange<T> {
-    return new QueueRange<T>(this._front, this._length);
+  iter(): QueueIterator<T> {
+    return new QueueIterator<T>(this._front);
   }
 
   /**
    * Get the value at the front of the queue.
    *
-   * @returns The value at the front of the queue.
+   * @returns The value at the front of the queue, or `undefined` if
+   *   the queue is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Undefined Behavior
-   * Calling `peek()` on an empty queue.
+   * #### Iterator Validity
+   * No changes.
    */
   peek(): T {
-    assert(!this.isEmpty(), 'Queue#peek(): Queue is empty');
-    return this._front.value;
+    return this._front ? this._front.value : void 0;
   }
 
   /**
@@ -92,7 +93,7 @@ class Queue<T> {
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
+   * #### Iterator Validity
    * No changes.
    */
   push(value: T): void {
@@ -110,19 +111,19 @@ class Queue<T> {
   /**
    * Remove and return the value at the front of the queue.
    *
-   * @returns The value at the front of the queue.
+   * @returns The value at the front of the queue, or `undefined` if
+   *   the queue is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
-   * Ranges pointing at the removed value are invalidated.
-   *
-   * #### Undefined Behavior
-   * Calling `pop()` on an empty queue.
+   * #### Iterator Validity
+   * Iterators pointing at the removed value are invalidated.
    */
   pop(): T {
-    assert(!this.isEmpty(), 'Queue#pop(): Queue is empty');
+    if (this._length === 0) {
+      return void 0;
+    }
     let node = this._front;
     if (this._length === 1) {
       this._front = null;
@@ -139,12 +140,18 @@ class Queue<T> {
    * Remove all values from the queue.
    *
    * #### Complexity
-   * Constant (excluding GC).
+   * Linear.
    *
-   * #### Range Validity
-   * All ranges pointing to the queue are invalidated.
+   * #### Iterator Validity
+   * All current iterators are invalidated.
    */
   clear(): void {
+    let node = this._front;
+    while (node) {
+      let next = node.next;
+      node.next = null;
+      node = next;
+    }
     this._length = 0;
     this._front = null;
     this._back = null;
@@ -153,6 +160,48 @@ class Queue<T> {
   private _length = 0;
   private _front: QueueNode<T> = null;
   private _back: QueueNode<T> = null;
+}
+
+
+/**
+ * An iterator for a queue.
+ */
+export
+class QueueIterator<T> implements IIterator<T> {
+  /**
+   * Construct a new queue iterator.
+   *
+   * @param node - The node at the front of range.
+   */
+  constructor(node: QueueNode<T>) {
+    this._node = node;
+  }
+
+  /**
+   * Create an independent clone of the queue iterator.
+   *
+   * @returns A new independent clone of the queue iterator.
+   */
+  clone(): QueueIterator<T> {
+    return new QueueIterator<T>(this._node);
+  }
+
+  /**
+   * Get the next value from the queue.
+   *
+   * @returns The next value from the queue, or `undefined` if the
+   *   iterator is exhausted.
+   */
+  next(): T {
+    if (!this._node) {
+      return void 0;
+    }
+    let value = this._node.value;
+    this._node = this._node.next;
+    return value;
+  }
+
+  private _node: QueueNode<T>;
 }
 
 
@@ -182,116 +231,4 @@ class QueueNode<T> {
   constructor(value: T) {
     this.value = value;
   }
-}
-
-
-/**
- * A forward range for a queue.
- */
-export
-class QueueRange<T> implements IForwardRange<T> {
-  /**
-   * Construct a new queue range.
-   *
-   * @param front - The first node in the queue.
-   *
-   * @param length - The length of the queue.
-   *
-   * #### Undefined Behavior
-   * A non-integer, negative, or invalid length.
-   */
-  constructor(front: QueueNode<T>, length: number) {
-    assert(isInt(length) && length >= 0, 'QueueRange(): Invalid length');
-    this._length = length;
-    this._front = front;
-  }
-
-  /**
-   * Test whether the range is empty.
-   *
-   * @returns `true` if the range is empty, `false` otherwise.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  isEmpty(): boolean {
-    return this._length === 0;
-  }
-
-  /**
-   * Get the number of values remaining in the range.
-   *
-   * @returns The current length of the range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  length(): number {
-    return this._length;
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  slice(): QueueRange<T> {
-    return new QueueRange<T>(this._front, this._length);
-  }
-
-  /**
-   * Get the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `front()` on an empty range.
-   */
-  front(): T {
-    assert(!this.isEmpty(), 'QueueRange#front(): Range is empty');
-    return this._front.value;
-  }
-
-  /**
-   * Remove and return the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `popFront()` on an empty range.
-   */
-  popFront(): T {
-    assert(!this.isEmpty(), 'QueueRange#popFront(): Range is empty');
-    let node = this._front;
-    this._front = node.next;
-    this._length--;
-    return node.value;
-  }
-
-  /**
-   * Remove the value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range.
-   */
-  dropFront(): void {
-    assert(!this.isEmpty(), 'QueueRange#dropFront(): Range is empty');
-    this._front = this._front.next;
-    this._length--;
-  }
-
-  private _length: number;
-  private _front: QueueNode<T>;
 }
