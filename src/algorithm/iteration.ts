@@ -25,11 +25,7 @@ import {
  */
 export
 function each<T>(iter: IIterator<T>, fn: (value: T) => void): void {
-  while (true) {
-    let value = iter.next();
-    if (value === void 0) {
-      return;
-    }
+  for (let value: T; (value = iter.next()) !== void 0;) {
     fn(value);
   }
 }
@@ -52,15 +48,10 @@ function each<T>(iter: IIterator<T>, fn: (value: T) => void): void {
  */
 export
 function every<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
-  while (true) {
-    let value = iter.next();
-    if (value === void 0) {
-      return true;
-    }
-    if (!fn(value)) {
-      return false;
-    }
+  for (let value: T; (value = iter.next()) !== void 0;) {
+    if (!fn(value)) return false;
   }
+  return true;
 }
 
 
@@ -81,15 +72,10 @@ function every<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
  */
 export
 function some<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
-  while (true) {
-    let value = iter.next();
-    if (value === void 0) {
-      return false;
-    }
-    if (fn(value)) {
-      return true;
-    }
+  for (let value: T; (value = iter.next()) !== void 0;) {
+    if (fn(value)) return true;
   }
+  return false;
 }
 
 
@@ -166,15 +152,10 @@ class FilterIterator<T> implements IIterator<T> {
   next(): T {
     let fn = this.fn;
     let iter = this.source;
-    while (true) {
-      let value = iter.next();
-      if (value === void 0) {
-        return void 0;
-      }
-      if (fn(value)) {
-        return value;
-      }
+    for (let value: T; (value = iter.next()) !== void 0;) {
+      if (fn(value)) return value;
     }
+    return void 0;
   }
 }
 
