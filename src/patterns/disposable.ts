@@ -6,8 +6,12 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IIterator, each
+  each
 } from '../algorithm/iteration';
+
+import {
+  IIterator
+} from '../algorithm/types';
 
 import {
   assert
