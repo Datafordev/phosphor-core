@@ -6,12 +6,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, each
 } from '../algorithm/iteration';
-
-import {
-  IIterator
-} from '../algorithm/types';
 
 import {
   assert
@@ -79,7 +75,7 @@ class DisposableSet implements IDisposable {
    *
    * @param items - An iterator of initial disposable items.
    */
-  constructor(items?: IIterator<IDisposable>) {
+  constructor(items?: IIterable<IDisposable>) {
     if (items) each(items, item => { this._set.add(item); });
   }
 

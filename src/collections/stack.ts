@@ -6,19 +6,15 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, IIterator, each
 } from '../algorithm/iteration';
-
-import {
-  IIterator
-} from '../algorithm/types';
 
 
 /**
  * A generic LIFO stack data structure.
  */
 export
-class Stack<T> {
+class Stack<T> implements IIterable<T> {
   /**
    * Construct a new stack.
    *

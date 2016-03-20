@@ -6,19 +6,15 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, IIterator, each
 } from '../algorithm/iteration';
-
-import {
-  IIterator
-} from '../algorithm/types';
 
 
 /**
  * A generic double ended queue data structure.
  */
 export
-class Deque<T> {
+class Deque<T> implements IIterable<T> {
   /**
    * Construct a new deque.
    *
