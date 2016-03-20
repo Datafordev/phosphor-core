@@ -71,6 +71,25 @@ interface IIterator<T> extends IIterable<T> {
 
 
 /**
+ * Create an array from an iterable of values.
+ *
+ * @param iterable - The iterable of values of interest.
+ *
+ * @returns A new array of values from the iterable.
+ */
+export
+function toArray<T>(iterable: IIterable<T>): T[] {
+  let value: T;
+  let result: T[] = [];
+  let iter = iterable.iter();
+  while ((value = iter.next()) !== void 0) {
+    result[result.length] = value;
+  }
+  return result;
+}
+
+
+/**
  * Invoke a function for each value in an iterable.
  *
  * @param iterable - The iterable of values of interest.
