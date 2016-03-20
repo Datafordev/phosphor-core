@@ -8,24 +8,45 @@
 
 
 /**
- * An object which traverses a collection of values.
+ * An object which produces an iterator over its values.
+ *
+ * #### Notes
+ * Iterable objects are the target of the iteration algorithms.
  */
 export
-interface IIterator<T> {
+interface IIterable<T> {
   /**
-   * Create an independent clone of the current iterator.
+   * Create an iterator over the object's values.
    *
-   * @returns A new independent clone of the current iterator.
+   * @returns A new iterator which traverses the object's values.
+   */
+  iter(): IIterator<T>;
+}
+
+
+/**
+ * An object which traverses a collection of values.
+ *
+ * #### Notes
+ * For the convenience of API implementors, an iterator itself is an
+ * iterable. Most concrete iterators will simply return `this` from
+ * their `iter()` method.
+ */
+export
+interface IIterator<T> extends IIterable<T> {
+  /**
+   * Create an independent clone of the iterator.
+   *
+   * @returns A new independent clone of the iterator.
    *
    * #### Notes
    * The cloned iterator can be consumed independently of the current
    * iterator. In essence, it is a copy of the iterator value stream
-   * which starts at the current iterator location. This can be useful
-   * for iterator lookahead and stream duplication.
+   * which starts at the current location. This can be useful for
+   * lookahead and stream duplication.
    *
    * Most iterators can trivially support cloning. Those which cannot
-   * (a single pass iterator) should throw an exception and document
-   * that they cannot be cloned.
+   * should throw an exception and document the restriction.
    */
   clone(): IIterator<T>;
 
@@ -40,10 +61,10 @@ interface IIterator<T> {
    * should therefore not be used as a value in a collection.
    *
    * The use of the `undefined` sentinel is an explicit design choice
-   * which favors performance over purity. The ES6 method of returning
-   * a `{ value, done }` pair is undesirable as it requires an object
-   * allocation on each iteration, and an `isDone()` method increases
-   * implementation and runtime complexity.
+   * which favors performance over purity. The ES6 iterator design of
+   * returning a `{ value, done }` pair is suboptimal, as it requires
+   * an object allocation on each iteration; and an `isDone()` method
+   * increases implementation and runtime complexity.
    */
   next(): T;
 }

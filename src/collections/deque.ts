@@ -254,6 +254,15 @@ class DequeIterator<T> implements IIterator<T> {
   }
 
   /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
+
+  /**
    * Create an independent clone of the deque iterator.
    *
    * @returns A new iterator starting with the current value.

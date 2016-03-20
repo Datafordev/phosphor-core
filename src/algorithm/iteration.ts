@@ -6,49 +6,49 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IIterator
+  IIterable, IIterator
 } from './types';
 
 
 /**
- * Invoke a function for each value in an iterator.
+ * Invoke a function for each value in an iterable.
  *
- * @param iter - The iterator of values of interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param fn - The callback function to invoke for each value in the
- *   iterator. The return value is ignored.
+ *   iterable. The return value is ignored.
  *
  * #### Notes
- * This greedily traverses the iterator.
- *
  * Iteration cannot be terminated early.
  */
 export
-function each<T>(iter: IIterator<T>, fn: (value: T) => void): void {
-  for (let value: T; (value = iter.next()) !== void 0;) {
+function each<T>(iterable: IIterable<T>, fn: (value: T) => void): void {
+  let value: T;
+  let iter = iterable.iter();
+  while ((value = iter.next()) !== void 0) {
     fn(value);
   }
 }
 
 
 /**
- * Test whether all values in a iterator satisfy a predicate.
+ * Test whether all values in an iterable satisfy a predicate.
  *
- * @param iter - The iterator of values of interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param fn - The predicate function to invoke for each value in the
- *   iterator. It returns whether the value passes the test.
+ *   iterable. It returns whether the value passes the test.
  *
  * @returns `true` if all values pass the test, `false` otherwise.
  *
  * #### Notes
- * This greedily traverses the iterator.
- *
- * Iteration terminates on the first `false` test.
+ * Iteration terminates on the first `false` predicate result.
  */
 export
-function every<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
-  for (let value: T; (value = iter.next()) !== void 0;) {
+function every<T>(iterable: IIterable<T>, fn: (value: T) => boolean): boolean {
+  let value: T;
+  let iter = iterable.iter();
+  while ((value = iter.next()) !== void 0) {
     if (!fn(value)) return false;
   }
   return true;
@@ -56,23 +56,23 @@ function every<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
 
 
 /**
- * Test whether any value in a range satisfies a predicate.
+ * Test whether any value in an iterable satisfies a predicate.
  *
- * @param iter - The iterator of values of interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param fn - The predicate function to invoke for each value in the
- *   iterator. It returns whether the value passes the test.
+ *   iterable. It returns whether the value passes the test.
  *
  * @returns `true` if any value passes the test, `false` otherwise.
  *
  * #### Notes
- * This greedily traverses the iterator.
- *
- * Iteration terminates on the first `true` test.
+ * Iteration terminates on the first `true` predicate result.
  */
 export
-function some<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
-  for (let value: T; (value = iter.next()) !== void 0;) {
+function some<T>(iterable: IIterable<T>, fn: (value: T) => boolean): boolean {
+  let value: T;
+  let iter = iterable.iter();
+  while ((value = iter.next()) !== void 0) {
     if (fn(value)) return true;
   }
   return false;
@@ -80,18 +80,18 @@ function some<T>(iter: IIterator<T>, fn: (value: T) => boolean): boolean {
 
 
 /**
- * Filter an iterator for values which pass a test.
+ * Filter an iterable for values which pass a test.
  *
- * @param iter - The iterator of values of interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param fn - The predicate function to invoke for each value in the
- *   iterator. It returns whether the value passes the test.
+ *   iterable. It returns whether the value passes the test.
  *
  * @returns An iterator which yields the values which pass the test.
  */
 export
-function filter<T>(iter: IIterator<T>, fn: (value: T) => boolean): FilterIterator<T> {
-  return new FilterIterator<T>(iter, fn);
+function filter<T>(iterable: IIterable<T>, fn: (value: T) => boolean): FilterIterator<T> {
+  return new FilterIterator<T>(iterable.iter(), fn);
 }
 
 
@@ -130,6 +130,15 @@ class FilterIterator<T> implements IIterator<T> {
   fn: (value: T) => boolean;
 
   /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
+
+  /**
    * Create an independent clone of the current iterator.
    *
    * @returns A new independent clone of the current iterator.
@@ -150,9 +159,10 @@ class FilterIterator<T> implements IIterator<T> {
    *   the predicate, or `undefined` if the iterator is exhausted.
    */
   next(): T {
+    let value: T;
     let fn = this.fn;
     let iter = this.source;
-    for (let value: T; (value = iter.next()) !== void 0;) {
+    while ((value = iter.next()) !== void 0) {
       if (fn(value)) return value;
     }
     return void 0;
@@ -161,18 +171,18 @@ class FilterIterator<T> implements IIterator<T> {
 
 
 /**
- * Transform the values of an iterator with a mapping function.
+ * Transform the values of an iterable with a mapping function.
  *
- * @param iter - The iterator of values of interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param fn - The mapping function to invoke for each value in the
- *   iterator. It returns the transformed value.
+ *   iterable. It returns the transformed value.
  *
  * @returns An iterator which yields the transformed values.
  */
 export
-function map<T, U>(iter: IIterator<T>, fn: (value: T) => U): MapIterator<T, U> {
-  return new MapIterator<T, U>(iter, fn);
+function map<T, U>(iterable: IIterable<T>, fn: (value: T) => U): MapIterator<T, U> {
+  return new MapIterator<T, U>(iterable.iter(), fn);
 }
 
 
@@ -209,6 +219,15 @@ class MapIterator<T, U> implements IIterator<U> {
    * User code can get/set this value for advanced use cases.
    */
   fn: (value: T) => U;
+
+  /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
 
   /**
    * Create an independent clone of the current iterator.
@@ -317,6 +336,15 @@ class RangeIterator implements IIterator<number> {
   }
 
   /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
+
+  /**
    * Create an independent clone of the range iterator.
    *
    * @returns A new iterator starting with the current value.
@@ -348,17 +376,17 @@ class RangeIterator implements IIterator<number> {
 
 
 /**
- * Attach an incremental index to an iterator.
+ * Attach an incremental index to an iterable.
  *
- * @param iter - The iterator of values of interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param start - The initial value of the index. The default is zero.
  *
  * @returns An iterator which yields `[index, value]` tuples.
  */
 export
-function enumerate<T>(iter: IIterator<T>, start = 0): EnumerateIterator<T> {
-  return new EnumerateIterator<T>(iter, start);
+function enumerate<T>(iterable: IIterable<T>, start = 0): EnumerateIterator<T> {
+  return new EnumerateIterator<T>(iterable.iter(), start);
 }
 
 
@@ -396,6 +424,15 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
   index: number;
 
   /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
+
+  /**
    * Create an independent clone of the enumerate iterator.
    *
    * @returns A new iterator starting with the current value.
@@ -424,17 +461,17 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
 
 
 /**
- * Iterate several iterators in lockstep.
+ * Iterate several iterables in lockstep.
  *
- * @param iters - The iterators of interest.
+ * @param iterables - The iterables of interest.
  *
  * @returns An iterator which yields successive tuples of values where
- *   each value is taken in turn from the provided iterators. It will
- *   be as long as the shortest provided iterator.
+ *   each value is taken in turn from the provided iterables. It will
+ *   be as long as the shortest provided iterable.
  */
 export
-function zip<T>(...iters: IIterator<T>[]): ZipIterator<T> {
-  return new ZipIterator<T>(iters);
+function zip<T>(...iterables: IIterable<T>[]): ZipIterator<T> {
+  return new ZipIterator<T>(iterables.map(it => it.iter()));
 }
 
 
@@ -459,6 +496,15 @@ class ZipIterator<T> implements IIterator<T[]> {
    * User code can get/set this value for advanced use cases.
    */
   sources: IIterator<T>[];
+
+  /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
 
   /**
    * Create an independent clone of the zip iterator.
@@ -494,18 +540,18 @@ class ZipIterator<T> implements IIterator<T[]> {
 
 
 /**
- * Iterate over values using a stepped increment.
+ * Iterate over an iterable using a stepped increment.
  *
- * @param iter - The iterator of values interest.
+ * @param iterable - The iterable of values interest.
  *
  * @param step - The distance to step on each iteration. A value
  *   of less than `1` will behave the same as a value of `1`.
  *
- * @returns An iterator which traverses the values step-wise.
+ * @returns An iterator which traverses the iterable step-wise.
  */
 export
-function stride<T>(iter: IIterator<T>, step: number): StrideIterator<T> {
-  return new StrideIterator<T>(iter, step);
+function stride<T>(iterable: IIterable<T>, step: number): StrideIterator<T> {
+  return new StrideIterator<T>(iterable.iter(), step);
 }
 
 
@@ -544,6 +590,15 @@ class StrideIterator<T> implements IIterator<T> {
    * User code can get/set this value for advanced use cases.
    */
   step: number;
+
+  /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
 
   /**
    * Create an independent clone of the stride iterator.
