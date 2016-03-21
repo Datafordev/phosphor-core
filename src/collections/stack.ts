@@ -24,8 +24,8 @@ class Stack<T> implements IIterable<T> {
    *
    * @param values - An iterator of initial values for the stack.
    */
-  constructor(values?: IIterator<T>) {
-    if (values) each(values, value => { this.push(value); });
+  constructor(values?: IIterable<T>) {
+    if (values) each(values, value => { this.pushBack(value); });
   }
 
   /**
@@ -33,13 +33,16 @@ class Stack<T> implements IIterable<T> {
    *
    * @returns `true` if the stack is empty, `false` otherwise.
    *
+   * #### Notes
+   * This is a read-only property.
+   *
    * #### Complexity
    * Constant.
    *
    * #### Iterator Validity
    * No changes.
    */
-  isEmpty(): boolean {
+  get isEmpty(): boolean {
     return this._stack.length === 0;
   }
 
@@ -48,14 +51,36 @@ class Stack<T> implements IIterable<T> {
    *
    * @return The number of values in the stack.
    *
+   * #### Notes
+   * This is a read-only property.
+   *
    * #### Complexity
    * Constant.
    *
    * #### Iterator Validity
    * No changes.
    */
-  length(): number {
+  get length(): number {
     return this._stack.length;
+  }
+
+  /**
+   * Get the value at the back of the stack.
+   *
+   * @returns The value at the back of the stack, or `undefined` if
+   *   the stack is empty.
+   *
+   * #### Notes
+   * This is a read-only property.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
+   */
+  get back(): T {
+    return this._stack[this._stack.length - 1];
   }
 
   /**
@@ -74,25 +99,9 @@ class Stack<T> implements IIterable<T> {
   }
 
   /**
-   * Get the value at the top of the stack.
+   * Add a value to the back of the stack.
    *
-   * @returns The value at the top of the stack, or `undefined` if
-   *   the stack is empty.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Iterator Validity
-   * No changes.
-   */
-  peek(): T {
-    return this._stack[this._stack.length - 1];
-  }
-
-  /**
-   * Add a value to the top of the stack.
-   *
-   * @param value - The value to add to the top of the stack.
+   * @param value - The value to add to the back of the stack.
    *
    * #### Complexity
    * Constant.
@@ -100,14 +109,14 @@ class Stack<T> implements IIterable<T> {
    * #### Iterator Validity
    * No changes.
    */
-  push(value: T): void {
+  pushBack(value: T): void {
     this._stack.push(value);
   }
 
   /**
-   * Remove and return the value at the top of the stack.
+   * Remove and return the value at the back of the stack.
    *
-   * @returns The value at the top of the stack, or `undefined` if
+   * @returns The value at the back of the stack, or `undefined` if
    *   the stack is empty.
    *
    * #### Complexity
@@ -116,7 +125,7 @@ class Stack<T> implements IIterable<T> {
    * #### Iterator Validity
    * Iterators pointing at the removed value are invalidated.
    */
-  pop(): T {
+  popBack(): T {
     return this._stack.pop();
   }
 
