@@ -20,6 +20,14 @@ import {
 export
 interface IDisposable {
   /**
+   * Test whether the object has been disposed.
+   *
+   * #### Notes
+   * This is a read-only property which is always safe to access.
+   */
+  isDisposed: boolean;
+
+  /**
    * Dispose of the resources held by the object.
    *
    * #### Notes
@@ -44,6 +52,16 @@ class DisposableDelegate implements IDisposable {
    */
   constructor(callback: () => void) {
     this._callback = callback || null;
+  }
+
+  /**
+   * Test whether the delegate has been disposed.
+   *
+   * #### Notes
+   * This is a read-only property which is always safe to access.
+   */
+  get isDisposed(): boolean {
+    return this._callback === null;
   }
 
   /**
@@ -80,6 +98,16 @@ class DisposableSet implements IDisposable {
   }
 
   /**
+   * Test whether the set has been disposed.
+   *
+   * #### Notes
+   * This is a read-only property which is always safe to access.
+   */
+  get isDisposed(): boolean {
+    return this._set === null;
+  }
+
+  /**
    * Dispose of the set and the disposable items it contains.
    *
    * #### Notes
@@ -103,9 +131,13 @@ class DisposableSet implements IDisposable {
    *
    * @param item - The disposable item to add to the set. If the item
    *   is already contained in the set, this is a no-op.
+   *
+   * @throws An error if the set has been disposed.
    */
   add(item: IDisposable): void {
-    if (this._set === null) throw new Error('Object is disposed');
+    if (this._set === null) {
+      throw new Error('Object is disposed');
+    }
     this._set.add(item);
   }
 
@@ -114,17 +146,25 @@ class DisposableSet implements IDisposable {
    *
    * @param item - The disposable item to remove from the set. If the
    *   item does not exist in the set, this is a no-op.
+   *
+   * @throws An error if the set has been disposed.
    */
   remove(item: IDisposable): void {
-    if (this._set === null) throw new Error('Object is disposed');
+    if (this._set === null) {
+      throw new Error('Object is disposed');
+    }
     this._set.delete(item);
   }
 
   /**
    * Remove all disposable items from the set.
+   *
+   * @throws An error if the set has been disposed.
    */
   clear(): void {
-    if (this._set === null) throw new Error('Object is disposed');
+    if (this._set === null) {
+      throw new Error('Object is disposed');
+    }
     this._set.clear();
   }
 
