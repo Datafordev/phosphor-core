@@ -13,10 +13,6 @@ import {
   IIterable
 } from '../algorithm/types';
 
-import {
-  assert
-} from './assertion';
-
 
 /**
  * An object which implements the disposable pattern.
@@ -109,7 +105,7 @@ class DisposableSet implements IDisposable {
    *   is already contained in the set, this is a no-op.
    */
   add(item: IDisposable): void {
-    assert(this._set !== null, 'Object is disposed');
+    if (this._set === null) throw new Error('Object is disposed');
     this._set.add(item);
   }
 
@@ -120,7 +116,7 @@ class DisposableSet implements IDisposable {
    *   item does not exist in the set, this is a no-op.
    */
   remove(item: IDisposable): void {
-    assert(this._set !== null, 'Object is disposed');
+    if (this._set === null) throw new Error('Object is disposed');
     this._set.delete(item);
   }
 
@@ -128,7 +124,7 @@ class DisposableSet implements IDisposable {
    * Remove all disposable items from the set.
    */
   clear(): void {
-    assert(this._set !== null, 'Object is disposed');
+    if (this._set === null) throw new Error('Object is disposed');
     this._set.clear();
   }
 
