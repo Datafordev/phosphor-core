@@ -33,13 +33,16 @@ class Deque<T> implements IIterable<T> {
    *
    * @returns `true` if the deque is empty, `false` otherwise.
    *
+   * #### Notes
+   * This is a read-only property.
+   *
    * #### Complexity
    * Constant.
    *
    * #### Iterator Validity
    * No changes.
    */
-  isEmpty(): boolean {
+  get isEmpty(): boolean {
     return this._length === 0;
   }
 
@@ -48,14 +51,55 @@ class Deque<T> implements IIterable<T> {
    *
    * @return The number of values in the deque.
    *
+   * #### Notes
+   * This is a read-only property.
+   *
    * #### Complexity
    * Constant.
    *
    * #### Iterator Validity
    * No changes.
    */
-  length(): number {
+  get length(): number {
     return this._length;
+  }
+
+  /**
+   * Get the value at the front of the deque.
+   *
+   * @returns The value at the front of the deque, or `undefined` if
+   *   the deque is empty.
+   *
+   * #### Notes
+   * This is a read-only property.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
+   */
+  get front(): T {
+    return this._front ? this._front.value : void 0;
+  }
+
+  /**
+   * Get the value at the back of the deque.
+   *
+   * @returns The value at the back of the deque, or `undefined` if
+   *   the deque is empty.
+   *
+   * #### Notes
+   * This is a read-only property.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
+   */
+  get back(): T {
+    return this._back ? this._back.value : void 0;
   }
 
   /**
@@ -71,38 +115,6 @@ class Deque<T> implements IIterable<T> {
    */
   iter(): DequeIterator<T> {
     return new DequeIterator<T>(this._front);
-  }
-
-  /**
-   * Get the value at the front of the deque.
-   *
-   * @returns The value at the front of the deque, or `undefined` if
-   *   the deque is empty.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Iterator Validity
-   * No changes.
-   */
-  peekFront(): T {
-    return this._front ? this._front.value : void 0;
-  }
-
-  /**
-   * Get the value at the back of the deque.
-   *
-   * @returns The value at the back of the deque, or `undefined` if
-   *   the deque is empty.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Iterator Validity
-   * No changes.
-   */
-  peekBack(): T {
-    return this._back ? this._back.value : void 0;
   }
 
   /**

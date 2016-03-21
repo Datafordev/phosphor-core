@@ -25,7 +25,7 @@ class Queue<T> implements IIterable<T> {
    * @param values - An iterator of initial values for the queue.
    */
   constructor(values?: IIterable<T>) {
-    if (values) each(values, value => { this.push(value); });
+    if (values) each(values, value => { this.pushBack(value); });
   }
 
   /**
@@ -33,13 +33,16 @@ class Queue<T> implements IIterable<T> {
    *
    * @returns `true` if the queue is empty, `false` otherwise.
    *
+   * #### Notes
+   * This is a read-only property.
+   *
    * #### Complexity
    * Constant.
    *
    * #### Iterator Validity
    * No changes.
    */
-  isEmpty(): boolean {
+  get isEmpty(): boolean {
     return this._length === 0;
   }
 
@@ -48,14 +51,55 @@ class Queue<T> implements IIterable<T> {
    *
    * @return The number of values in the queue.
    *
+   * #### Notes
+   * This is a read-only property.
+   *
    * #### Complexity
    * Constant.
    *
    * #### Iterator Validity
    * No changes.
    */
-  length(): number {
+  get length(): number {
     return this._length;
+  }
+
+  /**
+   * Get the value at the front of the queue.
+   *
+   * @returns The value at the front of the queue, or `undefined` if
+   *   the queue is empty.
+   *
+   * #### Notes
+   * This is a read-only property.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
+   */
+  get front(): T {
+    return this._front ? this._front.value : void 0;
+  }
+
+  /**
+   * Get the value at the back of the queue.
+   *
+   * @returns The value at the back of the queue, or `undefined` if
+   *   the queue is empty.
+   *
+   * #### Notes
+   * This is a read-only property.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
+   */
+  get back(): T {
+    return this._back ? this._back.value : void 0;
   }
 
   /**
@@ -74,22 +118,6 @@ class Queue<T> implements IIterable<T> {
   }
 
   /**
-   * Get the value at the front of the queue.
-   *
-   * @returns The value at the front of the queue, or `undefined` if
-   *   the queue is empty.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Iterator Validity
-   * No changes.
-   */
-  peek(): T {
-    return this._front ? this._front.value : void 0;
-  }
-
-  /**
    * Add a value to the back of the queue.
    *
    * @param value - The value to add to the back of the queue.
@@ -100,7 +128,7 @@ class Queue<T> implements IIterable<T> {
    * #### Iterator Validity
    * No changes.
    */
-  push(value: T): void {
+  pushBack(value: T): void {
     let node = new QueueNode(value);
     if (this._length === 0) {
       this._front = node;
@@ -124,7 +152,7 @@ class Queue<T> implements IIterable<T> {
    * #### Iterator Validity
    * Iterators pointing at the removed value are invalidated.
    */
-  pop(): T {
+  popFront(): T {
     if (this._length === 0) {
       return void 0;
     }
