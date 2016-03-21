@@ -24,7 +24,7 @@ class Queue<T> implements IIterable<T> {
    *
    * @param values - An iterator of initial values for the queue.
    */
-  constructor(values?: IIterator<T>) {
+  constructor(values?: IIterable<T>) {
     if (values) each(values, value => { this.push(value); });
   }
 

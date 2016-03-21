@@ -24,7 +24,7 @@ class Deque<T> implements IIterable<T> {
    *
    * @param values - An iterator of initial values for the deque.
    */
-  constructor(values?: IIterator<T>) {
+  constructor(values?: IIterable<T>) {
     if (values) each(values, value => { this.pushBack(value); });
   }
 

@@ -24,7 +24,7 @@ class Stack<T> implements IIterable<T> {
    *
    * @param values - An iterator of initial values for the stack.
    */
-  constructor(values?: IIterator<T>) {
+  constructor(values?: IIterable<T>) {
     if (values) each(values, value => { this.push(value); });
   }
 
