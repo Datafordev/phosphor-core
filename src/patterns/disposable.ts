@@ -6,12 +6,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, each
 } from '../algorithm/iteration';
-
-import {
-  IInputRange
-} from '../range/types';
 
 import {
   assert
@@ -77,9 +73,9 @@ class DisposableSet implements IDisposable {
   /**
    * Construct a new disposable set.
    *
-   * @param items - An input range of initial disposable items.
+   * @param items - An iterator of initial disposable items.
    */
-  constructor(items?: IInputRange<IDisposable>) {
+  constructor(items?: IIterable<IDisposable>) {
     if (items) each(items, item => { this._set.add(item); });
   }
 

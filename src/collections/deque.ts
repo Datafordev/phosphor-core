@@ -6,29 +6,21 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, IIterator, each
 } from '../algorithm/iteration';
-
-import {
-  assert, isInt
-} from '../patterns/assertion';
-
-import {
-  IBidirectionalRange, IInputRange
-} from '../range/types';
 
 
 /**
  * A generic double ended queue data structure.
  */
 export
-class Deque<T> {
+class Deque<T> implements IIterable<T> {
   /**
    * Construct a new deque.
    *
-   * @param values - A range of initial values for the deque.
+   * @param values - An iterator of initial values for the deque.
    */
-  constructor(values?: IInputRange<T>) {
+  constructor(values?: IIterator<T>) {
     if (values) each(values, value => { this.pushBack(value); });
   }
 
@@ -39,6 +31,9 @@ class Deque<T> {
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
   isEmpty(): boolean {
     return this._length === 0;
@@ -51,53 +46,59 @@ class Deque<T> {
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
   length(): number {
     return this._length;
   }
 
   /**
-   * Create a range over the values in the deque.
+   * Create an iterator over the values in the deque.
    *
-   * @returns A new bidirectional range for the deque.
+   * @returns A new iterator starting at the front of the deque.
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
-  slice(): DequeRange<T> {
-    return new DequeRange<T>(this._front, this._back, this._length);
+  iter(): DequeIterator<T> {
+    return new DequeIterator<T>(this._front);
   }
 
   /**
    * Get the value at the front of the deque.
    *
-   * @returns The value at the front of the deque.
+   * @returns The value at the front of the deque, or `undefined` if
+   *   the deque is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Undefined Behavior
-   * Calling `peekFront()` on an empty deque.
+   * #### Iterator Validity
+   * No changes.
    */
   peekFront(): T {
-    assert(!this.isEmpty(), 'Deque#peekFront(): Deque is empty');
-    return this._front.value;
+    return this._front ? this._front.value : void 0;
   }
 
   /**
    * Get the value at the back of the deque.
    *
-   * @returns The value at the back of the deque.
+   * @returns The value at the back of the deque, or `undefined` if
+   *   the deque is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Undefined Behavior
-   * Calling `peekBack()` on an empty deque.
+   * #### Iterator Validity
+   * No changes.
    */
   peekBack(): T {
-    assert(!this.isEmpty(), 'Deque#peekBack(): Deque is empty');
-    return this._back.value;
+    return this._back ? this._back.value : void 0;
   }
 
   /**
@@ -108,7 +109,7 @@ class Deque<T> {
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
+   * #### Iterator Validity
    * No changes.
    */
   pushFront(value: T): void {
@@ -132,7 +133,7 @@ class Deque<T> {
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
+   * #### Iterator Validity
    * No changes.
    */
   pushBack(value: T): void {
@@ -151,19 +152,19 @@ class Deque<T> {
   /**
    * Remove and return the value at the front of the deque.
    *
-   * @returns The value at the front of the deque.
+   * @returns The value at the front of the deque, or `undefined` if
+   *   the deque is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
-   * Ranges pointing at the removed value are invalidated.
-   *
-   * #### Undefined Behavior
-   * Calling `popFront()` on an empty deque.
+   * #### Iterator Validity
+   * Iterators pointing at the removed value are invalidated.
    */
   popFront(): T {
-    assert(!this.isEmpty(), 'Deque#popFront(): Deque is empty');
+    if (this._length === 0) {
+      return void 0;
+    }
     let node = this._front;
     if (this._length === 1) {
       this._front = null;
@@ -180,19 +181,19 @@ class Deque<T> {
   /**
    * Remove and return the value at the back of the deque.
    *
-   * @returns The value at the back of the deque.
+   * @returns The value at the back of the deque, or `undefined` if
+   *   the deque is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
-   * Ranges pointing at the removed value are invalidated.
-   *
-   * #### Undefined Behavior
-   * Calling `popBack()` on an empty deque.
+   * #### Iterator Validity
+   * Iterators pointing at the removed value are invalidated.
    */
   popBack(): T {
-    assert(!this.isEmpty(), 'Deque#popBack(): Deque is empty');
+    if (this._length === 0) {
+      return void 0;
+    }
     let node = this._back;
     if (this._length === 1) {
       this._front = null;
@@ -210,12 +211,19 @@ class Deque<T> {
    * Remove all values from the deque.
    *
    * #### Complexity
-   * Constant (excluding GC).
+   * Linear.
    *
-   * #### Range Validity
-   * All ranges pointing to the deque are invalidated.
+   * #### Iterator Validity
+   * All current iterators are invalidated.
    */
   clear(): void {
+    let node = this._front;
+    while (node) {
+      let next = node.next;
+      node.prev = null;
+      node.next = null;
+      node = next;
+    }
     this._length = 0;
     this._front = null;
     this._back = null;
@@ -224,6 +232,57 @@ class Deque<T> {
   private _length = 0;
   private _front: DequeNode<T> = null;
   private _back: DequeNode<T> = null;
+}
+
+
+/**
+ * An iterator for a deque.
+ */
+export
+class DequeIterator<T> implements IIterator<T> {
+  /**
+   * Construct a new deque iterator.
+   *
+   * @param node - The node at the front of range.
+   */
+  constructor(node: DequeNode<T>) {
+    this._node = node;
+  }
+
+  /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
+
+  /**
+   * Create an independent clone of the deque iterator.
+   *
+   * @returns A new iterator starting with the current value.
+   */
+  clone(): DequeIterator<T> {
+    return new DequeIterator<T>(this._node);
+  }
+
+  /**
+   * Get the next value from the deque.
+   *
+   * @returns The next value from the deque, or `undefined` if the
+   *   iterator is exhausted.
+   */
+  next(): T {
+    if (!this._node) {
+      return void 0;
+    }
+    let value = this._node.value;
+    this._node = this._node.next;
+    return value;
+  }
+
+  private _node: DequeNode<T>;
 }
 
 
@@ -258,193 +317,4 @@ class DequeNode<T> {
   constructor(value: T) {
     this.value = value;
   }
-}
-
-
-/**
- * A bidirectional range for a deque.
- */
-export
-class DequeRange<T> implements IBidirectionalRange<T> {
-  /**
-   * Construct a new deque range.
-   *
-   * @param front - The front of the deque.
-   *
-   * @param back - The back of the deque.
-   *
-   * @param length - The length of the deque.
-   *
-   * #### Undefined Behavior
-   * A back node which cannot be reached from the front node.
-   *
-   * A non-integer, negative, or invalid length.
-   */
-  constructor(front: DequeNode<T>, back: DequeNode<T>, length: number) {
-    assert(!!front === !!back, 'DequeRange(): Invalid nodes');
-    assert(isInt(length) && length >= 0, 'DequeRange(): Invalid length');
-    this._length = length;
-    this._front = front;
-    this._back = back;
-  }
-
-  /**
-   * Test whether the range is empty.
-   *
-   * @returns `true` if the range is empty, `false` otherwise.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  isEmpty(): boolean {
-    return this._length === 0;
-  }
-
-  /**
-   * Get the number of values remaining in the range.
-   *
-   * @returns The current length of the range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  length(): number {
-    return this._length;
-  }
-
-  /**
-   * Create an independent slice of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  slice(): DequeRange<T> {
-    return new DequeRange<T>(this._front, this._back, this._length);
-  }
-
-  /**
-   * Get the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `front()` on an empty range.
-   */
-  front(): T {
-    assert(!this.isEmpty(), 'DequeRange#front(): Range is empty');
-    return this._front.value;
-  }
-
-  /**
-   * Get the value at the back of the range.
-   *
-   * @returns The value at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `back()` on an empty range.
-   */
-  back(): T {
-    assert(!this.isEmpty(), 'DequeRange#back(): Range is empty');
-    return this._back.value;
-  }
-
-  /**
-   * Remove and return the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `popFront()` on an empty range.
-   */
-  popFront(): T {
-    assert(!this.isEmpty(), 'DequeRange#popFront(): Range is empty');
-    let node = this._front;
-    if (this._length === 1) {
-      this._front = null;
-      this._back = null;
-    } else {
-      this._front = node.next;
-    }
-    this._length--;
-    return node.value;
-  }
-
-  /**
-   * Remove and return the value at the back of the range.
-   *
-   * @returns The value at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `popBack()` on an empty range.
-   */
-  popBack(): T {
-    assert(!this.isEmpty(), 'DequeRange#popBack(): Range is empty');
-    let node = this._back;
-    if (this._length === 1) {
-      this._front = null;
-      this._back = null;
-    } else {
-      this._back = node.prev;
-    }
-    this._length--;
-    return node.value;
-  }
-
-  /**
-   * Remove the value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range.
-   */
-  dropFront(): void {
-    assert(!this.isEmpty(), 'DequeRange#dropFront(): Range is empty');
-    if (this._length === 1) {
-      this._front = null;
-      this._back = null;
-    } else {
-      this._front = this._front.next;
-    }
-    this._length--;
-  }
-
-  /**
-   * Remove the value at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `dropBack()` on an empty range.
-   */
-  dropBack(): void {
-    assert(!this.isEmpty(), 'DequeRange#dropBack(): Range is empty');
-    if (this._length === 1) {
-      this._front = null;
-      this._back = null;
-    } else {
-      this._back = this._back.prev;
-    }
-    this._length--;
-  }
-
-  private _length: number;
-  private _front: DequeNode<T>;
-  private _back: DequeNode<T>;
 }

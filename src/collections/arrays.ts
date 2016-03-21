@@ -5,33 +5,52 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  assert, isInt
-} from '../patterns/assertion';
 
-import {
-  IInputRange, IMutableRandomAccessRange, IRandomAccessRange
-} from '../range/types';
+// /**
+//  *
+//  */
+// export
+// interface IArrayLike<T> {
+//   /**
+//    *
+//    */
+//   length: number;
+
+//   /**
+//    *
+//    */
+//   [index: number]: T;
+// }
 
 
-/**
- * Convert a finite input range into an array.
- *
- * @param range - The finite input range of values.
- *
- * @returns A new array of values taken from the range.
- *
- * #### Notes
- * This greedily consumes the input range until it is empty.
- */
-export
-function toArray<T>(range: IInputRange<T>): T[] {
-  let result = new Array<T>(range.length() || 0);
-  for (let i = 0; !range.isEmpty(); ++i) {
-    result[i] = range.popFront();
-  }
-  return result;
-}
+// /**
+//  *
+//  */
+// function slice<T>(array: IArrayLike<T>, start?: number, stop: number, step: number): ArraySlice<T> {
+//   return new ArraySlice<T>(array);
+// }
+
+
+// /**
+//  *
+//  */
+// export
+// class ArraySlice<T> implements ISlice<T> {
+//   /**
+//    *
+//    */
+//   constructor(array: IArrayLike<T>) {
+//     this._array = array;
+//     this._index = 0;
+//   }
+
+//   /**
+//    *
+//    */
+
+//   private _array: IArrayLike<T>;
+//   private _st
+// }
 
 
 /**
@@ -56,10 +75,10 @@ function toArray<T>(range: IInputRange<T>): T[] {
  *
  * A stop value less than the start value.
  */
-export
-function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
-  return new ArrayRange<T>(array, start, stop);
-}
+// export
+// function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
+//   return new ArrayRange<T>(array, start, stop);
+// }
 
 
 /**
@@ -84,285 +103,285 @@ function slice<T>(array: T[], start = 0, stop = array.length): ArrayRange<T> {
  *
  * A stop value less than the start value.
  */
-export
-function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
-  return new MutableArrayRange<T>(array, start, stop);
-}
+// export
+// function mutableSlice<T>(array: T[], start = 0, stop = array.length): MutableArrayRange<T> {
+//   return new MutableArrayRange<T>(array, start, stop);
+// }
 
 
 /**
  * A random access range for an array.
  */
-export
-class ArrayRange<T> implements IRandomAccessRange<T> {
-  /**
-   * Construct a new array range.
-   *
-   * @param array - The array source for the range.
-   *
-   * @param start - The start index of the range, inclusive.
-   *
-   * @param stop - The end index of the range, exclusive.
-   *
-   * #### Undefined Behavior
-   * A non-integer, negative, or out of range index.
-   *
-   * A stop value less than the start value.
-   */
-  constructor(array: T[], start: number, stop: number) {
-    assert(isInt(start) && start >= 0 && start <= array.length, 'ArrayRange(): Invalid index');
-    assert(isInt(stop) && stop >= start && stop <= array.length, 'ArrayRange(): Invalid index');
-    this._array = array;
-    this._start = start;
-    this._stop = stop;
-  }
+// export
+// class ArrayRange<T> implements IRandomAccessRange<T> {
+//   /**
+//    * Construct a new array range.
+//    *
+//    * @param array - The array source for the range.
+//    *
+//    * @param start - The start index of the range, inclusive.
+//    *
+//    * @param stop - The end index of the range, exclusive.
+//    *
+//    * #### Undefined Behavior
+//    * A non-integer, negative, or out of range index.
+//    *
+//    * A stop value less than the start value.
+//    */
+//   constructor(array: T[], start: number, stop: number) {
+//     assert(isInt(start) && start >= 0 && start <= array.length, 'ArrayRange(): Invalid index');
+//     assert(isInt(stop) && stop >= start && stop <= array.length, 'ArrayRange(): Invalid index');
+//     this._array = array;
+//     this._start = start;
+//     this._stop = stop;
+//   }
 
-  /**
-   * Test whether the range is empty.
-   *
-   * @returns `true` if the range is empty, `false` otherwise.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  isEmpty(): boolean {
-    return this._stop === this._start;
-  }
+//   /**
+//    * Test whether the range is empty.
+//    *
+//    * @returns `true` if the range is empty, `false` otherwise.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    */
+//   isEmpty(): boolean {
+//     return this._stop === this._start;
+//   }
 
-  /**
-   * Get the number of values remaining in the range.
-   *
-   * @returns The current length of the range.
-   *
-   * #### Complexity
-   * Constant.
-   */
-  length(): number {
-    return this._stop - this._start;
-  }
+//   /**
+//    * Get the number of values remaining in the range.
+//    *
+//    * @returns The current length of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    */
+//   length(): number {
+//     return this._stop - this._start;
+//   }
 
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * A non-integer, negative, or out of range index.
-   *
-   * A stop value less than the start value.
-   */
-  slice(start = 0, stop = this.length()): ArrayRange<T> {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'ArrayRange#slice(): Invalid index');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'ArrayRange#slice(): Invalid index');
-    return new ArrayRange(this._array, this._start + start, this._start + stop);
-  }
+//   /**
+//    * Create an independent slice of the range.
+//    *
+//    * @param start - The starting index of the slice, inclusive.
+//    *   The default is zero.
+//    *
+//    * @param stop - The ending index of the slice, exclusive. The
+//    *   default is the length of the range.
+//    *
+//    * @returns A new slice of the current range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * A non-integer, negative, or out of range index.
+//    *
+//    * A stop value less than the start value.
+//    */
+//   slice(start = 0, stop = this.length()): ArrayRange<T> {
+//     assert(isInt(start) && start >= 0 && start <= this.length(), 'ArrayRange#slice(): Invalid index');
+//     assert(isInt(stop) && stop >= start && stop <= this.length(), 'ArrayRange#slice(): Invalid index');
+//     return new ArrayRange(this._array, this._start + start, this._start + stop);
+//   }
 
-  /**
-   * Get the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `front()` on an empty range.
-   */
-  front(): T {
-    assert(!this.isEmpty(), 'ArrayRange#front(): Range is empty');
-    return this._array[this._start];
-  }
+//   /**
+//    * Get the value at the front of the range.
+//    *
+//    * @returns The value at the front of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `front()` on an empty range.
+//    */
+//   front(): T {
+//     assert(!this.isEmpty(), 'ArrayRange#front(): Range is empty');
+//     return this._array[this._start];
+//   }
 
-  /**
-   * Get the value at the back of the range.
-   *
-   * @returns The value at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `back()` on an empty range.
-   */
-  back(): T {
-    assert(!this.isEmpty(), 'ArrayRange#back(): Range is empty');
-    return this._array[this._stop - 1];
-  }
+//   /**
+//    * Get the value at the back of the range.
+//    *
+//    * @returns The value at the back of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `back()` on an empty range.
+//    */
+//   back(): T {
+//     assert(!this.isEmpty(), 'ArrayRange#back(): Range is empty');
+//     return this._array[this._stop - 1];
+//   }
 
-  /**
-   * Get the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest.
-   *
-   * @returns The value at the specified index.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `at()` on an empty range.
-   *
-   * A non-integer, negative, or out of range index.
-   */
-  at(index: number): T {
-    assert(isInt(index) && index >= 0 && index < this.length(), 'ArrayRange#at(): Invalid index');
-    return this._array[this._start + index];
-  }
+//   /**
+//    * Get the value at a specific index in the range.
+//    *
+//    * @param index - The index of the value of interest.
+//    *
+//    * @returns The value at the specified index.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `at()` on an empty range.
+//    *
+//    * A non-integer, negative, or out of range index.
+//    */
+//   at(index: number): T {
+//     assert(isInt(index) && index >= 0 && index < this.length(), 'ArrayRange#at(): Invalid index');
+//     return this._array[this._start + index];
+//   }
 
-  /**
-   * Remove and return the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `popFront()` on an empty range.
-   */
-  popFront(): T {
-    assert(!this.isEmpty(), 'ArrayRange#popFront(): Range is empty');
-    return this._array[this._start++];
-  }
+//   /**
+//    * Remove and return the value at the front of the range.
+//    *
+//    * @returns The value at the front of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `popFront()` on an empty range.
+//    */
+//   popFront(): T {
+//     assert(!this.isEmpty(), 'ArrayRange#popFront(): Range is empty');
+//     return this._array[this._start++];
+//   }
 
-  /**
-   * Remove and return the value at the back of the range.
-   *
-   * @returns The value at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `popBack()` on an empty range.
-   */
-  popBack(): T {
-    assert(!this.isEmpty(), 'ArrayRange#popBack(): Range is empty');
-    return this._array[--this._stop];
-  }
+//   /**
+//    * Remove and return the value at the back of the range.
+//    *
+//    * @returns The value at the back of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `popBack()` on an empty range.
+//    */
+//   popBack(): T {
+//     assert(!this.isEmpty(), 'ArrayRange#popBack(): Range is empty');
+//     return this._array[--this._stop];
+//   }
 
-  /**
-   * Remove the value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range.
-   */
-  dropFront(): void {
-    assert(!this.isEmpty(), 'ArrayRange#dropFront(): Range is empty');
-    this._start++;
-  }
+//   /**
+//    * Remove the value at the front of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `dropFront()` on an empty range.
+//    */
+//   dropFront(): void {
+//     assert(!this.isEmpty(), 'ArrayRange#dropFront(): Range is empty');
+//     this._start++;
+//   }
 
-  /**
-   * Remove the value at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `dropBack()` on an empty range.
-   */
-  dropBack(): void {
-    assert(!this.isEmpty(), 'ArrayRange#dropBack(): Range is empty');
-    this._stop--;
-  }
+//   /**
+//    * Remove the value at the back of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `dropBack()` on an empty range.
+//    */
+//   dropBack(): void {
+//     assert(!this.isEmpty(), 'ArrayRange#dropBack(): Range is empty');
+//     this._stop--;
+//   }
 
-  protected _array: T[];
-  protected _start: number;
-  protected _stop: number;
-}
+//   protected _array: T[];
+//   protected _start: number;
+//   protected _stop: number;
+// }
 
 
 /**
  * A mutable random access range for an array.
  */
-export
-class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccessRange<T> {
-  /**
-   * Create an independent slice of the range.
-   *
-   * @param start - The starting index of the slice, inclusive.
-   *   The default is zero.
-   *
-   * @param stop - The ending index of the slice, exclusive. The
-   *   default is the length of the range.
-   *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * A non-integer, negative, or out of range index.
-   *
-   * A stop value less than the start value.
-   */
-  slice(start = 0, stop = this.length()): MutableArrayRange<T> {
-    assert(isInt(start) && start >= 0 && start <= this.length(), 'MutableArrayRange#slice(): Invalid index');
-    assert(isInt(stop) && stop >= start && stop <= this.length(), 'MutableArrayRange#slice(): Invalid index');
-    return new MutableArrayRange(this._array, this._start + start, this._start + stop);
-  }
+// export
+// class MutableArrayRange<T> extends ArrayRange<T> implements IMutableRandomAccessRange<T> {
+//   /**
+//    * Create an independent slice of the range.
+//    *
+//    * @param start - The starting index of the slice, inclusive.
+//    *   The default is zero.
+//    *
+//    * @param stop - The ending index of the slice, exclusive. The
+//    *   default is the length of the range.
+//    *
+//    * @returns A new slice of the current range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * A non-integer, negative, or out of range index.
+//    *
+//    * A stop value less than the start value.
+//    */
+//   slice(start = 0, stop = this.length()): MutableArrayRange<T> {
+//     assert(isInt(start) && start >= 0 && start <= this.length(), 'MutableArrayRange#slice(): Invalid index');
+//     assert(isInt(stop) && stop >= start && stop <= this.length(), 'MutableArrayRange#slice(): Invalid index');
+//     return new MutableArrayRange(this._array, this._start + start, this._start + stop);
+//   }
 
-  /**
-   * Set the value at the front of the range.
-   *
-   * @param value - The value to set at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `setFront()` on an empty range.
-   */
-  setFront(value: T): void {
-    assert(!this.isEmpty(), 'MutableArrayRange#setFront(): Range is empty');
-    this._array[this._start] = value;
-  }
+//   *
+//    * Set the value at the front of the range.
+//    *
+//    * @param value - The value to set at the front of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `setFront()` on an empty range.
 
-  /**
-   * Set the value at the back of the range.
-   *
-   * @param value - The value to set at the back of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `setBack()` on an empty range.
-   */
-  setBack(value: T): void {
-    assert(!this.isEmpty(), 'MutableArrayRange#setBack(): Range is empty');
-    this._array[this._stop - 1] = value;
-  }
+//   setFront(value: T): void {
+//     assert(!this.isEmpty(), 'MutableArrayRange#setFront(): Range is empty');
+//     this._array[this._start] = value;
+//   }
 
-  /**
-   * Set the value at a specific index in the range.
-   *
-   * @param index - The index of the value of interest.
-   *
-   * @param value - The value to set at the specified index.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `setAt()` on an empty range.
-   *
-   * A non-integer, negative, or out of range index.
-   */
-  setAt(index: number, value: T): void {
-    assert(isInt(index) && index >= 0 && index < this.length(), 'MutableArrayRange#setAt(): Invalid index');
-    this._array[this._start + index] = value;
-  }
-}
+//   /**
+//    * Set the value at the back of the range.
+//    *
+//    * @param value - The value to set at the back of the range.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `setBack()` on an empty range.
+//    */
+//   setBack(value: T): void {
+//     assert(!this.isEmpty(), 'MutableArrayRange#setBack(): Range is empty');
+//     this._array[this._stop - 1] = value;
+//   }
+
+//   /**
+//    * Set the value at a specific index in the range.
+//    *
+//    * @param index - The index of the value of interest.
+//    *
+//    * @param value - The value to set at the specified index.
+//    *
+//    * #### Complexity
+//    * Constant.
+//    *
+//    * #### Undefined Behavior
+//    * Calling `setAt()` on an empty range.
+//    *
+//    * A non-integer, negative, or out of range index.
+//    */
+//   setAt(index: number, value: T): void {
+//     assert(isInt(index) && index >= 0 && index < this.length(), 'MutableArrayRange#setAt(): Invalid index');
+//     this._array[this._start + index] = value;
+//   }
+// }

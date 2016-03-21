@@ -6,29 +6,21 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, IIterator, each
 } from '../algorithm/iteration';
-
-import {
-  assert, isInt
-} from '../patterns/assertion';
-
-import {
-  IForwardRange, IInputRange
-} from '../range/types';
 
 
 /**
  * A generic LIFO stack data structure.
  */
 export
-class Stack<T> {
+class Stack<T> implements IIterable<T> {
   /**
    * Construct a new stack.
    *
-   * @param values - A range of initial values for the stack.
+   * @param values - An iterator of initial values for the stack.
    */
-  constructor(values?: IInputRange<T>) {
+  constructor(values?: IIterator<T>) {
     if (values) each(values, value => { this.push(value); });
   }
 
@@ -39,6 +31,9 @@ class Stack<T> {
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
   isEmpty(): boolean {
     return this._stack.length === 0;
@@ -51,36 +46,42 @@ class Stack<T> {
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
   length(): number {
     return this._stack.length;
   }
 
   /**
-   * Create a range over the values in the stack.
+   * Create an iterator over the values in the stack.
    *
-   * @returns A new forward range for the stack.
+   * @returns A new iterator starting at the top of the stack.
    *
    * #### Complexity
    * Constant.
+   *
+   * #### Iterator Validity
+   * No changes.
    */
-  slice(): StackRange<T> {
-    return new StackRange<T>(this._stack, this._stack.length);
+  iter(): StackIterator<T> {
+    return new StackIterator<T>(this._stack, this._stack.length - 1);
   }
 
   /**
    * Get the value at the top of the stack.
    *
-   * @returns The value at the top of the stack.
+   * @returns The value at the top of the stack, or `undefined` if
+   *   the stack is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Undefined Behavior
-   * Calling `peek()` on an empty stack.
+   * #### Iterator Validity
+   * No changes.
    */
   peek(): T {
-    assert(!this.isEmpty(), 'Stack#peek(): Stack is empty');
     return this._stack[this._stack.length - 1];
   }
 
@@ -92,7 +93,7 @@ class Stack<T> {
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
+   * #### Iterator Validity
    * No changes.
    */
   push(value: T): void {
@@ -102,19 +103,16 @@ class Stack<T> {
   /**
    * Remove and return the value at the top of the stack.
    *
-   * @returns The value at the top of the stack.
+   * @returns The value at the top of the stack, or `undefined` if
+   *   the stack is empty.
    *
    * #### Complexity
    * Constant.
    *
-   * #### Range Validity
-   * Ranges pointing at the removed value are invalidated.
-   *
-   * #### Undefined Behavior
-   * Calling `pop()` on an empty stack.
+   * #### Iterator Validity
+   * Iterators pointing at the removed value are invalidated.
    */
   pop(): T {
-    assert(!this.isEmpty(), 'Stack#pop(): Stack is empty');
     return this._stack.pop();
   }
 
@@ -122,10 +120,10 @@ class Stack<T> {
    * Remove all values from the stack.
    *
    * #### Complexity
-   * Constant (excluding GC).
+   * Linear.
    *
-   * #### Range Validity
-   * All ranges pointing to the stack are invalidated.
+   * #### Iterator Validity
+   * All current iterators are invalidated.
    */
   clear(): void {
     this._stack.length = 0;
@@ -136,108 +134,53 @@ class Stack<T> {
 
 
 /**
- * A forward range for a stack.
+ * An iterator for a stack.
  */
 export
-class StackRange<T> implements IForwardRange<T> {
+class StackIterator<T> implements IIterator<T> {
   /**
-   * Construct a new stack range.
+   * Construct a new stack iterator.
    *
-   * @param stack - The stack of values.
+   * @param stack - The stack of values of interest.
    *
-   * @param length - The length of the stack.
-   *
-   * #### Undefined Behavior
-   * A non-integer, negative, or invalid length.
+   * @param index - The index of the top of the stack.
    */
-  constructor(stack: T[], length: number) {
-    assert(isInt(length) && length >= 0, 'StackRange(): Invalid length');
-    this._length = length;
+  constructor(stack: T[], index: number) {
     this._stack = stack;
+    this._index = index;
   }
 
   /**
-   * Test whether the range is empty.
+   * Create an iterator over the object's values.
    *
-   * @returns `true` if the range is empty, `false` otherwise.
-   *
-   * #### Complexity
-   * Constant.
+   * @returns A reference to `this` iterator.
    */
-  isEmpty(): boolean {
-    return this._length === 0;
+  iter(): this {
+    return this;
   }
 
   /**
-   * Get the number of values remaining in the range.
+   * Create an independent clone of the stack iterator.
    *
-   * @returns The current length of the range.
-   *
-   * #### Complexity
-   * Constant.
+   * @returns A new iterator starting with the current value.
    */
-  length(): number {
-    return this._length;
+  clone(): StackIterator<T> {
+    return new StackIterator<T>(this._stack, this._index);
   }
 
   /**
-   * Create an independent slice of the range.
+   * Get the next value from the stack.
    *
-   * @returns A new slice of the current range.
-   *
-   * #### Complexity
-   * Constant.
+   * @returns The next value from the stack, or `undefined` if the
+   *   iterator is exhausted.
    */
-  slice(): StackRange<T> {
-    return new StackRange<T>(this._stack, this._length);
+  next(): T {
+    if (this._index < 0 || this._index >= this._stack.length) {
+      return void 0;
+    }
+    return this._stack[this._index--];
   }
 
-  /**
-   * Get the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `front()` on an empty range.
-   */
-  front(): T {
-    assert(!this.isEmpty(), 'StackRange#front(): Range is empty');
-    return this._stack[this._length - 1];
-  }
-
-  /**
-   * Remove and return the value at the front of the range.
-   *
-   * @returns The value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `popFront()` on an empty range.
-   */
-  popFront(): T {
-    assert(!this.isEmpty(), 'StackRange#popFront(): Range is empty');
-    return this._stack[--this._length];
-  }
-
-  /**
-   * Remove the value at the front of the range.
-   *
-   * #### Complexity
-   * Constant.
-   *
-   * #### Undefined Behavior
-   * Calling `dropFront()` on an empty range.
-   */
-  dropFront(): void {
-    assert(!this.isEmpty(), 'StackRange#dropFront(): Range is empty');
-    this._length--;
-  }
-
-  private _length: number;
   private _stack: T[];
+  private _index: number;
 }
