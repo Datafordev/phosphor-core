@@ -484,7 +484,7 @@ namespace MessageLoop {
    * be processed on the next cycle of the loop.
    */
   function runMessageLoop(): void {
-    // Clear the cycle so the next loop can be scheduled.
+    // Clear the pending flag so the next loop can be scheduled.
     cyclePending = false;
 
     // If the queue is empty, there is nothing else to do.
