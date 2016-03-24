@@ -331,7 +331,7 @@ namespace MessageLoop {
   }
 
   /**
-   * Post a message to handler for processing if the future.
+   * Post a message to a handler for processing in the future.
    *
    * This will first conflate the message, if possible. If it cannot
    * be conflated, it will be queued for delivery on the next cycle
