@@ -6,7 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  each, some
 } from '../algorithm/iteration';
 
 import {
@@ -45,19 +45,67 @@ class Message {
     return this._type;
   }
 
-  // /**
-  //  *
-  //  */
-  // get isConflatable(): boolean {
-  //   return false;
-  // }
+  /**
+   * Test whether the message is conflatable.
+   *
+   * #### Notes
+   * Message conflation is an advanced topic. Most message types will
+   * not make use of this feature.
+   *
+   * If a conflatable message is posted to the event queue when another
+   * conflatable message of the same type and handler has already been
+   * posted, the `conflate()` method of the existing message will be
+   * invoked. If that method returns `true`, the new message will not
+   * be enqueued. This allows messages to be compressed, so that only
+   * a single instance of the message type is processed per cycle, no
+   * matter how many times messages of that type are posted.
+   *
+   * Custom message types may reimplement this property. The default
+   * implementation is always `false`.
+   *
+   * This is a read-only property.
+   *
+   * **See also:** [[conflateMessage]]
+   */
+  get isConflatable(): boolean {
+    return false;
+  }
 
-  // *
-  //  *
-
-  // conflate(other: Message): boolean {
-  //   return false;
-  // }
+  /**
+   * Conflate this message with another message of the same `type`.
+   *
+   * @param msg - A conflatable message of the same `type`.
+   *
+   * @returns `true` if the message was successfully conflated, or
+   *   `false` otherwise.
+   *
+   * #### Notes
+   * Message conflation is an advanced topic. Most message types will
+   * not make use of this feature.
+   *
+   * This method is called automatically by the message loop when the
+   * given message is posted to the handler paired with this message.
+   * This message will already be enqueued and conflatable, and the
+   * given message will have the same `type` and also be conflatable.
+   *
+   * This method should merge the state of the other message into this
+   * message as needed so that when this message is finally delivered
+   * to the handler, it receives the most up-to-date information.
+   *
+   * If this method returns `true`, it signals that the other message
+   * was successfully conflated and it will not be enqueue.
+   *
+   * If this method returns `false`, the other message will be enqueued
+   * for normal delivery.
+   *
+   * Custom message types may reimplement this method. The default
+   * implementation always returns `false`.
+   *
+   * **See also:** [[isConflatable]]
+   */
+  conflate(msg: Message): boolean {
+    return false;
+  }
 
   private _type: string;
 }
@@ -252,16 +300,28 @@ namespace MessageLoop {
    */
   export
   function postMessage(handler: IMessageHandler, msg: Message): void {
-    // // Handle the common case a non-conflatable message first.
-    // if (true) {
-    //   enqueueMessage(handler, msg);
-    //   return;
-    // }
+    // Handle the common case a non-conflatable message first.
+    if (!msg.isConflatable) {
+      enqueueMessage(handler, msg);
+      return;
+    }
 
-    // // Conflate message if possible, and bail early.
+    // Conflate message if possible.
+    let conflated = some(queue, posted => {
+      if (posted.handler !== handler) {
+        return false;
+      }
+      if (posted.msg.type !== msg.type) {
+        return false;
+      }
+      if (!posted.msg.isConflatable) {
+        return false;
+      }
+      return posted.msg.conflate(msg);
+    });
 
-    // // The message was not conflatable. Enqueue the message.
-    // enqueueMessage(handler, msg);
+    // If the message was not conflated, enqueue the message.
+    if (!conflated) enqueueMessage(handler, msg);
   }
 
   /**
