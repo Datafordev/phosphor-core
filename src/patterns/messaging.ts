@@ -359,6 +359,11 @@ namespace MessageLoop {
   })();
 
   /**
+   * Whether a message loop cycle is pending.
+   */
+  let cyclePending = false;
+
+  /**
    * Invoke a message hook with the specified handler and message.
    *
    * Returns the result of the hook, or `true` if the hook throws.
@@ -390,9 +395,63 @@ namespace MessageLoop {
   }
 
   /**
+   * Add a message to the end of the message queue.
    *
+   * This will automatically schedule a cycle of the loop.
    */
-  // function enqueueMessage(handler: IMessageHandler, msg: Message): void {
+  function enqueueMessage(handler: IMessageHandler, msg: Message): void {
+    queue.pushBack({ handler, msg });
+    scheduleMessageLoop();
+  }
 
-  // }
+  /**
+   * Schedule a message loop cycle to process any pending messages.
+   *
+   * This is a no-op if a loop is pending, or is not needed.
+   */
+  function scheduleMessageLoop(): void {
+    if (!cyclePending && !queue.isEmpty) {
+      raf(runMessageLoop);
+      cyclePending = true;
+    }
+  }
+
+  /**
+   * Run an iteration of the message loop.
+   *
+   * This will process all pending messages in the queue. If a message
+   * is added to the queue while the message loop is running, it will
+   * be processed on the next cycle of the loop.
+   */
+  function runMessageLoop(): void {
+    // Clear the cycle so the next loop can be scheduled.
+    cyclePending = false;
+
+    // If the queue is empty, there is nothing else to do.
+    if (queue.isEmpty) {
+      return;
+    }
+
+    // Add a sentinel value to the end of the queue. The queue will
+    // only be processed up to the sentinel. Messages posted during
+    // this cycle will execute on the next cycle.
+    let sentinel: PostedMessage = { handler: null, msg: null };
+    queue.pushBack(sentinel);
+
+    // Enter the message loop.
+    while (!queue.isEmpty) {
+      // Remove the first posted message in the queue.
+      let posted = queue.popFront();
+
+      // If the value is the sentinel, exit the loop.
+      if (posted === sentinel) {
+        return;
+      }
+
+      // Dispatch the message if the handler has not been cleared.
+      if (posted.handler !== null) {
+        sendMessage(posted.handler, posted.msg);
+      }
+    }
+  }
 }
