@@ -93,7 +93,7 @@ class Message {
    * to the handler, it receives the most up-to-date information.
    *
    * If this method returns `true`, it signals that the other message
-   * was successfully conflated and it will not be enqueue.
+   * was successfully conflated and it will not be enqueued.
    *
    * If this method returns `false`, the other message will be enqueued
    * for normal delivery.
