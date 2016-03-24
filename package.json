@@ -11,8 +11,8 @@
   },
   "scripts": {
     "clean": "rimraf lib",
-    "build:src": "tsc --project src",
-    "build": "npm run build:src",
+    "build": "tsc --project src",
+    "test": "mocha ./lib/**/*.spec.js",
     "prepublish": "npm run build"
   },
   "repository": {
