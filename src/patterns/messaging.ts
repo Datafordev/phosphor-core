@@ -45,6 +45,20 @@ class Message {
     return this._type;
   }
 
+  // /**
+  //  *
+  //  */
+  // get isConflatable(): boolean {
+  //   return false;
+  // }
+
+  // *
+  //  *
+
+  // conflate(other: Message): boolean {
+  //   return false;
+  // }
+
   private _type: string;
 }
 
@@ -199,7 +213,7 @@ function clearMessageData(handler: IMessageHandler): void {
 
 
 /**
- * The namespace for the global message loop.
+ * The namespace for the global singleton message loop.
  */
 namespace MessageLoop {
   /**
@@ -210,21 +224,22 @@ namespace MessageLoop {
    */
   export
   function sendMessage(handler: IMessageHandler, msg: Message): void {
-    // Handle the common case of no message hooks first.
+    // Handle the common case of no message hooks.
     let node = hooks.get(handler);
     if (node === void 0) {
       invokeHandler(handler, msg);
       return;
     }
 
-    // Run the message hooks. Bail early if any hook returns false.
+    // Run the message hooks and bail early if any hook returns false.
+    // A null hook indicates the hook was removed during dispatch.
     for (; node !== null; node = node.next) {
       if (node.hook !== null && !invokeHook(node.hook, handler, msg)) {
         return;
       }
     }
 
-    // All message hooks returned true. Invoke the handler.
+    // All message hooks returned true, so invoke the handler.
     invokeHandler(handler, msg);
   }
 
@@ -237,16 +252,16 @@ namespace MessageLoop {
    */
   export
   function postMessage(handler: IMessageHandler, msg: Message): void {
-    // Handle the common case a non-conflatable message first.
-    if (true) {
-      enqueueMessage(handler, msg);
-      return;
-    }
+    // // Handle the common case a non-conflatable message first.
+    // if (true) {
+    //   enqueueMessage(handler, msg);
+    //   return;
+    // }
 
-    // Conflate message if possible, and bail early.
+    // // Conflate message if possible, and bail early.
 
-    // The message was not conflatable. Enqueue the message.
-    enqueueMessage(handler, msg);
+    // // The message was not conflatable. Enqueue the message.
+    // enqueueMessage(handler, msg);
   }
 
   /**
@@ -257,7 +272,7 @@ namespace MessageLoop {
    */
   export
   function installMessageHook(handler: IMessageHandler, hook: MessageHook): void {
-    // Remove the hook if it's already installed.
+    // Remove the message hook if it's already installed.
     removeMessageHook(handler, hook);
 
     // Install the hook at the front of the list.
@@ -270,9 +285,13 @@ namespace MessageLoop {
    */
   export
   function removeMessageHook(handler: IMessageHandler, hook: MessageHook): void {
+    // Traverse the list and find the matching hook. If found, clear
+    // the reference to the hook and remove the node from the list.
+    // The node's next reference is *not* cleared so that dispatch
+    // may continue when the hook is removed during dispatch.
     let prev: HookNode = null;
-    let root = hooks.get(handler) || null;
-    for (let node = root; node !== null; node = node.next) {
+    let node = hooks.get(handler) || null;
+    for (; node !== null; prev = node, node = node.next) {
       if (node.hook === hook) {
         if (prev === null && node.next === null) {
           hooks.delete(handler);
@@ -288,20 +307,22 @@ namespace MessageLoop {
   }
 
   /**
+   * Clear all message data for a handler.
    *
+   * This will remove all message hooks and clear pending messages.
    */
   export
   function clearMessageData(handler: IMessageHandler): void {
-    //
-    let node = hooks.get(handler);
-    if (node !== void 0) {
-      for (; node !== null; node = node.next) {
-        node.hook = null;
-      }
-      hooks.delete(handler);
+    // Clear all message hooks.
+    let node = hooks.get(handler) || null;
+    for (; node !== null; node = node.next) {
+      node.hook = null;
     }
 
-    //
+    // Remove the handler from the hooks map.
+    hooks.delete(handler);
+
+    // Clear all pending messages.
     each(queue, posted => {
       if (posted.handler === handler) {
         posted.handler = null;
@@ -310,27 +331,27 @@ namespace MessageLoop {
   }
 
   /**
-   *
+   * A type alias for a posted message pair.
    */
   type PostedMessage = { handler: IMessageHandler, msg: Message };
 
   /**
-   *
+   * A type alias for a node in a message hook list.
    */
   type HookNode = { next: HookNode, hook: MessageHook };
 
   /**
-   *
+   * The queue of posted message pairs.
    */
   const queue = new Queue<PostedMessage>();
 
   /**
-   *
+   * A mapping of handler to list of installed message hooks.
    */
   const hooks = new WeakMap<IMessageHandler, HookNode>();
 
   /**
-   * A local reference to an event loop hook.
+   * A local reference to an event loop callback.
    */
   const raf = (() => {
     let ok = typeof requestAnimationFrame === 'function';
@@ -338,24 +359,27 @@ namespace MessageLoop {
   })();
 
   /**
+   * Invoke a message hook with the specified handler and message.
    *
-   */
-
-  /**
+   * Returns the result of the hook, or `true` if the hook throws.
    *
+   * Exceptions in the hook will be caught and logged.
    */
   function invokeHook(hook: MessageHook, handler: IMessageHandler, msg: Message): boolean {
-    let result = true;
+    let result: boolean;
     try {
       result = hook(handler, msg);
     } catch (err) {
+      result = true;
       console.error(err);
     }
     return result;
   }
 
   /**
+   * Invoke a message handler with the specified message.
    *
+   * Exceptions in the handler will be caught and logged.
    */
   function invokeHandler(handler: IMessageHandler, msg: Message): void {
     try {
@@ -368,7 +392,7 @@ namespace MessageLoop {
   /**
    *
    */
-  function enqueueMessage(handler: IMessageHandler, msg: Message): void {
+  // function enqueueMessage(handler: IMessageHandler, msg: Message): void {
 
-  }
+  // }
 }
