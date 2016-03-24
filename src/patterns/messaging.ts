@@ -413,7 +413,7 @@ namespace MessageLoop {
   /**
    * A local reference to an event loop callback.
    */
-  const raf = (() => {
+  const defer = (() => {
     let ok = typeof requestAnimationFrame === 'function';
     return ok ? requestAnimationFrame : setImmediate;
   })();
@@ -471,7 +471,7 @@ namespace MessageLoop {
    */
   function scheduleMessageLoop(): void {
     if (!cyclePending && !queue.isEmpty) {
-      raf(runMessageLoop);
+      defer(runMessageLoop);
       cyclePending = true;
     }
   }
