@@ -74,7 +74,7 @@ class Message {
   /**
    * Conflate this message with another message of the same `type`.
    *
-   * @param msg - A conflatable message of the same `type`.
+   * @param other - A conflatable message of the same `type`.
    *
    * @returns `true` if the message was successfully conflated, or
    *   `false` otherwise.
@@ -103,7 +103,7 @@ class Message {
    *
    * **See also:** [[isConflatable]]
    */
-  conflate(msg: Message): boolean {
+  conflate(other: Message): boolean {
     return false;
   }
 
