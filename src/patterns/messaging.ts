@@ -511,10 +511,10 @@ namespace MessageLoop {
   /**
    * Schedule a message loop cycle to process any pending messages.
    *
-   * This is a no-op if a loop is pending, or is not needed.
+   * This is a no-op if a loop cycle is already pending.
    */
   function scheduleMessageLoop(): void {
-    if (!cyclePending && !queue.isEmpty) {
+    if (!cyclePending) {
       defer(runMessageLoop);
       cyclePending = true;
     }
