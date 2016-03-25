@@ -174,30 +174,36 @@ interface IMessageHandler {
 
 
 /**
- * A function which intercepts messages sent to a message handler.
- *
- * @param handler - The target handler of the message.
- *
- * @param msg - The message to be sent to the handler.
- *
- * @returns `true` if the message should continue to be processed
- *   as normal, or `false` if processing should cease immediately.
+ * An object which intercepts messages sent to a message handler.
  *
  * #### Notes
  * A message hook is useful for intercepting or spying on messages
  * sent to message handlers which were either not created by the
  * consumer, or when subclassing the handler is not feasible.
  *
- * If the hook returns `false`, no other message hooks will be
- * invoked and the message will not be delivered to the handler.
- *
- * If all installed message hooks return `true`, the message will
- * be delivered to the handler for processing.
- *
  * **See also:** [[installMessageHook]] and [[removeMessageHook]]
  */
 export
-type MessageHook = (handler: IMessageHandler, msg: Message) => boolean;
+interface IMessageHook {
+  /**
+   * Intercept a message for a message handler.
+   *
+   * @param handler - The target handler of the message.
+   *
+   * @param msg - The message to be sent to the handler.
+   *
+   * @returns `true` if the message should continue to be processed
+   *   as normal, or `false` if processing should cease immediately.
+   *
+   * #### Notes
+   * If this method returns `false`, no other message hooks will be
+   * invoked and the message will not be delivered to the handler.
+   *
+   * If all installed message hooks return `true`, the message will
+   * be delivered to the handler for processing.
+   */
+  hookMessage(handler: IMessageHandler, msg: Message): boolean;
+}
 
 
 /**
@@ -251,8 +257,8 @@ function postMessage(handler: IMessageHandler, msg: Message): void {
  *
  * #### Notes
  * A message hook is invoked before a message is delivered to the
- * handler. If the hook returns `false`, no other hooks will be
- * invoked and the message will not be delivered to the handler.
+ * handler. If the hook method returns `false`, no other hooks will
+ * be invoked and the message will not be delivered to the handler.
  *
  * The most recently installed message hook is executed first.
  *
@@ -261,7 +267,7 @@ function postMessage(handler: IMessageHandler, msg: Message): void {
  * **See also:** [[removeMessageHook]]
  */
 export
-function installMessageHook(handler: IMessageHandler, hook: MessageHook): void {
+function installMessageHook(handler: IMessageHandler, hook: IMessageHook): void {
   MessageLoop.installMessageHook(handler, hook);
 }
 
@@ -279,7 +285,7 @@ function installMessageHook(handler: IMessageHandler, hook: MessageHook): void {
  * It is safe to call this function while the hook is executing.
  */
 export
-function removeMessageHook(handler: IMessageHandler, hook: MessageHook): void {
+function removeMessageHook(handler: IMessageHandler, hook: IMessageHook): void {
   MessageLoop.removeMessageHook(handler, hook);
 }
 
@@ -369,7 +375,7 @@ namespace MessageLoop {
    * hook in front of other hooks for the handler.
    */
   export
-  function installMessageHook(handler: IMessageHandler, hook: MessageHook): void {
+  function installMessageHook(handler: IMessageHandler, hook: IMessageHook): void {
     // Remove the message hook if it's already installed.
     removeMessageHook(handler, hook);
 
@@ -382,7 +388,7 @@ namespace MessageLoop {
    * Remove a message hook for a handler, if it exists.
    */
   export
-  function removeMessageHook(handler: IMessageHandler, hook: MessageHook): void {
+  function removeMessageHook(handler: IMessageHandler, hook: IMessageHook): void {
     // Traverse the list and find the matching hook. If found, clear
     // the reference to the hook and remove the node from the list.
     // The node's next reference is *not* cleared so that dispatch
@@ -436,7 +442,7 @@ namespace MessageLoop {
   /**
    * A type alias for a node in a message hook list.
    */
-  type HookNode = { next: HookNode, hook: MessageHook };
+  type HookNode = { next: HookNode, hook: IMessageHook };
 
   /**
    * The queue of posted message pairs.
@@ -468,10 +474,10 @@ namespace MessageLoop {
    *
    * Exceptions in the hook will be caught and logged.
    */
-  function invokeHook(hook: MessageHook, handler: IMessageHandler, msg: Message): boolean {
+  function invokeHook(hook: IMessageHook, handler: IMessageHandler, msg: Message): boolean {
     let result: boolean;
     try {
-      result = hook(handler, msg);
+      result = hook.hookMessage(handler, msg);
     } catch (err) {
       result = true;
       console.error(err);
