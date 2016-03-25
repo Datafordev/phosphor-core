@@ -10,9 +10,13 @@
     "typescript": "^1.8.0"
   },
   "scripts": {
-    "clean": "rimraf lib",
-    "build": "tsc --project src",
-    "test": "mocha ./lib/**/*.spec.js",
+    "clean:src": "rimraf lib",
+    "clean:test": "rimraf test/build",
+    "clean": "npm run clean:src && npm run clean:test",
+    "build:src": "tsc --project src",
+    "build:test": "tsc --project test",
+    "build": "npm run build:src && npm run build:test",
+    "test": "mocha ./test/build/**/*.spec.js",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -28,10 +32,10 @@
   "keywords": [
     "algorithm",
     "collections",
+    "iteration",
+    "iterator",
     "messaging",
     "properties",
-    "range",
-    "ranges",
     "signaling"
   ],
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
