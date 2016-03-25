@@ -125,7 +125,7 @@ class Message {
  * subclass should be created.
  */
 export
-class ConflatableMessage {
+class ConflatableMessage extends Message {
   /**
    * Test whether the message is conflatable.
    *
