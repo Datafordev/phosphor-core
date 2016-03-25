@@ -14,7 +14,7 @@
     "clean:test": "rimraf test/build",
     "clean": "npm run clean:src && npm run clean:test",
     "build:src": "tsc --project src",
-    "build:test": "tsc --project test",
+    "build:test": "tsc --project test/src",
     "build": "npm run build:src && npm run build:test",
     "test": "mocha ./test/build/**/*.spec.js",
     "prepublish": "npm run build"
