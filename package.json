@@ -5,18 +5,20 @@
   "dependencies": {},
   "devDependencies": {
     "expect.js": "^0.3.1",
+    "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "rimraf": "^2.5.2",
     "typescript": "^1.8.0"
   },
   "scripts": {
     "clean:src": "rimraf lib",
-    "clean:test": "rimraf test/build",
+    "clean:test": "rimraf test/build && rimraf test/coverage",
     "clean": "npm run clean:src && npm run clean:test",
     "build:src": "tsc --project src",
     "build:test": "tsc --project test/src",
     "build": "npm run build:src && npm run build:test",
-    "test": "mocha ./test/build/**/*.spec.js",
+    "test": "mocha test/build/**/*.spec.js",
+    "test:coverage": "istanbul cover --dir test/coverage node_modules/mocha/bin/_mocha -- test/build/**/*.spec.js",
     "prepublish": "npm run build"
   },
   "repository": {
