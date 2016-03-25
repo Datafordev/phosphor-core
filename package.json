@@ -32,13 +32,19 @@
     "lib/**/*.js"
   ],
   "keywords": [
+    "arrays",
     "algorithm",
     "collections",
+    "deque",
+    "disposable",
     "iteration",
-    "iterator",
     "messaging",
+    "patterns",
     "properties",
-    "signaling"
+    "queue",
+    "range",
+    "signaling",
+    "stack"
   ],
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
   "license": "BSD-3-Clause",
