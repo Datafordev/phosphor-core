@@ -251,9 +251,8 @@ function postMessage(handler: IMessageHandler, msg: Message): void {
  *
  * #### Notes
  * A message hook is invoked before a message is delivered to the
- * handler. If the hook returns `false` from its [[hookMessage]]
- * method, no other hooks will be invoked and the message will
- * not be delivered to the handler.
+ * handler. If the hook returns `false`, no other hooks will be
+ * invoked and the message will not be delivered to the handler.
  *
  * The most recently installed message hook is executed first.
  *
