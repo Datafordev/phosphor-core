@@ -6,8 +6,12 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IIterator, ISlice
-} from './types';
+  IIterator
+} from './iteration';
+
+import {
+  ISlice
+} from './slice';
 
 
 /**
