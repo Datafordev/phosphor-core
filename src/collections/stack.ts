@@ -6,12 +6,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each
+  IIterable, IIterator, Iterable, each
 } from '../algorithm/iteration';
-
-import {
-  IIterable, IIterator
-} from '../algorithm/types';
 
 
 /**
@@ -24,7 +20,7 @@ class Stack<T> implements IIterable<T> {
    *
    * @param values - An iterator of initial values for the stack.
    */
-  constructor(values?: IIterable<T>) {
+  constructor(values?: Iterable<T>) {
     if (values) each(values, value => { this.pushBack(value); });
   }
 
