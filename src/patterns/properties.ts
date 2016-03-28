@@ -185,7 +185,7 @@ class Property<T, U> {
    */
   get(owner: T): U {
     let value: U;
-    let map = getMap(owner);
+    let map = ensureMap(owner);
     if (this._pid in map) {
       value = map[this._pid];
     } else {
@@ -207,7 +207,7 @@ class Property<T, U> {
    */
   set(owner: T, value: U): void {
     let oldValue: U;
-    let map = getMap(owner);
+    let map = ensureMap(owner);
     if (this._pid in map) {
       oldValue = map[this._pid];
     } else {
@@ -228,7 +228,7 @@ class Property<T, U> {
    */
   coerce(owner: T): void {
     let oldValue: U;
-    let map = getMap(owner);
+    let map = ensureMap(owner);
     if (this._pid in map) {
       oldValue = map[this._pid];
     } else {
@@ -323,7 +323,14 @@ var ownerData = new WeakMap<any, PropertyMap>();
 /**
  * A function which computes successive unique property ids.
  */
-var nextPID = (() => { let id = 0; return () => 'pid-' + id++; })();
+var nextPID = (() => {
+  let id = 0;
+  return () => {
+    let rand = Math.random();
+    let stem = `${rand}`.slice(2);
+    return `pid-${stem}-${id++}`;
+  };
+})();
 
 
 /**
@@ -331,7 +338,7 @@ var nextPID = (() => { let id = 0; return () => 'pid-' + id++; })();
  *
  * This will create the map if one does not already exist.
  */
-function getMap(owner: any): PropertyMap {
+function ensureMap(owner: any): PropertyMap {
   let map = ownerData.get(owner);
   if (map !== void 0) return map;
   map = Object.create(null);
