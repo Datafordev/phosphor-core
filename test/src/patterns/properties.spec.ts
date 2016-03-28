@@ -8,7 +8,7 @@
 import expect = require('expect.js');
 
 import {
-  IChangedArgs, Property, clearPropertyData
+  IChangedArgs, AttachedProperty, clearPropertyData
 } from '../../../lib/patterns/properties';
 
 import {
@@ -31,12 +31,12 @@ function expectArrayEqual(arr1: any[], arr2: any[]): void {
 
 describe('patterns/properties', () => {
 
-  describe('Property', () => {
+  describe('AttachedProperty', () => {
 
     describe('#constructor()', () => {
 
       it('should accept a single options argument', () => {
-        let p = new Property<Model, number>({
+        let p = new AttachedProperty<Model, number>({
           name: 'p',
           value: 12,
           create: (owner) => 42,
@@ -45,7 +45,7 @@ describe('patterns/properties', () => {
           changed: (owner, oldValue, newValue) => { },
           notify: new Signal<Model, IChangedArgs<number>>(),
         });
-        expect(p instanceof Property).to.be(true);
+        expect(p instanceof AttachedProperty).to.be(true);
       });
 
     });
@@ -53,12 +53,12 @@ describe('patterns/properties', () => {
     describe('#name', () => {
 
       it('should be the name provided to the constructor', () => {
-        let p = new Property<Model, number>({ name: 'p' });
+        let p = new AttachedProperty<Model, number>({ name: 'p' });
         expect(p.name).to.be('p');
       });
 
       it('should be a read-only property', () => {
-        let p = new Property<Model, number>({ name: 'p' });
+        let p = new AttachedProperty<Model, number>({ name: 'p' });
         expect(() => { p.name = 'q'; }).to.throwException();
       });
 
@@ -68,13 +68,13 @@ describe('patterns/properties', () => {
 
       it('should be the signal provided to the constructor', () => {
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p = new Property<Model, number>({ name: 'p', notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', notify });
         expect(p.notify).to.be(notify);
       });
 
       it('should be a read-only property', () => {
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p = new Property<Model, number>({ name: 'p', notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', notify });
         expect(() => { p.notify = null }).to.throwException();
       });
 
@@ -83,9 +83,9 @@ describe('patterns/properties', () => {
     describe('#get()', () => {
 
       it('should return the current value of the property', () => {
-        let p1 = new Property<Model, number>({ name: 'p1' });
-        let p2 = new Property<Model, number>({ name: 'p2' });
-        let p3 = new Property<Model, number>({ name: 'p3' });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1' });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2' });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3' });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -119,9 +119,9 @@ describe('patterns/properties', () => {
       });
 
       it('should return the default value if the value is not yet set', () => {
-        let p1 = new Property<Model, number>({ name: 'p1', value: 42 });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 43 });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 44 });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 42 });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 43 });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 44 });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -139,9 +139,9 @@ describe('patterns/properties', () => {
       it('should use the default factory if the value is not yet set', () => {
         let tick = 42;
         let create = () => tick++;
-        let p1 = new Property<Model, number>({ name: 'p1', create });
-        let p2 = new Property<Model, number>({ name: 'p2', create });
-        let p3 = new Property<Model, number>({ name: 'p3', create });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', create });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -159,9 +159,9 @@ describe('patterns/properties', () => {
       it('should prefer the default factory over the default value', () => {
         let tick = 42;
         let create = () => tick++;
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, create });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, create });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 1, create });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, create });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, create });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 1, create });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -179,9 +179,9 @@ describe('patterns/properties', () => {
       it('should not invoke the coerce function', () => {
         let called = false;
         let coerce = (m: Model, v: number) => (called = true,  v);
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, coerce });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, coerce });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 1, coerce });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, coerce });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, coerce });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 1, coerce });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -200,9 +200,9 @@ describe('patterns/properties', () => {
       it('should not invoke the compare function', () => {
         let called = false;
         let compare = (v1: number, v2: number) => (called = true,  v1 === v2);
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, compare });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, compare });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 1, compare });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, compare });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, compare });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 1, compare });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -221,9 +221,9 @@ describe('patterns/properties', () => {
       it('should not invoke the changed function', () => {
         let called = false;
         let changed = () => { called = true; };
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, changed });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, changed });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 1, changed });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, changed });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, changed });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 1, changed });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -243,9 +243,9 @@ describe('patterns/properties', () => {
         let called = false;
         let changed = () => { called = true; };
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, notify });
-        let p2 = new Property<Model, number>({ name: 'p1', value: 1, notify });
-        let p3 = new Property<Model, number>({ name: 'p1', value: 1, notify });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, notify });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, notify });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, notify });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -269,9 +269,9 @@ describe('patterns/properties', () => {
     describe('#set()', () => {
 
       it('should set the current value of the property', () => {
-        let p1 = new Property<Model, number>({ name: 'p1' });
-        let p2 = new Property<Model, number>({ name: 'p2' });
-        let p3 = new Property<Model, number>({ name: 'p3' });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1' });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2' });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3' });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -304,9 +304,9 @@ describe('patterns/properties', () => {
           oldvals.push(o);
           newvals.push(n);
         };
-        let p1 = new Property<Model, number>({ name: 'p1', value: 0, changed });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 0, changed });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 0, changed });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 0, changed });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 0, changed });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 0, changed });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -336,9 +336,9 @@ describe('patterns/properties', () => {
           oldvals.push(args.oldValue);
           newvals.push(args.newValue);
         };
-        let p1 = new Property<Model, number>({ name: 'p1', value: 0, notify });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, notify });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 2, notify });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 0, notify });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, notify });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 2, notify });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -365,7 +365,7 @@ describe('patterns/properties', () => {
         let changed = () => { result.push('c1'); };
         let changed2 = () => { result.push('c2'); };
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p = new Property<Model, number>({ name: 'p', value: 0, changed, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, changed, notify });
         let m = new Model();
         notify.bind(m).connect(changed2);
         p.set(m, 42);
@@ -383,9 +383,9 @@ describe('patterns/properties', () => {
         };
         let tick = 42;
         let create = () => tick++;
-        let p1 = new Property<Model, number>({ name: 'p1', create, changed });
-        let p2 = new Property<Model, number>({ name: 'p2', create, changed });
-        let p3 = new Property<Model, number>({ name: 'p3', create, changed });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create, changed });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create, changed });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', create, changed });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -414,9 +414,9 @@ describe('patterns/properties', () => {
         };
         let tick = 42;
         let create = () => tick++;
-        let p1 = new Property<Model, number>({ name: 'p1', value: 0, create, changed });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 0, create, changed });
-        let p3 = new Property<Model, number>({ name: 'p3', value: 0, create, changed });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 0, create, changed });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 0, create, changed });
+        let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 0, create, changed });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -436,7 +436,7 @@ describe('patterns/properties', () => {
 
       it('should invoke the coerce function on the new value', () => {
         let coerce = (o: Model, v: number) => Math.max(0, v);
-        let p = new Property<Model, number>({ name: 'p', coerce });
+        let p = new AttachedProperty<Model, number>({ name: 'p', coerce });
         let m = new Model();
         p.set(m, -10);
         expect(p.get(m)).to.be(0);
@@ -453,7 +453,7 @@ describe('patterns/properties', () => {
       it('should not invoke the compare function if there are no listeners', () => {
         let called = false;
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare });
         let m = new Model();
         p.set(m, 42);
         expect(called).to.be(false);
@@ -463,7 +463,7 @@ describe('patterns/properties', () => {
         let called = false;
         let changed = () => { };
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare, changed });
         let m = new Model();
         p.set(m, 42);
         expect(called).to.be(true);
@@ -473,7 +473,7 @@ describe('patterns/properties', () => {
         let called = false;
         let notify = new Signal<Model, IChangedArgs<number>>();
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare, notify });
         let m = new Model();
         p.set(m, 42);
         expect(called).to.be(true);
@@ -484,7 +484,7 @@ describe('patterns/properties', () => {
         let changed = () => { };
         let notify = new Signal<Model, IChangedArgs<number>>();
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare, changed, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare, changed, notify });
         let m = new Model();
         p.set(m, 42);
         expect(called).to.be(true);
@@ -494,8 +494,8 @@ describe('patterns/properties', () => {
         let called = false;
         let changed = () => { called = true; };
         let compare = (v1: number, v2: number) => true;
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, changed });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, compare, changed });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, changed });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, compare, changed });
         let m = new Model();
         p1.set(m, 1);
         p1.set(m, 1);
@@ -511,8 +511,8 @@ describe('patterns/properties', () => {
         let changed = () => { called = true; };
         let compare = (v1: number, v2: number) => true;
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p1 = new Property<Model, number>({ name: 'p1', value: 1, notify });
-        let p2 = new Property<Model, number>({ name: 'p2', value: 1, compare, notify });
+        let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, notify });
+        let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, compare, notify });
         let m = new Model();
         notify.bind(m).connect(changed);
         p1.set(m, 1);
@@ -532,7 +532,7 @@ describe('patterns/properties', () => {
         let min = 20;
         let max = 50;
         let coerce = (m: Model, v: number) => Math.max(min, Math.min(v, max));
-        let p = new Property<Model, number>({ name: 'p', value: 0, coerce });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce });
         let m = new Model();
         p.set(m, 10);
         expect(p.get(m)).to.be(20);
@@ -549,7 +549,7 @@ describe('patterns/properties', () => {
         let called = false;
         let coerce = (m: Model, v: number) => Math.max(20, v);
         let changed = () => { called = true };
-        let p = new Property<Model, number>({ name: 'p', value: 0, coerce, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce, changed });
         let m = new Model();
         p.coerce(m);
         expect(called).to.be(true);
@@ -560,7 +560,7 @@ describe('patterns/properties', () => {
         let coerce = (m: Model, v: number) => Math.max(20, v);
         let changed = () => { called = true };
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p = new Property<Model, number>({ name: 'p', value: 0, coerce, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce, notify });
         let m = new Model();
         notify.bind(m).connect(changed);
         p.coerce(m);
@@ -573,7 +573,7 @@ describe('patterns/properties', () => {
         let changed2 = () => { result.push('c2'); };
         let coerce = (m: Model, v: number) => Math.max(20, v);
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p = new Property<Model, number>({ name: 'p', value: 0, coerce, changed, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce, changed, notify });
         let m = new Model();
         notify.bind(m).connect(changed2);
         p.coerce(m);
@@ -585,7 +585,7 @@ describe('patterns/properties', () => {
         let newval: number;
         let coerce = (m: Model, v: number) => Math.max(20, v);
         let changed = (m: Model, o: number, n: number) => { oldval = o; newval = n; };
-        let p = new Property<Model, number>({ name: 'p', value: 0, coerce, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce, changed });
         let m = new Model();
         p.coerce(m);
         expect(oldval).to.be(0);
@@ -598,7 +598,7 @@ describe('patterns/properties', () => {
         let create = () => 12;
         let coerce = (m: Model, v: number) => Math.max(20, v);
         let changed = (m: Model, o: number, n: number) => { oldval = o; newval = n; };
-        let p = new Property<Model, number>({ name: 'p', create, coerce, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', create, coerce, changed });
         let m = new Model();
         p.coerce(m);
         expect(oldval).to.be(12);
@@ -611,7 +611,7 @@ describe('patterns/properties', () => {
         let create = () => 12;
         let coerce = (m: Model, v: number) => Math.max(20, v);
         let changed = (m: Model, o: number, n: number) => { oldval = o; newval = n; };
-        let p = new Property<Model, number>({ name: 'p', value: 0, create, coerce, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, create, coerce, changed });
         let m = new Model();
         p.coerce(m);
         expect(oldval).to.be(12);
@@ -621,7 +621,7 @@ describe('patterns/properties', () => {
       it('should not invoke the compare function if there are not listeners', () => {
         let called = false;
         let compare = (v1: number, v2: number) => (called = true,  v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare });
         let m = new Model();
         p.coerce(m);
         expect(called).to.be(false);
@@ -631,7 +631,7 @@ describe('patterns/properties', () => {
         let called = false;
         let changed = () => { };
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare, changed });
         let m = new Model();
         p.coerce(m);
         expect(called).to.be(true);
@@ -641,7 +641,7 @@ describe('patterns/properties', () => {
         let called = false;
         let notify = new Signal<Model, IChangedArgs<number>>();
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare, notify });
         let m = new Model();
         p.coerce(m);
         expect(called).to.be(true);
@@ -652,7 +652,7 @@ describe('patterns/properties', () => {
         let changed = () => { };
         let notify = new Signal<Model, IChangedArgs<number>>();
         let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new Property<Model, number>({ name: 'p', value: 1, compare, changed, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, compare, changed, notify });
         let m = new Model();
         p.coerce(m);
         expect(called).to.be(true);
@@ -661,7 +661,7 @@ describe('patterns/properties', () => {
       it('should not invoke the changed function if the value does not change', () => {
         let called = false;
         let changed = () => { called = true; };
-        let p = new Property<Model, number>({ name: 'p', value: 1, changed });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, changed });
         let m = new Model();
         p.coerce(m);
         expect(called).to.be(false);
@@ -671,7 +671,7 @@ describe('patterns/properties', () => {
         let called = false;
         let changed = () => { called = true; };
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let p = new Property<Model, number>({ name: 'p', value: 1, notify });
+        let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, notify });
         let m = new Model();
         notify.bind(m).connect(changed);
         p.coerce(m);
@@ -685,9 +685,9 @@ describe('patterns/properties', () => {
   describe('clearPropertyData()', () => {
 
     it('should clear all property data for a property owner', () => {
-      let p1 = new Property<Model, number>({ name: 'p1', value: 42 });
-      let p2 = new Property<Model, number>({ name: 'p2', value: 42 });
-      let p3 = new Property<Model, number>({ name: 'p3', value: 42 });
+      let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 42 });
+      let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 42 });
+      let p3 = new AttachedProperty<Model, number>({ name: 'p3', value: 42 });
       let m1 = new Model();
       let m2 = new Model();
       let m3 = new Model();

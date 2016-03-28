@@ -36,7 +36,7 @@ interface IChangedArgs<T> {
  * The options object used to initialize an attached property.
  */
 export
-interface IPropertyOptions<T, U> {
+interface IAttachedPropertyOptions<T, U> {
   /**
    * The human readable name for the property.
    *
@@ -140,13 +140,13 @@ interface IPropertyOptions<T, U> {
  * therefore best used for the storage of rare data.
  */
 export
-class Property<T, U> {
+class AttachedProperty<T, U> {
   /**
    * Construct a new attached property.
    *
    * @param options - The options for initializing the property.
    */
-  constructor(options: IPropertyOptions<T, U>) {
+  constructor(options: IAttachedPropertyOptions<T, U>) {
     this._name = options.name;
     this._value = options.value;
     this._create = options.create;
