@@ -8,7 +8,7 @@
 import expect = require('expect.js');
 
 import {
-  ConflatableMessage, IMessageHandler, IMessageHook, Message, clearMessageData,
+  ConflatableMessage, IMessageHandler, Message, MessageHook, clearMessageData,
   installMessageHook, postMessage, removeMessageHook, sendMessage
 } from '../../../lib/patterns/messaging';
 
@@ -31,14 +31,6 @@ class BadHandler implements IMessageHandler {
 }
 
 
-class BadHook implements IMessageHook {
-
-  hookMessage(handler: IMessageHandler, msg: Message): boolean {
-    throw new Error('hook error');
-  }
-}
-
-
 class GlobalHandler extends Handler {
 
   static messages: string[] = [];
@@ -50,7 +42,7 @@ class GlobalHandler extends Handler {
 }
 
 
-class Hook implements IMessageHook {
+class LogHook {
 
   preventTypes: string[] = [];
 
@@ -58,21 +50,11 @@ class Hook implements IMessageHook {
 
   handlers: IMessageHandler[] = [];
 
-  hookMessage(handler: IMessageHandler, msg: Message): boolean {
+  hook: MessageHook = (handler: IMessageHandler, msg: Message) => {
     this.messages.push(msg.type);
     this.handlers.push(handler);
     return this.preventTypes.indexOf(msg.type) === -1;
-  }
-}
-
-
-class RemovingHook extends Hook {
-
-  hookMessage(handler: IMessageHandler, msg: Message): boolean {
-    let result = super.hookMessage(handler, msg);
-    removeMessageHook(handler, this);
-    return result;
-  }
+  };
 }
 
 
@@ -199,26 +181,26 @@ describe('patterns/messaging', () => {
 
       it('should be called for every message sent to a handler', () => {
         let handler = new Handler();
-        let hook = new Hook();
-        installMessageHook(handler, hook);
+        let logHook = new LogHook();
+        installMessageHook(handler, logHook.hook);
         sendMessage(handler, new Message('one'));
         sendMessage(handler, new Message('two'));
         sendMessage(handler, new Message('three'));
         expect(handler.messages).to.eql(['one', 'two', 'three']);
-        expect(hook.messages).to.eql(['one', 'two', 'three']);
-        expect(hook.handlers.length).to.be(3);
+        expect(logHook.messages).to.eql(['one', 'two', 'three']);
+        expect(logHook.handlers.length).to.be(3);
         for (let i of [0, 1, 2]) {
-          expect(hook.handlers[i]).to.be(handler);
+          expect(logHook.handlers[i]).to.be(handler);
         }
       });
 
       it('should block messages which do not pass the hook', () => {
         let handler1 = new Handler();
         let handler2 = new Handler();
-        let hook = new Hook();
-        hook.preventTypes = ['one', 'two'];
-        installMessageHook(handler1, hook);
-        installMessageHook(handler2, hook);
+        let logHook = new LogHook();
+        logHook.preventTypes = ['one', 'two'];
+        installMessageHook(handler1, logHook.hook);
+        installMessageHook(handler2, logHook.hook);
         sendMessage(handler1, new Message('one'));
         sendMessage(handler2, new Message('one'));
         sendMessage(handler1, new Message('two'));
@@ -227,11 +209,11 @@ describe('patterns/messaging', () => {
         sendMessage(handler2, new Message('three'));
         expect(handler1.messages).to.eql(['three']);
         expect(handler2.messages).to.eql(['three']);
-        expect(hook.messages).to.eql(['one', 'one', 'two', 'two', 'three', 'three']);
-        expect(hook.handlers.length).to.be(6);
+        expect(logHook.messages).to.eql(['one', 'one', 'two', 'two', 'three', 'three']);
+        expect(logHook.handlers.length).to.be(6);
         for (let i of [0, 2, 4]) {
-          expect(hook.handlers[i]).to.be(handler1);
-          expect(hook.handlers[i + 1]).to.be(handler2);
+          expect(logHook.handlers[i]).to.be(handler1);
+          expect(logHook.handlers[i + 1]).to.be(handler2);
         }
       });
 
@@ -261,38 +243,38 @@ describe('patterns/messaging', () => {
 
     it('should first run the message through the message hooks', () => {
       let handler = new Handler();
-      let hook1 = new Hook();
-      let hook2 = new Hook();
-      hook1.preventTypes = ['one'];
-      hook2.preventTypes = ['two'];
-      installMessageHook(handler, hook1);
-      installMessageHook(handler, hook2);
+      let logHook1 = new LogHook();
+      let logHook2 = new LogHook();
+      logHook1.preventTypes = ['one'];
+      logHook2.preventTypes = ['two'];
+      installMessageHook(handler, logHook1.hook);
+      installMessageHook(handler, logHook2.hook);
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
       sendMessage(handler, new Message('three'));
       expect(handler.messages).to.eql(['three']);
-      expect(hook1.messages).to.eql(['one', 'three']);
-      expect(hook2.messages).to.eql(['one', 'two', 'three']);
+      expect(logHook1.messages).to.eql(['one', 'three']);
+      expect(logHook2.messages).to.eql(['one', 'two', 'three']);
     });
 
     it('should stop dispatching on the first `false` hook result', () => {
       let handler = new Handler();
-      let hook1 = new Hook();
-      let hook2 = new Hook();
-      let hook3 = new Hook();
-      hook1.preventTypes = ['one'];
-      hook2.preventTypes = ['one'];
-      hook3.preventTypes = ['one'];
-      installMessageHook(handler, hook1);
-      installMessageHook(handler, hook2);
-      installMessageHook(handler, hook3);
+      let logHook1 = new LogHook();
+      let logHook2 = new LogHook();
+      let logHook3 = new LogHook();
+      logHook1.preventTypes = ['one'];
+      logHook2.preventTypes = ['one'];
+      logHook3.preventTypes = ['one'];
+      installMessageHook(handler, logHook1.hook);
+      installMessageHook(handler, logHook2.hook);
+      installMessageHook(handler, logHook3.hook);
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
       sendMessage(handler, new Message('three'));
       expect(handler.messages).to.eql(['two', 'three']);
-      expect(hook1.messages).to.eql(['two', 'three']);
-      expect(hook2.messages).to.eql(['two', 'three']);
-      expect(hook3.messages).to.eql(['one', 'two', 'three']);
+      expect(logHook1.messages).to.eql(['two', 'three']);
+      expect(logHook2.messages).to.eql(['two', 'three']);
+      expect(logHook3.messages).to.eql(['one', 'two', 'three']);
     });
 
     it('should ignore exceptions in handlers', () => {
@@ -304,7 +286,7 @@ describe('patterns/messaging', () => {
     it('should ignore exceptions in hooks', () => {
       let handler = new Handler();
       let msg = new Message('one');
-      installMessageHook(handler, new BadHook());
+      installMessageHook(handler, (): boolean => { throw ''; });
       expect(() => { sendMessage(handler, msg); }).to.not.throwError();
     });
 
@@ -399,9 +381,9 @@ describe('patterns/messaging', () => {
 
     it('should install a hook for a handler', () => {
       let handler = new Handler();
-      let hook = new Hook();
-      hook.preventTypes = ['one'];
-      installMessageHook(handler, hook);
+      let logHook = new LogHook();
+      logHook.preventTypes = ['one'];
+      installMessageHook(handler, logHook.hook);
       expect(handler.messages).to.eql([]);
       sendMessage(handler, new Message('one'));
       expect(handler.messages).to.eql([]);
@@ -409,34 +391,34 @@ describe('patterns/messaging', () => {
 
     it('should install a new hook in front of any others', () => {
       let handler = new Handler();
-      let hook1 = new Hook();
-      let hook2 = new Hook();
-      hook1.preventTypes = ['one'];
-      hook2.preventTypes = ['two'];
-      installMessageHook(handler, hook1);
+      let logHook1 = new LogHook();
+      let logHook2 = new LogHook();
+      logHook1.preventTypes = ['one'];
+      logHook2.preventTypes = ['two'];
+      installMessageHook(handler, logHook1.hook);
       sendMessage(handler, new Message('two'));
-      installMessageHook(handler, hook2);
+      installMessageHook(handler, logHook2.hook);
       sendMessage(handler, new Message('two'));
       sendMessage(handler, new Message('two'));
       sendMessage(handler, new Message('three'));
       sendMessage(handler, new Message('one'));
       expect(handler.messages).to.eql(['two', 'three']);
-      expect(hook1.messages).to.eql(['two', 'three', 'one']);
-      expect(hook2.messages).to.eql(['two', 'two', 'three', 'one']);
+      expect(logHook1.messages).to.eql(['two', 'three', 'one']);
+      expect(logHook2.messages).to.eql(['two', 'two', 'three', 'one']);
     });
 
     it('should not allow a hook to be installed multiple times', () => {
       let handler = new Handler();
-      let hook1 = new Hook();
-      let hook2 = new Hook();
-      installMessageHook(handler, hook1);
-      installMessageHook(handler, hook2);
-      installMessageHook(handler, hook1);
+      let logHook1 = new LogHook();
+      let logHook2 = new LogHook();
+      installMessageHook(handler, logHook1.hook);
+      installMessageHook(handler, logHook2.hook);
+      installMessageHook(handler, logHook1.hook);
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
       expect(handler.messages).to.eql(['one', 'two']);
-      expect(hook1.messages).to.eql(['one', 'two']);
-      expect(hook2.messages).to.eql(['one', 'two']);
+      expect(logHook1.messages).to.eql(['one', 'two']);
+      expect(logHook2.messages).to.eql(['one', 'two']);
     });
 
   });
@@ -445,50 +427,55 @@ describe('patterns/messaging', () => {
 
     it('should remove a previously installed hook', () => {
       let handler = new Handler();
-      let hook1 = new Hook();
-      let hook2 = new Hook();
-      hook1.preventTypes = ['one'];
-      hook2.preventTypes = ['two'];
+      let logHook1 = new LogHook();
+      let logHook2 = new LogHook();
+      logHook1.preventTypes = ['one'];
+      logHook2.preventTypes = ['two'];
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
-      installMessageHook(handler, hook1);
-      installMessageHook(handler, hook2);
+      installMessageHook(handler, logHook1.hook);
+      installMessageHook(handler, logHook2.hook);
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
-      removeMessageHook(handler, hook2);
-      removeMessageHook(handler, hook1);
+      removeMessageHook(handler, logHook2.hook);
+      removeMessageHook(handler, logHook1.hook);
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
       expect(handler.messages).to.eql(['one', 'two', 'one', 'two']);
-      expect(hook1.messages).to.eql(['one']);
-      expect(hook2.messages).to.eql(['one', 'two']);
+      expect(logHook1.messages).to.eql(['one']);
+      expect(logHook2.messages).to.eql(['one', 'two']);
     });
 
     it('should be a no-op if the hook was not installed', () => {
       let handler = new Handler();
-      let hook = new Hook();
-      hook.preventTypes = ['one'];
+      let logHook = new LogHook();
+      logHook.preventTypes = ['one'];
       sendMessage(handler, new Message('one'));
-      removeMessageHook(handler, hook);
+      removeMessageHook(handler, logHook.hook);
       sendMessage(handler, new Message('one'));
       expect(handler.messages).to.eql(['one', 'one']);
     });
 
     it('should be safe to remove a hook while dispatching', () => {
       let handler = new Handler();
-      let hook1 = new Hook();
-      let hook2 = new RemovingHook();
-      let hook3 = new Hook();
-      installMessageHook(handler, hook1);
-      installMessageHook(handler, hook2);
-      installMessageHook(handler, hook3);
+      let logHook1 = new LogHook();
+      let logHook2 = new LogHook();
+      let logHook3 = new LogHook();
+      let remHook: MessageHook = (handler: IMessageHandler, msg: Message) => {
+        let result = logHook3.hook(handler, msg);
+        removeMessageHook(handler, remHook);
+        return result;
+      };
+      installMessageHook(handler, logHook1.hook);
+      installMessageHook(handler, remHook);
+      installMessageHook(handler, logHook2.hook);
       sendMessage(handler, new Message('one'));
       sendMessage(handler, new Message('two'));
       sendMessage(handler, new Message('three'));
       expect(handler.messages).to.eql(['one', 'two', 'three']);
-      expect(hook1.messages).to.eql(['one', 'two', 'three']);
-      expect(hook2.messages).to.eql(['one']);
-      expect(hook3.messages).to.eql(['one', 'two', 'three']);
+      expect(logHook1.messages).to.eql(['one', 'two', 'three']);
+      expect(logHook3.messages).to.eql(['one']);
+      expect(logHook2.messages).to.eql(['one', 'two', 'three']);
     });
 
   });
@@ -498,8 +485,8 @@ describe('patterns/messaging', () => {
     it('should remove all message data associated with a handler', (done) => {
       let h1 = new Handler();
       let h2 = new Handler();
-      let hook = new Hook();
-      installMessageHook(h1, hook);
+      let logHook = new LogHook();
+      installMessageHook(h1, logHook.hook);
       postMessage(h1, new Message('one'));
       postMessage(h2, new Message('one'));
       postMessage(h1, new Message('two'));
@@ -510,7 +497,7 @@ describe('patterns/messaging', () => {
       defer(() => {
         expect(h1.messages).to.eql([]);
         expect(h2.messages).to.eql(['one', 'two', 'three']);
-        expect(hook.messages).to.eql([]);
+        expect(logHook.messages).to.eql([]);
         done();
       });
     });
