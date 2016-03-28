@@ -11,7 +11,7 @@ import {
 
 
 /**
- * The args object emitted with a change notification signal.
+ * The args object emitted with a property change notification signal.
  */
 export
 interface IChangedArgs<T> {
@@ -129,9 +129,15 @@ interface IPropertyOptions<T, U> {
 /**
  * A class which attaches a value to an external object.
  *
+ * #### Notes
  * Attached properties are used to extend the state of an object with
  * semantic data from an unrelated class. They also encapsulate value
  * creation, coercion, and notification.
+ *
+ * Because attached property values are stored in a hash table, which
+ * in turn is stored in a WeakMap keyed on the owner object, there is
+ * non-trivial storage overhead involved in their use. The pattern is
+ * therefore best used for the storage of rare data.
  */
 export
 class Property<T, U> {
