@@ -323,13 +323,13 @@ type PropertyMap = { [key: string]: any };
 /**
  * A weak mapping of property owner to property map.
  */
-var ownerData = new WeakMap<any, PropertyMap>();
+const ownerData = new WeakMap<any, PropertyMap>();
 
 
 /**
  * A function which computes successive unique property ids.
  */
-var nextPID = (() => {
+const nextPID = (() => {
   let id = 0;
   return () => {
     let rand = Math.random();
