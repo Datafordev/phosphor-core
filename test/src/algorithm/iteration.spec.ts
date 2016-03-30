@@ -40,7 +40,7 @@ describe('algorithm/iteration', () => {
         let wanted = [[0, 1], [1, 2], [2, 4], [3, 8], [4, 16], [5, 32]];
         let enumerated = enumerate<number>(new ArrayIterator(data));
         let cloned = enumerated.clone().iter();
-        expect(toArray<[number, number]>(cloned.clone())).to.eql(wanted);
+        expect(toArray<[number, number]>(cloned)).to.eql(wanted);
       });
 
     });
