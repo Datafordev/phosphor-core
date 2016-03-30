@@ -154,7 +154,7 @@ describe('algorithm/iteration', () => {
     it('should visit every item in an iterable', () => {
       let data = [1, 2, 3, 4, 5];
       let result = 0;
-      each<number>(new ArrayIterator(data), x => result += x)
+      each<number>(new ArrayIterator(data), x => result += x);
       expect(result).to.be(15);
     });
 
