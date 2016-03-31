@@ -625,7 +625,7 @@ class ZipIterator<T> implements IIterator<T[]> {
 /**
  * Iterate over an iterable using a stepped increment.
  *
- * @param iterable - The iterable of values interest.
+ * @param iterable - The iterable of values of interest.
  *
  * @param step - The distance to step on each iteration. A value
  *   of less than `1` will behave the same as a value of `1`.
@@ -646,7 +646,7 @@ class StrideIterator<T> implements IIterator<T> {
   /**
    * Construct a new stride iterator.
    *
-   * @param source - The iterator of values interest.
+   * @param source - The iterator of values of interest.
    *
    * @param step - The distance to step on each iteration. A value
    *   of less than `1` will behave the same as a value of `1`.
