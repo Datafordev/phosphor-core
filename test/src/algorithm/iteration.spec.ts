@@ -63,7 +63,6 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.be(data[4]);
         expect(iterator.next()).to.be(data[5]);
         expect(iterator.next()).to.be(void 0);
-        expect(iterator.next()).to.be(void 0);
       });
 
     });
@@ -120,7 +119,6 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.eql(wanted[3]);
         expect(iterator.next()).to.eql(wanted[4]);
         expect(iterator.next()).to.eql(wanted[5]);
-        expect(iterator.next()).to.be(void 0);
         expect(iterator.next()).to.be(void 0);
       });
 
@@ -179,7 +177,6 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.be(wanted[0]);
         expect(iterator.next()).to.be(wanted[1]);
         expect(iterator.next()).to.be(wanted[2]);
-        expect(iterator.next()).to.be(void 0);
         expect(iterator.next()).to.be(void 0);
       });
 
@@ -242,7 +239,6 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.be(wanted[4]);
         expect(iterator.next()).to.be(wanted[5]);
         expect(iterator.next()).to.be(void 0);
-        expect(iterator.next()).to.be(void 0);
       });
 
     });
@@ -300,7 +296,6 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.be(wanted[0]);
         expect(iterator.next()).to.be(wanted[1]);
         expect(iterator.next()).to.be(wanted[2]);
-        expect(iterator.next()).to.be(void 0);
         expect(iterator.next()).to.be(void 0);
       });
 
@@ -408,7 +403,6 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.eql(wanted[2]);
         expect(iterator.next()).to.eql(wanted[3]);
         expect(iterator.next()).to.eql(wanted[4]);
-        expect(iterator.next()).to.be(void 0);
         expect(iterator.next()).to.be(void 0);
       });
 
