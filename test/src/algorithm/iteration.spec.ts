@@ -20,10 +20,55 @@ describe('algorithm/iteration', () => {
 
     describe('#constructor()', () => {
 
-      it('should create an array iterator from a source', () => {
+      it('should accept an array data source', () => {
+        let it = new ArrayIterator([0, 1, 2, 3, 4, 5]);
+        expect(it).to.be.an(ArrayIterator);
+      });
+
+      it('should accept an optional start index', () => {
+        let it = new ArrayIterator([0, 1, 2, 3, 4, 5], 2);
+        expect(it).to.be.an(ArrayIterator);
+      });
+
+    });
+
+    describe('#source', () => {
+
+      it('should be the array data source', () => {
         let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator(data);
-        expect(toArray<number>(iterator)).to.eql(data);
+        let it = new ArrayIterator(data);
+        expect(it.source).to.be(data);
+      });
+
+      it('should be writable', () => {
+        let data = [0, 1, 2, 3, 4, 5];
+        let it = new ArrayIterator([]);
+        expect(it.source).to.not.be(data);
+        it.source = data;
+        expect(it.source).to.be(data);
+      });
+
+    });
+
+    describe('#index', () => {
+
+      it('should be the iteration index', () => {
+        let it = new ArrayIterator([0, 1, 2, 3, 4, 5], 2);
+        expect(it.index).to.be(2);
+        it.next();
+        expect(it.index).to.be(3);
+      });
+
+      it('should default to zero', () => {
+        let it = new ArrayIterator([0, 1, 2, 3, 4, 5]);
+        expect(it.index).to.be(0);
+      });
+
+      it('should be writable', () => {
+        let it = new ArrayIterator([0, 1, 2, 3, 4, 5]);
+        expect(it.index).to.be(0);
+        it.index = 4;
+        expect(it.index).to.be(4);
       });
 
     });
@@ -32,21 +77,24 @@ describe('algorithm/iteration', () => {
 
       it('should create a clone from the original iterator', () => {
         let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator(data);
-        let cloned = iterator.clone();
-        expect(cloned).to.be.an(ArrayIterator);
-        expect(toArray<number>(cloned)).to.eql(data);
+        let it = new ArrayIterator(data);
+        it.next();
+        it.next();
+        let cl = it.clone();
+        expect(cl).to.be.an(ArrayIterator);
+        let a1 = toArray(it);
+        let a2 = toArray(cl);
+        expect(a1).to.eql(data.slice(2));
+        expect(a1).to.eql(a2);
       });
 
     });
 
     describe('#iter()', () => {
 
-      it('should return an interator', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator(data);
-        expect(iterator.iter()).to.be.an(ArrayIterator);
-        expect(toArray<number>(iterator.iter())).to.eql(data);
+      it('should return `this`', () => {
+        let it = new ArrayIterator([0, 1, 2, 3, 4, 5]);
+        expect(it.iter()).to.be(it);
       });
 
     });
@@ -55,14 +103,32 @@ describe('algorithm/iteration', () => {
 
       it('should return the next item in an iterator', () => {
         let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator(data);
-        expect(iterator.next()).to.be(data[0]);
-        expect(iterator.next()).to.be(data[1]);
-        expect(iterator.next()).to.be(data[2]);
-        expect(iterator.next()).to.be(data[3]);
-        expect(iterator.next()).to.be(data[4]);
-        expect(iterator.next()).to.be(data[5]);
-        expect(iterator.next()).to.be(void 0);
+        let it = new ArrayIterator(data);
+        expect(it.next()).to.be(data[0]);
+        expect(it.next()).to.be(data[1]);
+        expect(it.next()).to.be(data[2]);
+        expect(it.next()).to.be(data[3]);
+        expect(it.next()).to.be(data[4]);
+        expect(it.next()).to.be(data[5]);
+        expect(it.next()).to.be(void 0);
+      });
+
+      it('should iterate from the given index', () => {
+        let data = [0, 1, 2, 3, 4, 5];
+        let it = new ArrayIterator(data, 4);
+        expect(it.next()).to.be(data[4]);
+        expect(it.next()).to.be(data[5]);
+        expect(it.next()).to.be(void 0);
+        it.index = 0;
+        expect(it.next()).to.be(data[0]);
+        expect(it.next()).to.be(data[1]);
+        expect(it.next()).to.be(data[2]);
+        expect(it.next()).to.be(data[3]);
+        expect(it.next()).to.be(data[4]);
+        expect(it.next()).to.be(data[5]);
+        expect(it.next()).to.be(void 0);
+        it.index = 99;
+        expect(it.next()).to.be(void 0);
       });
 
     });
