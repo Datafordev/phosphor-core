@@ -824,13 +824,27 @@ describe('algorithm/iteration', () => {
 
   describe('reduce<T, U>()', () => {
 
-    it('should reduce items in an iterable into an accumulator', () => {
+    it('should reduce items in an iterable into an accumulated number', () => {
       let data = [1, 2, 3, 4, 5];
       let iterator = new ArrayIterator(data, 0);
       let reducer = (a: number, x: number, i: number) => a + x;
       let accumulator = 0;
       let sum = reduce<number, number>(iterator, reducer, accumulator);
       expect(sum).to.be(15);
+    });
+
+    it('should reduce items in an iterable into an accumulated object', () => {
+      type accumulated = {[key: string]: number};
+      let data = [1, 2, 3, 4, 5];
+      let iterator = new ArrayIterator(data);
+      let reducer = (a: accumulated, x: number, i: number) => {
+        a[`${i}`] = x;
+        return a;
+      };
+      let accumulator: accumulated = Object.create(null);
+      let want = { '0': 1, '1': 2, '2': 3, '3': 4, '4': 5 };
+      let sum = reduce<number, accumulated>(iterator, reducer, accumulator);
+      expect(sum).to.eql(want);
     });
 
   });
