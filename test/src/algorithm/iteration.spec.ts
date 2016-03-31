@@ -421,7 +421,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('each<T>()', () => {
+  describe('each()', () => {
 
     it('should visit every item in an iterable', () => {
       let data = [1, 2, 3, 4, 5];
@@ -432,7 +432,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('enumerate<T>()', () => {
+  describe('enumerate()', () => {
 
     it('should return an enumerate iterator', () => {
       let data = [1, 2, 4, 8, 16, 32];
@@ -442,7 +442,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('every<T>()', () => {
+  describe('every()', () => {
 
     it('should verify all items in an iterable satisfy a condition', () => {
       let data = [1, 2, 3, 4, 5];
@@ -454,7 +454,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('filter<T>()', () => {
+  describe('filter()', () => {
 
     it('should return a filtered iterator', () => {
       let data = [0, 1, 2, 3, 4, 5];
@@ -464,7 +464,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('map<T, U>()', () => {
+  describe('map()', () => {
 
     it('should return a transformed iterator', () => {
       let data = [0, 1, 2, 3, 4, 5];
@@ -474,7 +474,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('some<T>()', () => {
+  describe('some()', () => {
 
     it('should verify some items in an iterable satisfy a condition', () => {
       let data = [1, 2, 3, 4, 5];
@@ -486,7 +486,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('stride<T>()', () => {
+  describe('stride()', () => {
 
     it('should return an iterator with stepped values of the source', () => {
       let data = [0, 1, 2, 3, 4, 5];
@@ -496,7 +496,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('zip<T>()', () => {
+  describe('zip()', () => {
 
     it('should return an iterator with transposed values sources', () => {
       let dataA = new ArrayIterator([1, 2, 3, 4, 5]);
