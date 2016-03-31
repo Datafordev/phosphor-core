@@ -10,7 +10,7 @@ import expect = require('expect.js');
 import {
   ArrayIterator, EnumerateIterator, FilterIterator, MapIterator,
   StrideIterator, ZipIterator, each, enumerate, every, filter, iter, map,
-  some, stride, toArray, zip
+  reduce, some, stride, toArray, zip
 } from '../../../lib/algorithm/iteration';
 
 
@@ -822,7 +822,20 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('some()', () => {
+  describe('reduce<T, U>()', () => {
+
+    it('should reduce items in an iterable into an accumulator', () => {
+      let data = [1, 2, 3, 4, 5];
+      let iterator = new ArrayIterator(data, 0);
+      let reducer = (a: number, x: number, i: number) => a + x;
+      let accumulator = 0;
+      let sum = reduce<number, number>(iterator, reducer, accumulator);
+      expect(sum).to.be(15);
+    });
+
+  });
+
+  describe('some<T>()', () => {
 
     it('should verify some items in an iterable satisfy a condition', () => {
       let data = [1, 2, 3, 4, 5];

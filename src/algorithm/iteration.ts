@@ -255,6 +255,31 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
 
 
 /**
+ * Summarize all values in an iterable using a reducer function.
+ *
+ * @param iterable - The iterable of values of interest.
+ *
+ * @param fn - The reducer function to invoke for each value in the
+ *   iterable. It returns a new accumulator value.
+ *
+ * @param accumulator - The initial value for the accumulator passed
+ *   to the reducer function.
+ *
+ * @returns the accumulated value.
+ */
+export
+function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T, index: number) => U, accumulator: U): U {
+  let value: T;
+  let it = iter(iterable);
+  let index = 0;
+  while ((value = it.next()) !== void 0) {
+    accumulator = fn(accumulator, value, index++);
+  }
+  return accumulator;
+}
+
+
+/**
  * Test whether any value in an iterable satisfies a predicate.
  *
  * @param iterable - The iterable of values of interest.
