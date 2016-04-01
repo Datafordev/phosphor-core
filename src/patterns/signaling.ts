@@ -8,6 +8,25 @@
 
 
 /**
+ * A type alias for a slot function.
+ *
+ * @param T - The type of the sender.
+ *
+ * @param U - The type of the signal args.
+ *
+ * #### Notes
+ * A slot function is invoked when a signal to which it is connected is
+ * emitted.
+ *
+ * The signal `args` are typically the most important information for a
+ * slot. Therefore, the `sender` is passed as the second argument so it
+ * can be easily ignored when not needed.
+ */
+export
+type Slot<T, U> = (args: U, sender: T) => void;
+
+
+/**
  * An object used for type-safe inter-object communication.
  *
  * #### Notes
@@ -67,7 +86,9 @@
 export
 class Signal<T, U> {
   /**
-   * Connect a slot function to the signal.
+   * Connect a slot to the signal.
+   *
+   * @param sender - The object emitting the signal.
    *
    * @param slot - The function to invoke when the signal is emitted.
    *   It will be passed the emitted args and the sender object.
@@ -97,12 +118,14 @@ class Signal<T, U> {
    * SomeClass.valueChanged.connect(someObject, myCallback);
    * ```
    */
-  connect(sender: T, slot: (args: U, sender: T) => void, thisArg?: any): boolean {
+  connect(sender: T, slot: Slot<T, U>, thisArg?: any): boolean {
     return connect(sender, this._sid, slot, thisArg);
   }
 
   /**
-   * Disconnect a slot function from the signal.
+   * Disconnect a slot from the signal.
+   *
+   * @param sender - The object emitting the signal.
    *
    * @param slot - The slot function connected to the signal.
    *
@@ -126,12 +149,12 @@ class Signal<T, U> {
    * SomeClass.valueChanged.disconnect(someObject, myCallback);
    * ```
    */
-  disconnect(sender: T, slot: (args: U, sender: T) => void, thisArg?: any): boolean {
+  disconnect(sender: T, slot: Slot<T, U>, thisArg?: any): boolean {
     return disconnect(sender, this._sid, slot, thisArg);
   }
 
   /**
-   * Emit a signal and invoke the connected slot functions.
+   * Emit a signal and invoke the connected slots.
    *
    * @param sender - The object emitting the signal.
    *
@@ -160,7 +183,7 @@ class Connection {
   /**
    * The slot connected to the signal.
    */
-  slot: Function = null;
+  slot: Slot<any, any> = null;
 
   /**
    * The `this` context for the slot.
@@ -247,18 +270,149 @@ function ensureMap(owner: any): IConnectionMap {
 
 
 /**
+ * Connect a slot to a signal.
  *
+ * @param sender - The object emitting the signal.
+ *
+ * @param sid - The unique id of the signal.
+ *
+ * @param slot - The slot to connect to the signal.
+ *
+ * @param thisArg - The `this` context for the slot.
+ *
+ * @returns `true` if the connection succeeds, `false` otherwise.
+ *
+ * #### Notes
+ * Connected slots are invoked synchronously, in the order in which
+ * they are connected.
+ *
+ * Signal connections are unique. If a connection already exists for
+ * the given `slot` and `thisArg`, this function returns `false`.
+ *
+ * A newly connected slot will not be invoked until the next time the
+ * signal is emitted, even if the slot is connected while the signal
+ * is being emitted.
  */
-function connect(sender: any, sid: string, slot: Function, thisArg?: any): boolean {
-  return false;
+function connect(sender: any, sid: string, slot: Slot<any, any>, thisArg?: any): boolean {
+  // Coerce a `null` thisArg to `undefined`.
+  thisArg = thisArg || void 0;
+
+  // Check if a connection already exists, and bail if found.
+  let senderMap = ensureMap(sender);
+  let head = senderMap[sid] || null;
+  for (let conn = head; conn !== null; conn = conn.nextReceiver) {
+    if (conn.slot === slot && conn.thisArg === thisArg) {
+      return false;
+    }
+  }
+
+  // Create a new connection.
+  let conn = new Connection();
+  conn.slot = slot;
+  conn.thisArg = thisArg;
+
+  // Add the connection to the sender's list of receivers.
+  conn.nextReceiver = head;
+  senderMap[sid] = conn;
+
+  // Add the connection to the receiver's list of senders.
+  let receiverMap = ensureMap(thisArg || slot);
+  conn.nextSender = receiverMap.senders || null;
+  receiverMap.senders = conn;
+
+  // Indicate a successful connection.
+  return true;
 }
 
 
 /**
+ * Disconnect a slot from a signal.
  *
+ * @param sender - The object emitting the signal.
+ *
+ * @param sid - The unique id of the signal.
+ *
+ * @param slot - The slot to disconnect from the signal.
+ *
+ * @param thisArg - The `this` context for the slot.
+ *
+ * @returns `true` if the connection is removed, `false` otherwise.
+ *
+ * #### Notes
+ * A disconnected slot will no longer be invoked, even if the slot
+ * is disconnected while the signal is being emitted.
+ *
+ * If no connection exists for the given `slot` and `thisArg`, this
+ * function returns `false`.
  */
-function disconnect(sender: any, sid: string, slot: Function, thisArg?: any): boolean {
-  return false;
+function disconnect(sender: any, sid: string, slot: Slot<any, any>, thisArg?: any): boolean {
+  // Coerce a `null` thisArg to `undefined`.
+  thisArg = thisArg || void 0;
+
+  // Lookup the sender map.
+  let senderMap = ownerData.get(sender);
+  if (senderMap === void 0) {
+    return false;
+  }
+
+  // Lookup the head of the receiver list.
+  let head = senderMap[sid];
+  if (head === void 0) {
+    return false;
+  }
+
+  // Setup a variable to store the removed connection.
+  let target: Connection = null;
+
+  // Remove the connection from the sender's list of receivers.
+  let rConn = head;
+  let rPrev: Connection = null;
+  for (; rConn !== null; rPrev = rConn, rConn = rConn.nextReceiver) {
+    if (rConn.slot === slot && rConn.thisArg === thisArg) {
+      if (rPrev === null && rConn.nextReceiver === null) {
+        delete senderMap[sid];
+      } else if (rPrev === null) {
+        senderMap[sid] = rConn.nextReceiver;
+      } else {
+        rPrev.nextReceiver = rConn.nextReceiver;
+      }
+      target = rConn;
+      break;
+    }
+  }
+
+  // Bail if the connection was not found.
+  if (target === null) {
+    return false;
+  }
+
+  // Lookup the receiver map, which is guaranteed to exist.
+  let receiverMap = ownerData.get(thisArg || slot);
+
+  // Remove the connection from the receiver's list of senders.
+  let sPrev: Connection = null;
+  let sConn = receiverMap.senders || null;
+  for (; sConn !== null; sPrev = sConn, sConn = sConn.nextSender) {
+    if (sConn === target) {
+      if (sPrev === null && sConn.nextSender === null) {
+        delete receiverMap.senders;
+      } else if (sPrev === null) {
+        receiverMap.senders = sConn.nextSender;
+      } else {
+        sPrev.nextSender = sConn.nextSender;
+      }
+      break;
+    }
+  }
+
+  // Clear the content of the target connection.
+  target.slot = null;
+  target.thisArg = null;
+  target.nextSender = null;
+  target.nextReceiver = null;
+
+  // Indicate successful disconnection.
+  return true;
 }
 
 
