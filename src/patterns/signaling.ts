@@ -10,20 +10,13 @@
 /**
  * A type alias for a slot function.
  *
- * @param T - The type of the sender.
- *
- * @param U - The type of the signal args.
+ * @param args - The args object emitted with the signal.
  *
  * #### Notes
- * A slot function is invoked when a signal to which it is connected is
- * emitted.
- *
- * The signal `args` are typically the most important information for a
- * slot. Therefore, the `sender` is passed as the second argument so it
- * can be easily ignored when not needed.
+ * A slot is invoked when a signal to which it is connected is emitted.
  */
 export
-type Slot<T, U> = (args: U, sender: T) => void;
+type Slot<T> = (args: T) => void;
 
 
 /**
@@ -69,7 +62,8 @@ type Slot<T, U> = (args: U, sender: T) => void;
  *   export const valueChanged = new Signal<MyClass, number>();
  * }
  *
- * function logger(value: number, sender: MyClass): void {
+ * function logger(value: number): void {
+     let sender = MyClass.valueChanged.sender();
  *   console.log(sender.name, value);
  * }
  *
@@ -90,11 +84,10 @@ class Signal<T, U> {
    *
    * @param sender - The object emitting the signal.
    *
-   * @param slot - The function to invoke when the signal is emitted.
-   *   It will be passed the emitted args and the sender object.
+   * @param slot - The slot to invoke when the signal is emitted.
    *
-   * @param thisArg - The object to use as the `this` context in the
-   *   function. If provided, this must be a non-primitive object.
+   * @param thisArg - The `this` context for the slot. If provided,
+   *   this must be a non-primitive object.
    *
    * @returns `true` if the connection succeeds, `false` otherwise.
    *
@@ -107,7 +100,7 @@ class Signal<T, U> {
    *
    * A newly connected slot will not be invoked until the next time the
    * signal is emitted, even if the slot is connected while the signal
-   * is being emitted.
+   * is dispatching.
    *
    * #### Example
    * ```typescript
@@ -118,7 +111,7 @@ class Signal<T, U> {
    * SomeClass.valueChanged.connect(someObject, myCallback);
    * ```
    */
-  connect(sender: T, slot: Slot<T, U>, thisArg?: any): boolean {
+  connect(sender: T, slot: Slot<U>, thisArg?: any): boolean {
     return connect(sender, this._sid, slot, thisArg);
   }
 
@@ -127,15 +120,16 @@ class Signal<T, U> {
    *
    * @param sender - The object emitting the signal.
    *
-   * @param slot - The slot function connected to the signal.
+   * @param slot - The slot to disconnect from the signal.
    *
-   * @param thisArg - The `this` context for the slot function.
+   * @param thisArg - The `this` context for the slot. If provided,
+   *   this must be a non-primitive object.
    *
    * @returns `true` if the connection is removed, `false` otherwise.
    *
    * #### Notes
    * A disconnected slot will no longer be invoked, even if the slot
-   * is disconnected while the signal is being emitted.
+   * is disconnected while the signal is dispatching.
    *
    * If no connection exists for the given `slot` and `thisArg`, this
    * method returns `false`.
@@ -149,16 +143,16 @@ class Signal<T, U> {
    * SomeClass.valueChanged.disconnect(someObject, myCallback);
    * ```
    */
-  disconnect(sender: T, slot: Slot<T, U>, thisArg?: any): boolean {
+  disconnect(sender: T, slot: Slot<U>, thisArg?: any): boolean {
     return disconnect(sender, this._sid, slot, thisArg);
   }
 
   /**
-   * Emit a signal and invoke the connected slots.
+   * Emit the signal and invoke the connected slots.
    *
    * @param sender - The object emitting the signal.
    *
-   * @param args - The args object to pass to the slots.
+   * @param args - The args to pass to the connected slots.
    *
    * #### Notes
    * Exceptions thrown by connected slots will be caught and logged.
@@ -169,10 +163,28 @@ class Signal<T, U> {
    * ```
    */
   emit(sender: T, args: U): void {
+    let old = this._sender;
+    this._sender = sender;
     emit(sender, this._sid, args);
+    this._sender = old;
+  }
+
+  /**
+   * Get the object currently emitting the signal.
+   *
+   * @returns The object which is currently emitting this signal,
+   *   or null if the signal is not being emitted.
+   *
+   * #### Notes
+   * If the signal is recursively emitted, the result will be the
+   * sender in the stack frame of the most recent call to `emit`.
+   */
+  sender(): T {
+    return this._sender;
   }
 
   private _sid = nextSID();
+  private _sender: T = null;
 }
 
 
@@ -183,7 +195,7 @@ class Connection {
   /**
    * The slot connected to the signal.
    */
-  slot: Slot<any, any> = null;
+  slot: Slot<any> = null;
 
   /**
    * The `this` context for the slot.
@@ -256,9 +268,7 @@ const nextSID = (() => {
 
 
 /**
- * Lookup the connection map for a connection owner.
- *
- * This will create the map if one does not already exist.
+ * Lookup the connection map for an owner, creating it if needed.
  */
 function ensureMap(owner: any): IConnectionMap {
   let map = ownerData.get(owner);
@@ -291,9 +301,9 @@ function ensureMap(owner: any): IConnectionMap {
  *
  * A newly connected slot will not be invoked until the next time the
  * signal is emitted, even if the slot is connected while the signal
- * is being emitted.
+ * is dispatching.
  */
-function connect(sender: any, sid: string, slot: Slot<any, any>, thisArg?: any): boolean {
+function connect(sender: any, sid: string, slot: Slot<any>, thisArg?: any): boolean {
   // Coerce a `null` thisArg to `undefined`.
   thisArg = thisArg || void 0;
 
@@ -340,12 +350,12 @@ function connect(sender: any, sid: string, slot: Slot<any, any>, thisArg?: any):
  *
  * #### Notes
  * A disconnected slot will no longer be invoked, even if the slot
- * is disconnected while the signal is being emitted.
+ * is disconnected while the signal is dispatching.
  *
  * If no connection exists for the given `slot` and `thisArg`, this
  * function returns `false`.
  */
-function disconnect(sender: any, sid: string, slot: Slot<any, any>, thisArg?: any): boolean {
+function disconnect(sender: any, sid: string, slot: Slot<any>, thisArg?: any): boolean {
   // Coerce a `null` thisArg to `undefined`.
   thisArg = thisArg || void 0;
 
@@ -442,7 +452,7 @@ function emit(sender: any, sid: string, args: any): void {
   }
 
   // Dispatch the slots for the for the signal.
-  recursiveEmit(conn, sender, args);
+  recursiveDispatch(conn, args);
 }
 
 
@@ -451,22 +461,20 @@ function emit(sender: any, sid: string, args: any): void {
  *
  * @param conn - A connection in the list of receivers.
  *
- * @param sender - The sender object emitting the signal.
- *
  * @param args - The arguments emitted with the signal.
  *
  * #### Notes
  * This function recursively traverses the list and invokes the last
  * connection in the list first. This has the effect of capturing a
- * snapshot of the list in the recursive stack frames. As the stack
- * unwinds, any non-empty connection is invoked.
+ * snapshot of the list in the stack frames. As the stack unwinds,
+ * any non-empty connection is invoked.
  */
-function recursiveEmit(conn: Connection, sender: any, args: any): void {
+function recursiveDispatch(conn: Connection, args: any): void {
   if (conn.nextReceiver !== null) {
-    recursiveEmit(conn.nextReceiver, sender, args);
+    recursiveDispatch(conn.nextReceiver, args);
   }
   if (conn.slot !== null) {
-    invokeSlot(conn, sender, args);
+    invokeSlot(conn, args);
   }
 }
 
@@ -476,16 +484,14 @@ function recursiveEmit(conn: Connection, sender: any, args: any): void {
  *
  * @param conn - The connection which holds the slot.
  *
- * @param sender - The sender object emitting the signal.
- *
  * @param args - The arguments emitted with the signal.
  *
  * #### Notes
  * Any exception thrown by the slot will be caught and logged.
  */
-function invokeSlot(conn: Connection, sender: any, args: any): void {
+function invokeSlot(conn: Connection, args: any): void {
   try {
-    conn.slot.call(conn.thisArg, args, sender);
+    conn.slot.call(conn.thisArg, args);
   } catch (err) {
     console.error(err);
   }
