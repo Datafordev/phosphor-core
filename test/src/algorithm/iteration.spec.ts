@@ -829,7 +829,7 @@ describe('algorithm/iteration', () => {
       let iterator = iter(data);
       let reducer = (a: number, x: number) => a + x;
       let initialValue = 0;
-      let sum = reduce<number, number>(iterator, reducer, initialValue);
+      let sum = reduce(iterator, reducer, initialValue);
       expect(sum).to.be(15);
     });
 
@@ -852,7 +852,7 @@ describe('algorithm/iteration', () => {
         let iterator = iter(data);
         let reducer = (a: number, x: number) => a + x;
         let reduced = () => {
-          return reduce<number, number>(iterator, reducer);
+          return reduce(iterator, reducer);
         };
         expect(reduced).to.throwError(error => {
           expect(error).to.be.a(TypeError);
@@ -865,7 +865,7 @@ describe('algorithm/iteration', () => {
       let iterator = iter(data);
       let reducer = (a: number, x: number) => a + x;
       let initialValue = 0;
-      let result = reduce<number, number>(iterator, reducer, initialValue);
+      let result = reduce(iterator, reducer, initialValue);
       expect(result).to.be(data.reduce(reducer, initialValue));
     });
 
@@ -874,7 +874,7 @@ describe('algorithm/iteration', () => {
         let data = [9];
         let iterator = iter(data);
         let reducer = (a: number, x: number) => a + x;
-        let result = reduce<number, number>(iterator, reducer);
+        let result = reduce(iterator, reducer);
         expect(result).to.be(data.reduce(reducer));
       }
     );
@@ -885,7 +885,7 @@ describe('algorithm/iteration', () => {
         let iterator = iter(data);
         let reducer = (a: number, x: number) => a + x;
         let initialValue = 1;
-        let result = reduce<number, number>(iterator, reducer, initialValue);
+        let result = reduce(iterator, reducer, initialValue);
         expect(result).to.be(data.reduce(reducer, initialValue));
       }
     );
@@ -895,7 +895,7 @@ describe('algorithm/iteration', () => {
         let data = [1, 2];
         let iterator = iter(data);
         let reducer = (a: number, x: number) => a + x;
-        let result = reduce<number, number>(iterator, reducer);
+        let result = reduce(iterator, reducer);
         expect(result).to.be(data.reduce(reducer));
       }
     );
