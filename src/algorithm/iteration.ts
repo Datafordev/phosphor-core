@@ -285,17 +285,16 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
  *
  * If iterator has multiple items and no initial value is supplied,
  * the first time the reducer function is called, its accumulator argument
- * is the iterator's first item, its second argument is the iterator's
- * next item, and its third argument is the index value 1.
+ * is the iterator's first item and its second argument is the iterator's
+ * next item.
  */
 export
-function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T, index: number) => U, initialValue?: U): U {
+function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T) => U, initialValue?: U): U {
   let it = iter(iterable);
   let first = it.next();
   let second: T;
   let next: T;
   let accumulator = initialValue;
-  let index = 0;
 
   // If iterator is empty, initial value is required and is what reduce returns.
   if (first === void 0 && initialValue === void 0) {
@@ -319,24 +318,24 @@ function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T, inde
   // the reducer function is invoked and reduce returns that invocations's
   // return value.
   if (second === void 0) {
-    return fn(initialValue, first, index);
+    return fn(initialValue, first);
   }
 
   // If iterator has multiple items and no initial value is supplied,
   // the first time the reducer function is called, its accumulator argument
-  // is the iterator's first item, its second argument is the iterator's
-  // next item, and its third argument is the index value 1.
+  // is the iterator's first item and its second argument is the iterator's
+  // next item.
   //
   // Otherwise, because first and second have already been captured from the
   // iterator, they must be used to calculate the current accumulated value.
   if (initialValue === void 0) {
-    accumulator = fn(first as any, second, ++index);
+    accumulator = fn(first as any, second);
   } else {
-    accumulator = fn(fn(initialValue, first, index++), second, index++);
+    accumulator = fn(fn(initialValue, first), second);
   }
 
   while ((next = it.next()) !== void 0) {
-    accumulator = fn(accumulator, next, index++);
+    accumulator = fn(accumulator, next);
   }
   return accumulator;
 }
