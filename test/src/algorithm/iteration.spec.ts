@@ -828,8 +828,8 @@ describe('algorithm/iteration', () => {
       let data = [1, 2, 3, 4, 5];
       let iterator = iter(data);
       let reducer = (a: number, x: number, i: number) => a + x;
-      let accumulator = 0;
-      let sum = reduce<number, number>(iterator, reducer, accumulator);
+      let initialValue = 0;
+      let sum = reduce<number, number>(iterator, reducer, initialValue);
       expect(sum).to.be(15);
     });
 
@@ -840,11 +840,65 @@ describe('algorithm/iteration', () => {
         a[`${i}`] = x;
         return a;
       };
-      let accumulator: {[key: string]: number} = Object.create(null);
+      let initialValue: {[key: string]: number} = Object.create(null);
       let want = { '0': 1, '1': 2, '2': 3, '3': 4, '4': 5 };
-      let sum = reduce(iterator, reducer, accumulator);
+      let sum = reduce(iterator, reducer, initialValue);
       expect(sum).to.eql(want);
     });
+
+    it('should throw if iterator is empty and' +
+      ' initial value is undefined', () => {
+        let data: Array<number> = [];
+        let iterator = iter(data);
+        let reducer = (a: number, x: number, i: number) => a + x;
+        let reduced = () => {
+          return reduce<number, number>(iterator, reducer);
+        };
+        expect(reduced).to.throwError(error => {
+          expect(error).to.be.a(TypeError);
+        });
+      }
+    );
+
+    it('should return initial value if iterator is empty', () => {
+      let data: Array<number> = [];
+      let iterator = iter(data);
+      let reducer = (a: number, x: number, i: number) => a + x;
+      let initialValue = 0;
+      let result = reduce<number, number>(iterator, reducer, initialValue);
+      expect(result).to.be(data.reduce(reducer, initialValue));
+    });
+
+    it('should return first item if initial value is undefined and' +
+      ' iterator only has one item', () => {
+        let data = [9];
+        let iterator = iter(data);
+        let reducer = (a: number, x: number, i: number) => a + x;
+        let result = reduce<number, number>(iterator, reducer);
+        expect(result).to.be(data.reduce(reducer));
+      }
+    );
+
+    it('should return value of reducer call if initial value is defined and' +
+      ' iterator only has one item', () => {
+        let data = [9];
+        let iterator = iter(data);
+        let reducer = (a: number, x: number, i: number) => a + x;
+        let initialValue = 1;
+        let result = reduce<number, number>(iterator, reducer, initialValue);
+        expect(result).to.be(data.reduce(reducer, initialValue));
+      }
+    );
+
+    it('should use first and second iterator values as reducer arguments' +
+      ' values if initial value is undefined', () => {
+        let data = [1, 2];
+        let iterator = iter(data);
+        let reducer = (a: number, x: number, i: number) => a + x;
+        let result = reduce<number, number>(iterator, reducer);
+        expect(result).to.be(data.reduce(reducer));
+      }
+    );
 
   });
 

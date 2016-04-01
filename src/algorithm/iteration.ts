@@ -262,18 +262,82 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
  * @param fn - The reducer function to invoke for each value in the
  *   iterable. It returns a new accumulator value.
  *
- * @param accumulator - The initial value for the accumulator passed
+ * @param initialValue - The initial value for the accumulator passed
  *   to the reducer function.
  *
  * @returns the accumulated value.
+ *
+ * #### Notes
+ * The reduce function follows the conventions of the browser native function
+ * Array.prototype.reduce, the following rules apply:
+ *
+ * If iterator is empty, initial value is required and is what reduce returns.
+ *
+ * If iterator is empty and no initial value is supplied,
+ * reduce will throw a type error.
+ *
+ * If iterator contains only a single item and no initial value is supplied,
+ * the reducer function is never invoked and reduce returns the sole item.
+ *
+ * If iterator contains only a single item and an initial value is supplied,
+ * the reducer function is invoked and reduce returns that invocations's
+ * return value.
+ *
+ * If iterator has multiple items and no initial value is supplied,
+ * the first time the reducer function is called, its accumulator argument
+ * is the iterator's first item, its second argument is the iterator's
+ * next item, and its third argument is the index value 1.
  */
 export
-function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T, index: number) => U, accumulator: U): U {
-  let value: T;
+function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T, index: number) => U, initialValue?: U): U {
   let it = iter(iterable);
+  let first = it.next();
+  let second: T;
+  let next: T;
+  let accumulator = initialValue;
   let index = 0;
-  while ((value = it.next()) !== void 0) {
-    accumulator = fn(accumulator, value, index++);
+
+  // If iterator is empty, initial value is required and is what reduce returns.
+  if (first === void 0 && initialValue === void 0) {
+    throw new TypeError('Cannot reduce empty iterator without initial value.');
+  }
+
+  // If iterator is empty and no initial value is supplied,
+  // reduce will throw a type error.
+  if (first === void 0) {
+    return initialValue;
+  }
+
+  // If iterator contains only a single item and no initial value is supplied,
+  // the reducer function is never invoked and reduce returns the sole item.
+  second = it.next();
+  if (second === void 0 && initialValue === void 0) {
+    return first as any;
+  }
+
+  // If iterator contains only a single item and an initial value is supplied,
+  // the reducer function is invoked and reduce returns that invocations's
+  // return value.
+  if (second === void 0) {
+    return fn(initialValue, first, index);
+  }
+
+  // If iterator has multiple items and no initial value is supplied,
+  // the first time the reducer function is called, its accumulator argument
+  // is the iterator's first item, its second argument is the iterator's
+  // next item, and its third argument is the index value 1.
+  //
+  // Otherwise, because first and second have already been captured from the
+  // iterator, they must be used to calculate the current accumulated value.
+  if (initialValue === void 0) {
+    accumulator = fn(first as any, second, ++index);
+  } else {
+    accumulator = fn(initialValue, first, index++);
+    accumulator = fn(accumulator, second, index++);
+  }
+
+  while ((next = it.next()) !== void 0) {
+    accumulator = fn(accumulator, next, index++);
   }
   return accumulator;
 }
