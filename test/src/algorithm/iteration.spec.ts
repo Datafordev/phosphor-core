@@ -848,7 +848,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('some<T>()', () => {
+  describe('some()', () => {
 
     it('should verify some items in an iterable satisfy a condition', () => {
       let data = [1, 2, 3, 4, 5];
