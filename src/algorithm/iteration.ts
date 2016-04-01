@@ -152,7 +152,7 @@ class ArrayIterator<T> implements IIterator<T> {
    *
    * @param start - The starting index for iteration.
    */
-  constructor(source: IArrayLike<T>, start = 0) {
+  constructor(source: IArrayLike<T>, start: number) {
     this.source = source;
     this.index = start;
   }
