@@ -332,8 +332,7 @@ function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T, inde
   if (initialValue === void 0) {
     accumulator = fn(first as any, second, ++index);
   } else {
-    accumulator = fn(initialValue, first, index++);
-    accumulator = fn(accumulator, second, index++);
+    accumulator = fn(fn(initialValue, first, index++), second, index++);
   }
 
   while ((next = it.next()) !== void 0) {
