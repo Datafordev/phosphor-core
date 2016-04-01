@@ -822,7 +822,7 @@ describe('algorithm/iteration', () => {
 
   });
 
-  describe('reduce<T, U>()', () => {
+  describe('reduce()', () => {
 
     it('should reduce items in an iterable into an accumulated number', () => {
       let data = [1, 2, 3, 4, 5];
@@ -834,16 +834,15 @@ describe('algorithm/iteration', () => {
     });
 
     it('should reduce items in an iterable into an accumulated object', () => {
-      type accumulated = {[key: string]: number};
       let data = [1, 2, 3, 4, 5];
       let iterator = iter(data);
-      let reducer = (a: accumulated, x: number, i: number) => {
+      let reducer = (a: {[key: string]: number}, x: number, i: number) => {
         a[`${i}`] = x;
         return a;
       };
-      let accumulator: accumulated = Object.create(null);
+      let accumulator: {[key: string]: number} = Object.create(null);
       let want = { '0': 1, '1': 2, '2': 3, '3': 4, '4': 5 };
-      let sum = reduce<number, accumulated>(iterator, reducer, accumulator);
+      let sum = reduce(iterator, reducer, accumulator);
       expect(sum).to.eql(want);
     });
 
