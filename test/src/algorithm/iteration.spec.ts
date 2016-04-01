@@ -253,7 +253,7 @@ describe('algorithm/iteration', () => {
 
     describe('#constructor()', () => {
 
-      it('should accept and iterator source and filter filter', () => {
+      it('should accept and iterator source and filter', () => {
         let filter = (x: number) => !!(x % 2);
         let iterator = new FilterIterator(iter([1, 2, 3]), filter);
         expect(iterator).to.be.a(FilterIterator);
@@ -826,7 +826,7 @@ describe('algorithm/iteration', () => {
 
     it('should reduce items in an iterable into an accumulated number', () => {
       let data = [1, 2, 3, 4, 5];
-      let iterator = new ArrayIterator(data, 0);
+      let iterator = iter(data);
       let reducer = (a: number, x: number, i: number) => a + x;
       let accumulator = 0;
       let sum = reduce<number, number>(iterator, reducer, accumulator);
@@ -836,7 +836,7 @@ describe('algorithm/iteration', () => {
     it('should reduce items in an iterable into an accumulated object', () => {
       type accumulated = {[key: string]: number};
       let data = [1, 2, 3, 4, 5];
-      let iterator = new ArrayIterator(data);
+      let iterator = iter(data);
       let reducer = (a: accumulated, x: number, i: number) => {
         a[`${i}`] = x;
         return a;
