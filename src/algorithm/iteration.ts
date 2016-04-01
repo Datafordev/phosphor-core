@@ -262,7 +262,7 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
  * @param fn - The reducer function to invoke for each value in the
  *   iterable. It returns a new accumulator value.
  *
- * @param initialValue - The initial value for the accumulator passed
+ * @param initial - The initial value for the accumulator passed
  *   to the reducer function.
  *
  * @returns the accumulated value.
@@ -289,32 +289,32 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
  * next item.
  */
 export
-function reduce<T>(iterable: Iterable<T>, fn: (accumulator: T, value: T) => T, initialValue?: T): T;
+function reduce<T>(iterable: Iterable<T>, fn: (accumulator: T, value: T) => T, initial?: T): T;
 export
-function reduce<T, U>(iterable: IIterable<T>, fn: (accumulator: U, value: T) => U, initialValue: U): U;
+function reduce<T, U>(iterable: IIterable<T>, fn: (accumulator: U, value: T) => U, initial: U): U;
 export
-function reduce<T>(iterable: IIterable<T>, fn: (accumulator: any, value: T) => any, initialValue?: any): any {
+function reduce<T>(iterable: IIterable<T>, fn: (accumulator: any, value: T) => any, initial?: any): any {
   let it = iter(iterable);
   let first = it.next();
   let second: T;
   let next: T;
-  let accumulator = initialValue;
+  let accumulator = initial;
 
   // If iterator is empty, initial value is required and is what reduce returns.
-  if (first === void 0 && initialValue === void 0) {
+  if (first === void 0 && initial === void 0) {
     throw new TypeError('Cannot reduce empty iterator without initial value.');
   }
 
   // If iterator is empty and no initial value is supplied,
   // reduce will throw a type error.
   if (first === void 0) {
-    return initialValue;
+    return initial;
   }
 
   // If iterator contains only a single item and no initial value is supplied,
   // the reducer function is never invoked and reduce returns the sole item.
   second = it.next();
-  if (second === void 0 && initialValue === void 0) {
+  if (second === void 0 && initial === void 0) {
     return first;
   }
 
@@ -322,7 +322,7 @@ function reduce<T>(iterable: IIterable<T>, fn: (accumulator: any, value: T) => a
   // the reducer function is invoked and reduce returns that invocations's
   // return value.
   if (second === void 0) {
-    return fn(initialValue, first);
+    return fn(initial, first);
   }
 
   // If iterator has multiple items and no initial value is supplied,
@@ -332,10 +332,10 @@ function reduce<T>(iterable: IIterable<T>, fn: (accumulator: any, value: T) => a
   //
   // Otherwise, because first and second have already been captured from the
   // iterator, they must be used to calculate the current accumulated value.
-  if (initialValue === void 0) {
+  if (initial === void 0) {
     accumulator = fn(first, second);
   } else {
-    accumulator = fn(fn(initialValue, first), second);
+    accumulator = fn(fn(initial, first), second);
   }
 
   while ((next = it.next()) !== void 0) {

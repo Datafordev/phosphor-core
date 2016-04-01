@@ -828,8 +828,8 @@ describe('algorithm/iteration', () => {
       let data = [1, 2, 3, 4, 5];
       let iterator = iter(data);
       let reducer = (a: number, x: number) => a + x;
-      let initialValue = 0;
-      let sum = reduce(iterator, reducer, initialValue);
+      let initial = 0;
+      let sum = reduce(iterator, reducer, initial);
       expect(sum).to.be(15);
     });
 
@@ -840,9 +840,9 @@ describe('algorithm/iteration', () => {
         a[`${x}`] = !(x % 2);
         return a;
       };
-      let initialValue: {[key: string]: boolean} = Object.create(null);
+      let initial: {[key: string]: boolean} = Object.create(null);
       let want = { '1': false, '2': true, '3': false, '4': true, '5': false };
-      let sum = reduce(iterator, reducer, initialValue);
+      let sum = reduce(iterator, reducer, initial);
       expect(sum).to.eql(want);
     });
 
@@ -864,9 +864,9 @@ describe('algorithm/iteration', () => {
       let data: Array<number> = [];
       let iterator = iter(data);
       let reducer = (a: number, x: number) => a + x;
-      let initialValue = 0;
-      let result = reduce(iterator, reducer, initialValue);
-      expect(result).to.be(data.reduce(reducer, initialValue));
+      let initial = 0;
+      let result = reduce(iterator, reducer, initial);
+      expect(result).to.be(data.reduce(reducer, initial));
     });
 
     it('should return first item if initial value is undefined and' +
@@ -884,9 +884,9 @@ describe('algorithm/iteration', () => {
         let data = [9];
         let iterator = iter(data);
         let reducer = (a: number, x: number) => a + x;
-        let initialValue = 1;
-        let result = reduce(iterator, reducer, initialValue);
-        expect(result).to.be(data.reduce(reducer, initialValue));
+        let initial = 1;
+        let result = reduce(iterator, reducer, initial);
+        expect(result).to.be(data.reduce(reducer, initial));
       }
     );
 
