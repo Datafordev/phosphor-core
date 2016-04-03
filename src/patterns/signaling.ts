@@ -194,7 +194,8 @@ function disconnectSender(sender: any): void {
 
   // Clear the connections and schedule a cleanup of the
   // receiver's corresponding list of sender connections.
-  for (let conn of receiverList) {
+  for (let i = 0, n = receiverList.length; i < n; ++i) {
+    let conn = receiverList[i];
     let senderList = receiverData.get(conn.thisArg || conn.slot);
     scheduleCleanup(senderList);
     conn.signal = null;
@@ -234,7 +235,8 @@ function disconnectReceiver(receiver: any): void {
 
   // Clear the connections and schedule a cleanup of the
   // senders's corresponding list of receiver connections.
-  for (let conn of senderList) {
+  for (let i = 0, n = senderList.length; i < n; ++i) {
+    let conn = senderList[i];
     let receiverList = senderData.get(conn.sender);
     scheduleCleanup(receiverList);
     conn.signal = null;
@@ -447,9 +449,9 @@ function emit(sender: any, signal: Signal<any, any>, args: any): void {
 
   // Invoke the connections which match the given signal.
   for (let i = 0, n = receiverList.length; i < n; ++i) {
-    let rc = receiverList[i];
-    if (rc.signal === signal) {
-      invokeSlot(rc, args);
+    let conn = receiverList[i];
+    if (conn.signal === signal) {
+      invokeSlot(conn, args);
     }
   }
 }
@@ -490,9 +492,11 @@ function invokeSlot(conn: IConnection, args: any): void {
  */
 function findConnection(list: IConnection[], signal: Signal<any, any>, slot: Slot<any, any>, thisArg: any): IConnection {
   for (let i = 0, n = list.length; i < n; ++i) {
-    let cn = list[i];
-    if (cn.signal === signal && cn.slot === slot && cn.thisArg === thisArg) {
-      return cn;
+    let conn = list[i];
+    if (conn.signal === signal &&
+        conn.slot === slot &&
+        conn.thisArg === thisArg) {
+      return conn;
     }
   }
   return null;
@@ -545,10 +549,11 @@ function cleanupDirtySet(): void {
 function cleanupList(list: IConnection[]): void {
   let count = 0;
   for (let i = 0, n = list.length; i < n; ++i) {
-    if (list[i].signal === null) {
+    let conn = list[i];
+    if (conn.signal === null) {
       count++;
     } else {
-      list[i - count] = list[i];
+      list[i - count] = conn;
     }
   }
   list.length -= count;
