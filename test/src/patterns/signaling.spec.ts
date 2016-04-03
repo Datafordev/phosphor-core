@@ -8,29 +8,17 @@
 import expect = require('expect.js');
 
 import {
-  ISignal, Signal, clearSignalData, disconnectReceiver, disconnectSender
+  Signal, clearSignalData, disconnectReceiver, disconnectSender
 } from '../../../lib/patterns/signaling';
 
 
 class TestObject {
 
-  static oneSignal = new Signal<TestObject, void>();
+  static one = new Signal<TestObject, void>();
 
-  static twoSignal = new Signal<TestObject, number>();
+  static two = new Signal<TestObject, number>();
 
-  static threeSignal = new Signal<TestObject, string[]>();
-
-  get one(): ISignal<TestObject, void> {
-    return TestObject.oneSignal.bind(this);
-  }
-
-  get two(): ISignal<TestObject, number> {
-    return TestObject.twoSignal.bind(this);
-  }
-
-  get three(): ISignal<TestObject, string[]> {
-    return TestObject.threeSignal.bind(this);
-  }
+  static three = new Signal<TestObject, string[]>();
 }
 
 
@@ -58,12 +46,12 @@ class TestHandler {
     this.oneCount++;
   }
 
-  onTwo(sender: TestObject, args: number): void {
+  onTwo(args: number, sender: TestObject): void {
     this.twoSender = sender;
     this.twoValue = args;
   }
 
-  onThree(sender: TestObject, args: string[]): void {
+  onThree(args: string[], sender: TestObject): void {
     args.push(this.name);
   }
 
@@ -75,22 +63,22 @@ class TestHandler {
 
 describe('patterns/signaling', () => {
 
-  describe('ISignal', () => {
+  describe('Signal', () => {
 
     describe('#connect()', () => {
 
       it('should return true on success', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        let c1 = obj.one.connect(handler.onOne, handler);
+        let c1 = TestObject.one.connect(obj, handler.onOne, handler);
         expect(c1).to.be(true);
       });
 
       it('should return false on failure', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        let c1 = obj.one.connect(handler.onOne, handler);
-        let c2 = obj.one.connect(handler.onOne, handler);
+        let c1 = TestObject.one.connect(obj, handler.onOne, handler);
+        let c2 = TestObject.one.connect(obj, handler.onOne, handler);
         expect(c1).to.be(true);
         expect(c2).to.be(false);
       });
@@ -98,19 +86,19 @@ describe('patterns/signaling', () => {
       it('should connect plain functions', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        let c1 = obj.one.connect(handler.onThrow);
+        let c1 = TestObject.one.connect(obj, handler.onThrow);
         expect(c1).to.be(true);
       });
 
       it('should ignore duplicate connections', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        let c1 = obj.one.connect(handler.onOne, handler);
-        let c2 = obj.one.connect(handler.onOne, handler);
-        let c3 = obj.two.connect(handler.onTwo, handler);
-        let c4 = obj.two.connect(handler.onTwo, handler);
-        obj.one.emit(void 0);
-        obj.two.emit(42);
+        let c1 = TestObject.one.connect(obj, handler.onOne, handler);
+        let c2 = TestObject.one.connect(obj, handler.onOne, handler);
+        let c3 = TestObject.two.connect(obj, handler.onTwo, handler);
+        let c4 = TestObject.two.connect(obj, handler.onTwo, handler);
+        TestObject.one.emit(obj, void 0);
+        TestObject.two.emit(obj, 42);
         expect(c1).to.be(true);
         expect(c2).to.be(false);
         expect(c3).to.be(true);
@@ -126,24 +114,24 @@ describe('patterns/signaling', () => {
       it('should return true on success', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        obj.one.connect(handler.onOne, handler);
-        let d1 = obj.one.disconnect(handler.onOne, handler);
+        TestObject.one.connect(obj, handler.onOne, handler);
+        let d1 = TestObject.one.disconnect(obj, handler.onOne, handler);
         expect(d1).to.be(true);
       });
 
       it('should return false on failure', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        let d1 = obj.one.disconnect(handler.onOne, handler);
+        let d1 = TestObject.one.disconnect(obj, handler.onOne, handler);
         expect(d1).to.be(false);
       });
 
       it('should disconnect plain functions', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
-        obj.one.connect(handler.onThrow);
-        expect(obj.one.disconnect(handler.onThrow)).to.be(true);
-        expect(() => obj.one.emit(void 0)).to.not.throwError();
+        TestObject.one.connect(obj, handler.onThrow);
+        expect(TestObject.one.disconnect(obj, handler.onThrow)).to.be(true);
+        expect(() => TestObject.one.emit(obj, void 0)).to.not.throwError();
       });
 
       it('should disconnect a specific signal', () => {
@@ -153,17 +141,17 @@ describe('patterns/signaling', () => {
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
         let handler3 = new TestHandler();
-        obj1.one.connect(handler1.onOne, handler1);
-        obj2.one.connect(handler2.onOne, handler2);
-        obj1.one.connect(handler3.onOne, handler3);
-        obj2.one.connect(handler3.onOne, handler3);
-        obj3.one.connect(handler3.onOne, handler3);
-        let d1 = obj1.one.disconnect(handler1.onOne, handler1);
-        let d2 = obj1.one.disconnect(handler1.onOne, handler1);
-        let d3 = obj2.one.disconnect(handler3.onOne, handler3);
-        obj1.one.emit(void 0);
-        obj2.one.emit(void 0);
-        obj3.one.emit(void 0);
+        TestObject.one.connect(obj1, handler1.onOne, handler1);
+        TestObject.one.connect(obj2, handler2.onOne, handler2);
+        TestObject.one.connect(obj1, handler3.onOne, handler3);
+        TestObject.one.connect(obj2, handler3.onOne, handler3);
+        TestObject.one.connect(obj3, handler3.onOne, handler3);
+        let d1 = TestObject.one.disconnect(obj1, handler1.onOne, handler1);
+        let d2 = TestObject.one.disconnect(obj1, handler1.onOne, handler1);
+        let d3 = TestObject.one.disconnect(obj2, handler3.onOne, handler3);
+        TestObject.one.emit(obj1, void 0);
+        TestObject.one.emit(obj2, void 0);
+        TestObject.one.emit(obj3, void 0);
         expect(d1).to.be(true);
         expect(d2).to.be(false);
         expect(d3).to.be(true);
@@ -180,9 +168,9 @@ describe('patterns/signaling', () => {
         let obj = new TestObject();
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
-        obj.two.connect(handler1.onTwo, handler1);
-        obj.two.connect(handler2.onTwo, handler2);
-        obj.two.emit(15);
+        TestObject.two.connect(obj, handler1.onTwo, handler1);
+        TestObject.two.connect(obj, handler2.onTwo, handler2);
+        TestObject.two.emit(obj, 15);
         expect(handler1.twoSender).to.be(obj);
         expect(handler2.twoSender).to.be(obj);
         expect(handler1.twoValue).to.be(15);
@@ -190,40 +178,40 @@ describe('patterns/signaling', () => {
       });
 
       it('should invoke handlers in connection order', () => {
-        let obj1 = new TestObject();
+        let obj = new TestObject();
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
         let handler3 = new TestHandler();
         handler1.name = 'foo';
         handler2.name = 'bar';
         handler3.name = 'baz';
-        obj1.three.connect(handler1.onThree, handler1);
-        obj1.one.connect(handler1.onOne, handler1);
-        obj1.three.connect(handler2.onThree, handler2);
-        obj1.three.connect(handler3.onThree, handler3);
+        TestObject.three.connect(obj, handler1.onThree, handler1);
+        TestObject.one.connect(obj, handler1.onOne, handler1);
+        TestObject.three.connect(obj, handler2.onThree, handler2);
+        TestObject.three.connect(obj, handler3.onThree, handler3);
         let names: string[] = [];
-        obj1.three.emit(names);
-        obj1.one.emit(void 0);
+        TestObject.three.emit(obj, names);
+        TestObject.one.emit(obj, void 0);
         expect(names).to.eql(['foo', 'bar', 'baz']);
         expect(handler1.oneCount).to.be(1);
         expect(handler2.oneCount).to.be(0);
       });
 
       it('should catch any exceptions in handlers', () => {
-        let obj1 = new TestObject();
+        let obj = new TestObject();
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
         let handler3 = new TestHandler();
         handler1.name = 'foo';
         handler2.name = 'bar';
         handler3.name = 'baz';
-        obj1.three.connect(handler1.onThree, handler1);
-        obj1.three.connect(handler2.onThrow, handler2);
-        obj1.three.connect(handler3.onThree, handler3);
+        TestObject.three.connect(obj, handler1.onThree, handler1);
+        TestObject.three.connect(obj, handler2.onThrow, handler2);
+        TestObject.three.connect(obj, handler3.onThree, handler3);
         let threw = false;
         let names1: string[] = [];
         try {
-          obj1.three.emit(names1);
+          TestObject.three.emit(obj, names1);
         } catch (e) {
           threw = true;
         }
@@ -232,7 +220,7 @@ describe('patterns/signaling', () => {
       });
 
       it('should not invoke signals added during emission', () =>  {
-        let obj1 = new TestObject();
+        let obj = new TestObject();
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
         let handler3 = new TestHandler();
@@ -241,23 +229,23 @@ describe('patterns/signaling', () => {
         handler3.name = 'baz';
         let adder = {
           add: () => {
-            obj1.three.connect(handler3.onThree, handler3);
+            TestObject.three.connect(obj, handler3.onThree, handler3);
           },
         };
-        obj1.three.connect(handler1.onThree, handler1);
-        obj1.three.connect(handler2.onThree, handler2);
-        obj1.three.connect(adder.add, adder);
+        TestObject.three.connect(obj, handler1.onThree, handler1);
+        TestObject.three.connect(obj, handler2.onThree, handler2);
+        TestObject.three.connect(obj, adder.add, adder);
         let names1: string[] = [];
-        obj1.three.emit(names1);
-        obj1.three.disconnect(adder.add, adder);
+        TestObject.three.emit(obj, names1);
+        TestObject.three.disconnect(obj, adder.add, adder);
         let names2: string[] = [];
-        obj1.three.emit(names2);
+        TestObject.three.emit(obj, names2);
         expect(names1).to.eql(['foo', 'bar']);
         expect(names2).to.eql(['foo', 'bar', 'baz']);
       });
 
       it('should not invoke signals removed during emission', () => {
-        let obj1 = new TestObject();
+        let obj = new TestObject();
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
         let handler3 = new TestHandler();
@@ -266,15 +254,15 @@ describe('patterns/signaling', () => {
         handler3.name = 'baz';
         let remover = {
           remove: () => {
-            obj1.three.disconnect(handler3.onThree, handler3);
+            TestObject.three.disconnect(obj, handler3.onThree, handler3);
           },
         };
-        obj1.three.connect(handler1.onThree, handler1);
-        obj1.three.connect(handler2.onThree, handler2);
-        obj1.three.connect(remover.remove, remover);
-        obj1.three.connect(handler3.onThree, handler3);
+        TestObject.three.connect(obj, handler1.onThree, handler1);
+        TestObject.three.connect(obj, handler2.onThree, handler2);
+        TestObject.three.connect(obj, remover.remove, remover);
+        TestObject.three.connect(obj, handler3.onThree, handler3);
         let names: string[] = [];
-        obj1.three.emit(names);
+        TestObject.three.emit(obj, names);
         expect(names).to.eql(['foo', 'bar']);
       });
 
@@ -289,13 +277,13 @@ describe('patterns/signaling', () => {
       let obj2 = new TestObject();
       let handler1 = new TestHandler();
       let handler2 = new TestHandler();
-      obj1.one.connect(handler1.onOne, handler1);
-      obj1.one.connect(handler2.onOne, handler2);
-      obj2.one.connect(handler1.onOne, handler1);
-      obj2.one.connect(handler2.onOne, handler2);
+      TestObject.one.connect(obj1, handler1.onOne, handler1);
+      TestObject.one.connect(obj1, handler2.onOne, handler2);
+      TestObject.one.connect(obj2, handler1.onOne, handler1);
+      TestObject.one.connect(obj2, handler2.onOne, handler2);
       disconnectSender(obj1);
-      obj1.one.emit(void 0);
-      obj2.one.emit(void 0);
+      TestObject.one.emit(obj1, void 0);
+      TestObject.one.emit(obj2, void 0);
       expect(handler1.oneCount).to.be(1);
       expect(handler2.oneCount).to.be(1);
     });
@@ -313,16 +301,16 @@ describe('patterns/signaling', () => {
       let obj2 = new TestObject();
       let handler1 = new TestHandler();
       let handler2 = new TestHandler();
-      obj1.one.connect(handler1.onOne, handler1);
-      obj1.one.connect(handler2.onOne, handler2);
-      obj2.one.connect(handler1.onOne, handler1);
-      obj2.one.connect(handler2.onOne, handler2);
-      obj2.two.connect(handler1.onTwo, handler1);
-      obj2.two.connect(handler2.onTwo, handler2);
+      TestObject.one.connect(obj1, handler1.onOne, handler1);
+      TestObject.one.connect(obj1, handler2.onOne, handler2);
+      TestObject.one.connect(obj2, handler1.onOne, handler1);
+      TestObject.one.connect(obj2, handler2.onOne, handler2);
+      TestObject.two.connect(obj2, handler1.onTwo, handler1);
+      TestObject.two.connect(obj2, handler2.onTwo, handler2);
       disconnectReceiver(handler1);
-      obj1.one.emit(void 0);
-      obj2.one.emit(void 0);
-      obj2.two.emit(42);
+      TestObject.one.emit(obj1, void 0);
+      TestObject.one.emit(obj2, void 0);
+      TestObject.two.emit(obj2, 42);
       expect(handler1.oneCount).to.be(0);
       expect(handler2.oneCount).to.be(2);
       expect(handler1.twoValue).to.be(0);
@@ -342,15 +330,15 @@ describe('patterns/signaling', () => {
       let onCount = () => { counter++ };
       let ext1 = new ExtendedObject();
       let ext2 = new ExtendedObject();
-      ext1.one.connect(ext1.onNotify, ext1);
-      ext1.one.connect(ext2.onNotify, ext2);
-      ext1.one.connect(onCount);
-      ext2.one.connect(ext1.onNotify, ext1);
-      ext2.one.connect(ext2.onNotify, ext2);
-      ext2.one.connect(onCount);
+      ExtendedObject.one.connect(ext1, ext1.onNotify, ext1);
+      ExtendedObject.one.connect(ext1, ext2.onNotify, ext2);
+      ExtendedObject.one.connect(ext1, onCount);
+      ExtendedObject.one.connect(ext2, ext1.onNotify, ext1);
+      ExtendedObject.one.connect(ext2, ext2.onNotify, ext2);
+      ExtendedObject.one.connect(ext2, onCount);
       clearSignalData(ext1);
-      ext1.one.emit(void 0);
-      ext2.one.emit(void 0);
+      ExtendedObject.one.emit(ext1, void 0);
+      ExtendedObject.one.emit(ext2, void 0);
       expect(ext1.notifyCount).to.be(0);
       expect(ext2.notifyCount).to.be(1);
       expect(counter).to.be(1);
@@ -363,11 +351,11 @@ describe('patterns/signaling', () => {
     it('should handle connect after disconnect and emit', () => {
       let obj = new TestObject();
       let handler = new TestHandler();
-      let c1 = obj.one.connect(handler.onOne, handler);
+      let c1 = TestObject.one.connect(obj, handler.onOne, handler);
       expect(c1).to.be(true);
-      obj.one.disconnect(handler.onOne, handler);
-      obj.one.emit(void 0);
-      let c2 = obj.one.connect(handler.onOne, handler);
+      TestObject.one.disconnect(obj, handler.onOne, handler);
+      TestObject.one.emit(obj, void 0);
+      let c2 = TestObject.one.connect(obj, handler.onOne, handler);
       expect(c2).to.be(true);
     });
 
@@ -378,20 +366,20 @@ describe('patterns/signaling', () => {
     it('should handle disconnecting sender after receiver', () => {
       let obj = new TestObject();
       let handler = new TestHandler();
-      obj.one.connect(handler.onOne, handler);
+      TestObject.one.connect(obj, handler.onOne, handler);
       disconnectReceiver(handler);
       disconnectSender(obj);
-      obj.one.emit(void 0);
+      TestObject.one.emit(obj, void 0);
       expect(handler.oneCount).to.be(0);
     });
 
     it('should handle disconnecting receiver after sender', () => {
       let obj = new TestObject();
       let handler = new TestHandler();
-      obj.one.connect(handler.onOne, handler);
+      TestObject.one.connect(obj, handler.onOne, handler);
       disconnectSender(obj);
       disconnectReceiver(handler);
-      obj.one.emit(void 0);
+      TestObject.one.emit(obj, void 0);
       expect(handler.oneCount).to.be(0);
     });
 
