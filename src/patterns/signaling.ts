@@ -175,6 +175,98 @@ class Signal<T, U> {
 
 
 /**
+ * Remove all connections where the given object is the sender.
+ *
+ * @param sender - The sender object of interest.
+ *
+ * #### Example
+ * ```typescript
+ * disconnectSender(someObject);
+ * ```
+ */
+export
+function disconnectSender(sender: any): void {
+  // If there are no receivers, there is nothing to do.
+  let receiverList = senderData.get(sender);
+  if (receiverList === void 0) {
+    return;
+  }
+
+  // Clear the connections and schedule a cleanup of the
+  // receiver's corresponding list of sender connections.
+  for (let conn of receiverList) {
+    let senderList = receiverData.get(conn.thisArg || conn.slot);
+    scheduleCleanup(senderList);
+    conn.signal = null;
+  }
+
+  // Schedule a cleanup of the receiver list.
+  scheduleCleanup(receiverList);
+}
+
+
+/**
+ * Remove all connections where the given object is the receiver.
+ *
+ * @param receiver - The receiver object of interest.
+ *
+ * #### Notes
+ * If a `thisArg` is provided when connecting a signal, that object
+ * is considered the receiver. Otherwise, the `callback` is used as
+ * the receiver.
+ *
+ * #### Example
+ * ```typescript
+ * // disconnect a regular object receiver
+ * disconnectReceiver(myObject);
+ *
+ * // disconnect a plain callback receiver
+ * disconnectReceiver(myCallback);
+ * ```
+ */
+export
+function disconnectReceiver(receiver: any): void {
+  // If there are no senders, there is nothing to do.
+  let senderList = receiverData.get(receiver);
+  if (senderList === void 0) {
+    return;
+  }
+
+  // Clear the connections and schedule a cleanup of the
+  // senders's corresponding list of receiver connections.
+  for (let conn of senderList) {
+    let receiverList = senderData.get(conn.sender);
+    scheduleCleanup(receiverList);
+    conn.signal = null;
+  }
+
+  // Schedule a cleanup of the sender list.
+  scheduleCleanup(senderList);
+}
+
+
+/**
+ * Clear all signal data associated with the given object.
+ *
+ * @param obj - The object for which the signal data should be cleared.
+ *
+ * #### Notes
+ * This removes all signal connections where the object is used as
+ * either the sender or the receiver.
+ *
+ * #### Example
+ * ```typescript
+ * clearSignalData(someObject);
+ * ```
+ */
+export
+function clearSignalData(obj: any): void {
+  disconnectSender(obj);
+  disconnectReceiver(obj);
+}
+
+
+/**
  * An object which holds connection data.
  */
 interface IConnection {
