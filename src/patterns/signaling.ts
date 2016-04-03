@@ -462,7 +462,7 @@ function emit(sender: any, signal: Signal<any, any>, args: any): void {
  *
  * @param conn - The connection of interest
  *
- * @param args - The arguments emitted with the signal.
+ * @param args - The arguments to pass to the slot.
  *
  * #### Notes
  * Any exception thrown by the slot will be caught and logged.
@@ -535,7 +535,7 @@ function cleanupDirtySet(): void {
 
 
 /**
- * Cleanup the cleared connections in a connection list.
+ * Cleanup the dirty connections in a connection list.
  *
  * @param list - The list of connection to cleanup.
  *
