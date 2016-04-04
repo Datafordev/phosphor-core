@@ -284,7 +284,7 @@ class AttachedProperty<T, U> {
       changed(owner, oldValue, newValue);
     }
     if (notify) {
-      notify.bind(owner).emit({ name: this._name, oldValue, newValue });
+      notify.emit(owner, { name: this._name, oldValue, newValue });
     }
   }
 

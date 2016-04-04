@@ -8,6 +8,25 @@
 
 
 /**
+ * A type alias for a slot function.
+ *
+ * @param args - The args object emitted with the signal.
+ *
+ * @param sender - The object emitting the signal.
+ *
+ * #### Notes
+ * A slot is invoked when a signal to which it is connected is emitted.
+ *
+ * The order of slot arguments is reversed from the type declaration.
+ * Since the `args` is typically the most important parameter for the
+ * slot, the reversal allows the slot to declare a `sender` only when
+ * it is actually required.
+ */
+export
+type Slot<T, U> = (args: U, sender: T) => void;
+
+
+/**
  * An object used for type-safe inter-object communication.
  *
  * #### Notes
@@ -16,23 +35,14 @@
  * and consumers connect callbacks (subscribers) to those signals. The
  * subscribers are invoked whenever the publisher emits the signal.
  *
- * A `Signal` object must be bound to a sender in order to be useful.
- * A common pattern is to declare a `Signal` object as a constant in
- * a merged namespace, and define a getter which binds the signal to
- * the `this` instance on-demand.
- *
  * #### Example
  * ```typescript
- * import { ISignal, Signal } from 'phosphor-signaling';
+ * import { Signal } from 'phosphor-core/lib/patterns/signaling';
  *
- * class MyClass {
+ * class SomeClass {
  *
  *   constructor(name: string) {
  *     this._name = name;
- *   }
- *
- *   get valueChanged(): ISignal<MyClass, number> {
- *     return MyClass.valueChangedSignal.bind(this);
  *   }
  *
  *   get name(): string {
@@ -44,29 +54,30 @@
  *   }
  *
  *   set value(value: number) {
- *     if (value !== this._value) {
- *       this._value = value;
- *       this.valueChanged.emit(value);
+ *     if (value === this._value) {
+ *       return;
  *     }
+ *     this._value = value;
+ *     SomeClass.valueChanged.emit(this, value);
  *   }
  *
  *   private _name: string;
  *   private _value = 0;
  * }
  *
- * namespace MyClass {
- *   export const valueChangedSignal = new Signal<MyClass, number>();
+ * namespace SomeClass {
+ *   export const valueChanged = new Signal<SomeClass, number>();
  * }
  *
- * function logger(sender: MyClass, value: number): void {
+ * function logger(value: number, sender: SomeClass): void {
  *   console.log(sender.name, value);
  * }
  *
- * let m1 = new MyClass('foo');
- * let m2 = new MyClass('bar');
+ * let m1 = new SomeClass('foo');
+ * let m2 = new SomeClass('bar');
  *
- * m1.valueChanged.connect(logger);
- * m2.valueChanged.connect(logger);
+ * SomeClass.valueChanged.connect(m1, logger);
+ * SomeClass.valueChanged.connect(m2, logger);
  *
  * m1.value = 42;  // logs: foo 42
  * m2.value = 17;  // logs: bar 17
@@ -75,113 +86,91 @@
 export
 class Signal<T, U> {
   /**
-   * Bind the signal to a specific sender.
+   * Connect a slot to the signal.
    *
-   * @param sender - The sender object to bind to the signal.
+   * @param sender - The object emitting the signal.
    *
-   * @returns The bound signal object which can be used for connecting,
-   *   disconnecting, and emitting the signal.
-   */
-  bind(sender: T): ISignal<T, U> {
-    return new BoundSignal(this, sender);
-  }
-}
-
-
-/**
- * A type alias for a signal callback function.
- *
- * @param T - The type of the sender.
- *
- * @param U - The type of the signal args.
- */
-export
-type Slot<T, U> = (sender: T, args: U) => void;
-
-
-/**
- * A signal object which is bound to a specific sender.
- *
- * #### Notes
- * User code will not create instances of `ISignal` directly. They are
- * created on demand by calling the [[bind]] method of a [[Signal]].
- */
-export
-interface ISignal<T, U> {
-  /**
-   * Connect a callback to the signal.
+   * @param slot - The slot to invoke when the signal is emitted.
    *
-   * @param callback - The function to invoke whenever the signal is
-   *   emitted. It will be passed the sender object and the emit args.
-   *
-   * @param thisArg - The object to use as the `this` context in the
-   *   callback. If provided, this must be a non-primitive object.
+   * @param thisArg - The `this` context for the slot. If provided,
+   *   this must be a non-primitive object.
    *
    * @returns `true` if the connection succeeds, `false` otherwise.
    *
    * #### Notes
-   * Connected callbacks are invoked synchronously, in the order in
-   * which they are connected.
-   *
    * Signal connections are unique. If a connection already exists for
-   * the given `callback` and `thisArg`, this function returns `false`.
+   * the given `slot` and `thisArg`, this method returns `false`.
    *
-   * A newly connected callback will not be invoked until the next time
-   * the signal is emitted, even if it is connected while the signal is
-   * being emitted.
+   * A newly connected slot will not be invoked until the next time the
+   * signal is emitted, even if the slot is connected while the signal
+   * is dispatching.
    *
    * #### Example
    * ```typescript
    * // connect a method
-   * someObject.valueChanged.connect(myObject.onValueChanged, myObject);
+   * SomeClass.valueChanged.connect(someObject, myObject.onValueChanged, myObject);
    *
    * // connect a plain function
-   * someObject.valueChanged.connect(myCallback);
+   * SomeClass.valueChanged.connect(someObject, myCallback);
    * ```
    */
-  connect(callback: Slot<T, U>, thisArg?: any): boolean;
+  connect(sender: T, slot: Slot<T, U>, thisArg?: any): boolean {
+    return connect(sender, this, slot, thisArg);
+  }
 
   /**
-   * Disconnect a callback from the signal.
+   * Disconnect a slot from the signal.
    *
-   * @param callback - The function connected to the signal.
+   * @param sender - The object emitting the signal.
    *
-   * @param thisArg - The `this` context for the callback.
+   * @param slot - The slot to disconnect from the signal.
    *
-   * @returns `true` if the connection is broken, `false` otherwise.
+   * @param thisArg - The `this` context for the slot. If provided,
+   *   this must be a non-primitive object.
+   *
+   * @returns `true` if the connection is removed, `false` otherwise.
    *
    * #### Notes
-   * A disconnected callback will no longer be invoked, even if it
-   * is disconnected while the signal is being emitted.
+   * If no connection exists for the given `slot` and `thisArg`, this
+   * method returns `false`.
    *
-   * If no connection exists for the given `callback` and `thisArg`,
-   * this function returns `false`.
+   * A disconnected slot will no longer be invoked, even if the slot
+   * is disconnected while the signal is dispatching.
    *
    * #### Example
    * ```typescript
    * // disconnect a method
-   * someObject.valueChanged.disconnect(myObject.onValueChanged, myObject);
+   * SomeClass.valueChanged.disconnect(someObject, myObject.onValueChanged, myObject);
    *
    * // disconnect a plain function
-   * someObject.valueChanged.disconnect(myCallback);
+   * SomeClass.valueChanged.disconnect(someObject, myCallback);
    * ```
    */
-  disconnect(callback: Slot<T, U>, thisArg?: any): boolean;
+  disconnect(sender: T, slot: Slot<T, U>, thisArg?: any): boolean {
+    return disconnect(sender, this, slot, thisArg);
+  }
 
   /**
-   * Emit the signal and invoke the connected callbacks.
+   * Emit the signal and invoke the connected slots.
    *
-   * @param args - The args object to pass to the callbacks.
+   * @param sender - The object emitting the signal.
+   *
+   * @param args - The args to pass to the connected slots.
    *
    * #### Notes
-   * Exceptions thrown by connected callbacks will be logged.
+   * Connected slots are invoked synchronously, in the order in which
+   * they are connected.
+   *
+   * Exceptions thrown by connected slots will be caught and logged.
    *
    * #### Example
    * ```typescript
-   * this.valueChanged.emit(42);
+   * SomeClass.valueChanged.emit(someObject, 42);
    * ```
    */
-  emit(args: U): void;
+  emit(sender: T, args: U): void {
+    emit(sender, this, args);
+  }
 }
 
 
@@ -197,18 +186,23 @@ interface ISignal<T, U> {
  */
 export
 function disconnectSender(sender: any): void {
-  let list = senderMap.get(sender);
-  if (!list) {
+  // If there are no receivers, there is nothing to do.
+  let receiverList = senderData.get(sender);
+  if (receiverList === void 0) {
     return;
   }
-  let conn = list.first;
-  while (conn !== null) {
-    removeFromSendersList(conn);
-    conn.callback = null;
-    conn.thisArg = null;
-    conn = conn.nextReceiver;
+
+  // Clear the connections and schedule a cleanup of the
+  // receiver's corresponding list of sender connections.
+  for (let i = 0, n = receiverList.length; i < n; ++i) {
+    let conn = receiverList[i];
+    let senderList = receiverData.get(conn.thisArg || conn.slot);
+    scheduleCleanup(senderList);
+    conn.signal = null;
   }
-  senderMap.delete(sender);
+
+  // Schedule a cleanup of the receiver list.
+  scheduleCleanup(receiverList);
 }
 
 
@@ -233,19 +227,23 @@ function disconnectSender(sender: any): void {
  */
 export
 function disconnectReceiver(receiver: any): void {
-  let conn = receiverMap.get(receiver);
-  if (!conn) {
+  // If there are no senders, there is nothing to do.
+  let senderList = receiverData.get(receiver);
+  if (senderList === void 0) {
     return;
   }
-  while (conn !== null) {
-    let next = conn.nextSender;
-    conn.callback = null;
-    conn.thisArg = null;
-    conn.prevSender = null;
-    conn.nextSender = null;
-    conn = next;
+
+  // Clear the connections and schedule a cleanup of the
+  // senders's corresponding list of receiver connections.
+  for (let i = 0, n = senderList.length; i < n; ++i) {
+    let conn = senderList[i];
+    let receiverList = senderData.get(conn.sender);
+    scheduleCleanup(receiverList);
+    conn.signal = null;
   }
-  receiverMap.delete(receiver);
+
+  // Schedule a cleanup of the sender list.
+  scheduleCleanup(senderList);
 }
 
 
@@ -271,239 +269,207 @@ function clearSignalData(obj: any): void {
 
 
 /**
- * A concrete implementation of ISignal.
+ * An object which holds connection data.
  */
-class BoundSignal<T, U> implements ISignal<T, U> {
+interface IConnection {
   /**
-   * Construct a new bound signal.
+   * The sender emitting the signal.
    */
-  constructor(signal: Signal<T, U>, sender: T) {
-    this._signal = signal;
-    this._sender = sender;
-  }
+  sender: any;
 
-  /**
-   * Connect a callback to the signal.
-   */
-  connect(callback: Slot<T, U>, thisArg?: any): boolean {
-    return connect(this._sender, this._signal, callback, thisArg);
-  }
-
-  /**
-   * Disconnect a callback from the signal.
-   */
-  disconnect(callback: Slot<T, U>, thisArg?: any): boolean {
-    return disconnect(this._sender, this._signal, callback, thisArg);
-  }
-
-  /**
-   * Emit the signal and invoke the connected callbacks.
-   */
-  emit(args: U): void {
-    emit(this._sender, this._signal, args);
-  }
-
-  private _signal: Signal<T, U>;
-  private _sender: T;
-}
-
-
-/**
- * A struct which holds connection data.
- */
-class Connection {
   /**
    * The signal for the connection.
    */
-  signal: Signal<any, any> = null;
+  signal: Signal<any, any>;
 
   /**
-   * The callback connected to the signal.
+   * The slot connected to the signal.
    */
-  callback: Slot<any, any> = null;
+  slot: Slot<any, any>;
 
   /**
-   * The `this` context for the callback.
+   * The `this` context for the slot.
    */
-  thisArg: any = null;
-
-  /**
-   * The next connection in the singly linked receivers list.
-   */
-  nextReceiver: Connection = null;
-
-  /**
-   * The next connection in the doubly linked senders list.
-   */
-  nextSender: Connection = null;
-
-  /**
-   * The previous connection in the doubly linked senders list.
-   */
-  prevSender: Connection = null;
+  thisArg: any;
 }
 
 
 /**
- * The list of receiver connections for a specific sender.
+ * A weak mapping of sender to list of receiver connections.
  */
-class ConnectionList {
-  /**
-   * The ref count for the list.
-   */
-  refs = 0;
-
-  /**
-   * The first connection in the list.
-   */
-  first: Connection = null;
-
-  /**
-   * The last connection in the list.
-   */
-  last: Connection = null;
-}
+const senderData = new WeakMap<any, IConnection[]>();
 
 
 /**
- * A mapping of sender object to its receiver connection list.
+ * A weak mapping of receiver to list of sender connections.
  */
-var senderMap = new WeakMap<any, ConnectionList>();
+const receiverData = new WeakMap<any, IConnection[]>();
 
 
 /**
- * A mapping of receiver object to its sender connection list.
+ * A set of connection lists which are pending cleanup.
  */
-var receiverMap = new WeakMap<any, Connection>();
+const dirtySet = new Set<IConnection[]>();
 
 
 /**
- * Create a connection between a sender, signal, and callback.
+ * A local reference to an event loop callback.
  */
-function connect<T, U>(sender: T, signal: Signal<T, U>, callback: Slot<T, U>, thisArg: any): boolean {
+const defer = (() => {
+  let ok = typeof requestAnimationFrame === 'function';
+  return ok ? requestAnimationFrame : setImmediate;
+})();
+
+
+/**
+ * Connect a slot to a signal.
+ *
+ * @param sender - The object emitting the signal.
+ *
+ * @param signal - The signal of interest.
+ *
+ * @param slot - The slot to connect to the signal.
+ *
+ * @param thisArg - The `this` context for the slot.
+ *
+ * @returns `true` if the connection succeeds, `false` otherwise.
+ *
+ * #### Notes
+ * Signal connections are unique. If a connection already exists for
+ * the given `slot` and `thisArg`, this function returns `false`.
+ *
+ * A newly connected slot will not be invoked until the next time the
+ * signal is emitted, even if the slot is connected while the signal
+ * is dispatching.
+ */
+function connect(sender: any, signal: Signal<any, any>, slot: Slot<any, any>, thisArg?: any): boolean {
   // Coerce a `null` thisArg to `undefined`.
   thisArg = thisArg || void 0;
 
-  // Search for an equivalent connection and bail if one exists.
-  let list = senderMap.get(sender);
-  if (list && findConnection(list, signal, callback, thisArg)) {
+  // Ensure the sender's receiver list is created.
+  let receiverList = senderData.get(sender);
+  if (receiverList === void 0) {
+    receiverList = [];
+    senderData.set(sender, receiverList);
+  }
+
+  // Bail if a matching connection already exists.
+  if (findConnection(receiverList, signal, slot, thisArg) !== null) {
     return false;
   }
 
-  // Create a new connection.
-  let conn = new Connection();
-  conn.signal = signal;
-  conn.callback = callback;
-  conn.thisArg = thisArg;
-
-  // Add the connection to the receivers list.
-  if (!list) {
-    list = new ConnectionList();
-    list.first = conn;
-    list.last = conn;
-    senderMap.set(sender, list);
-  } else if (list.last === null) {
-    list.first = conn;
-    list.last = conn;
-  } else {
-    list.last.nextReceiver = conn;
-    list.last = conn;
+  // Ensure the receiver's sender list is created.
+  let receiver = thisArg || slot;
+  let senderList = receiverData.get(receiver);
+  if (senderList === void 0) {
+    senderList = [];
+    receiverData.set(receiver, senderList);
   }
 
-  // Add the connection to the senders list.
-  let receiver = thisArg || callback;
-  let head = receiverMap.get(receiver);
-  if (head) {
-    head.prevSender = conn;
-    conn.nextSender = head;
-  }
-  receiverMap.set(receiver, conn);
+  // Create a new connection and add it to the end of each list.
+  let connection = { sender, signal, slot, thisArg };
+  receiverList.push(connection);
+  senderList.push(connection);
 
+  // Indicate a successful connection.
   return true;
 }
 
 
 /**
- * Break the connection between a sender, signal, and callback.
+ * Disconnect a slot from a signal.
+ *
+ * @param sender - The object emitting the signal.
+ *
+ * @param signal - The signal of interest.
+ *
+ * @param slot - The slot to disconnect from the signal.
+ *
+ * @param thisArg - The `this` context for the slot.
+ *
+ * @returns `true` if the connection is removed, `false` otherwise.
+ *
+ * #### Notes
+ * If no connection exists for the given `slot` and `thisArg`, this
+ * function returns `false`.
+ *
+ * A disconnected slot will no longer be invoked, even if the slot
+ * is disconnected while the signal is dispatching.
  */
-function disconnect<T, U>(sender: T, signal: Signal<T, U>, callback: Slot<T, U>, thisArg: any): boolean {
+function disconnect(sender: any, signal: Signal<any, any>, slot: Slot<any, any>, thisArg?: any): boolean {
   // Coerce a `null` thisArg to `undefined`.
   thisArg = thisArg || void 0;
 
-  // Search for an equivalent connection and bail if none exists.
-  let list = senderMap.get(sender);
-  if (!list) {
-    return false;
-  }
-  let conn = findConnection(list, signal, callback, thisArg);
-  if (!conn) {
+  // Lookup the list of receivers, and bail if none exist.
+  let receiverList = senderData.get(sender);
+  if (receiverList === void 0) {
     return false;
   }
 
-  // Remove the connection from the senders list. It will be removed
-  // from the receivers list the next time the signal is emitted.
-  removeFromSendersList(conn);
+  // Bail if no matching connection exits.
+  let conn = findConnection(receiverList, signal, slot, thisArg);
+  if (conn === null) {
+    return false;
+  }
 
-  // Clear the connection data so it becomes a dead connection.
-  conn.callback = null;
-  conn.thisArg = null;
+  // Lookup the list of senders, which is now known to exist.
+  let senderList = receiverData.get(thisArg || slot);
 
+  // Clear the connection and schedule list cleanup.
+  conn.signal = null;
+  scheduleCleanup(receiverList);
+  scheduleCleanup(senderList);
+
+  // Indicate a successful disconnection.
   return true;
 }
 
 
 /**
- * Emit a signal and invoke the connected callbacks.
+ * Emit a signal and invoke the connected slots.
+ *
+ * @param sender - The object emitting the signal.
+ *
+ * @param signal - The signal of interest.
+ *
+ * @param args - The args to pass to the connected slots.
+ *
+ * #### Notes
+ * Connected slots are invoked synchronously, in the order in which
+ * they are connected.
+ *
+ * Exceptions thrown by connected slots will be caught and logged.
  */
-function emit<T, U>(sender: T, signal: Signal<T, U>, args: U): void {
-  // If there is no connection list, there is nothing to do.
-  let list = senderMap.get(sender);
-  if (!list) {
+function emit(sender: any, signal: Signal<any, any>, args: any): void {
+  // If there are no receivers, there is nothing to do.
+  let receiverList = senderData.get(sender);
+  if (receiverList === void 0) {
     return;
   }
 
-  // Prepare to dispatch the callbacks. Increment the reference count
-  // on the list so that the list is cleaned only when the emit stack
-  // is fully unwound.
-  list.refs++;
-  let dirty = false;
-  let last = list.last;
-  let conn = list.first;
-
-  // Dispatch the callbacks. If a connection has a null callback, it
-  // indicates the list is dirty. Connections which match the signal
-  // are safely dispatched where all exceptions are logged. Dispatch
-  // is stopped at the last connection for the current stack frame.
-  while (conn !== null) {
-    if (!conn.callback) {
-      dirty = true;
-    } else if (conn.signal === signal) {
-      invokeSlot(conn, sender, args);
+  // Invoke the connections which match the given signal.
+  for (let i = 0, n = receiverList.length; i < n; ++i) {
+    let conn = receiverList[i];
+    if (conn.signal === signal) {
+      invokeSlot(conn, args);
     }
-    if (conn === last) {
-      break;
-    }
-    conn = conn.nextReceiver;
-  }
-
-  // Decrement the reference count on the list.
-  list.refs--;
-
-  // Clean the list if it's dirty and the emit stack is fully unwound.
-  if (dirty && list.refs === 0) {
-    cleanList(list);
   }
 }
 
 
 /**
- * Safely invoke the callback for the given connection.
+ * Safely invoke a non-empty connection.
  *
- * Exceptions thrown by the callback will be caught and logged.
+ * @param conn - The connection of interest
+ *
+ * @param args - The arguments to pass to the slot.
+ *
+ * #### Notes
+ * Any exception thrown by the slot will be caught and logged.
  */
-function invokeSlot(conn: Connection, sender: any, args: any): void {
+function invokeSlot(conn: IConnection, args: any): void {
   try {
-    conn.callback.call(conn.thisArg, sender, args);
+    conn.slot.call(conn.thisArg, args, conn.sender);
   } catch (err) {
     console.error(err);
   }
@@ -511,74 +477,84 @@ function invokeSlot(conn: Connection, sender: any, args: any): void {
 
 
 /**
- * Find a matching connection in the given connection list.
+ * Find a connection which matches the given parameters.
  *
- * Returns `null` if no matching connection is found.
+ * @param list - The list of connections to search.
+ *
+ * @param signal - The signal of interest.
+ *
+ * @param slot - The slot of interest.
+ *
+ * @param thisArg - The `this` context for the slot.
+ *
+ * @returns The first connection which matches the supplied parameters,
+ *   or null if no matching connection is found.
  */
-function findConnection<T, U>(list: ConnectionList, signal: Signal<T, U>, callback: Slot<T, U>, thisArg: any): Connection {
-  let conn = list.first;
-  while (conn !== null) {
+function findConnection(list: IConnection[], signal: Signal<any, any>, slot: Slot<any, any>, thisArg: any): IConnection {
+  for (let i = 0, n = list.length; i < n; ++i) {
+    let conn = list[i];
     if (conn.signal === signal &&
-        conn.callback === callback &&
+        conn.slot === slot &&
         conn.thisArg === thisArg) {
       return conn;
     }
-    conn = conn.nextReceiver;
   }
   return null;
 }
 
 
 /**
- * Remove the dead connections from the given connection list.
+ * Schedule a cleanup of a connection list.
+ *
+ * @param list - The list of connections to cleanup.
+ *
+ * #### Notes
+ * This will add the list to the dirty set and schedule a deferred
+ * cleanup of the list contents. On cleanup, any connection with a
+ * null signal will be removed from the array.
  */
-function cleanList(list: ConnectionList): void {
-  let prev: Connection;
-  let conn = list.first;
-  while (conn !== null) {
-    let next = conn.nextReceiver;
-    if (!conn.callback) {
-      conn.nextReceiver = null;
-    } else if (!prev) {
-      list.first = conn;
-      prev = conn;
-    } else {
-      prev.nextReceiver = conn;
-      prev = conn;
-    }
-    conn = next;
+function scheduleCleanup(list: IConnection[]): void {
+  if (dirtySet.size === 0) {
+    defer(cleanupDirtySet);
   }
-  if (!prev) {
-    list.first = null;
-    list.last = null;
-  } else {
-    prev.nextReceiver = null;
-    list.last = prev;
-  }
+  dirtySet.add(list);
 }
 
 
 /**
- * Remove a connection from the doubly linked list of senders.
+ * Cleanup the connection lists in the dirty set.
+ *
+ * #### Notes
+ * This function should only be invoked asynchronously, when the stack
+ * frame is guaranteed to not be on the path of a signal dispatch.
  */
-function removeFromSendersList(conn: Connection): void {
-  let receiver = conn.thisArg || conn.callback;
-  if (!receiver) {
-    return;
+function cleanupDirtySet(): void {
+  dirtySet.forEach(cleanupList);
+  dirtySet.clear();
+}
+
+
+/**
+ * Cleanup the dirty connections in a connection list.
+ *
+ * @param list - The list of connection to cleanup.
+ *
+ * #### Notes
+ * This will remove any connection with a null signal from the list,
+ * while retaining the relative order of the other connections.
+ *
+ * This function should only be invoked asynchronously, when the stack
+ * frame is guaranteed to not be on the path of a signal dispatch.
+ */
+function cleanupList(list: IConnection[]): void {
+  let count = 0;
+  for (let i = 0, n = list.length; i < n; ++i) {
+    let conn = list[i];
+    if (conn.signal === null) {
+      count++;
+    } else {
+      list[i - count] = conn;
+    }
   }
-  let prev = conn.prevSender;
-  let next = conn.nextSender;
-  if (prev === null && next === null) {
-    receiverMap.delete(receiver);
-  } else if (prev === null) {
-    receiverMap.set(receiver, next);
-    next.prevSender = null;
-  } else if (next === null) {
-    prev.nextSender = null;
-  } else {
-    prev.nextSender = next;
-    next.prevSender = prev;
-  }
-  conn.prevSender = null;
-  conn.nextSender = null;
+  list.length -= count;
 }

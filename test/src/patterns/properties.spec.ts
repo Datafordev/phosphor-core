@@ -249,9 +249,9 @@ describe('patterns/properties', () => {
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
-        notify.bind(m1).connect(changed);
-        notify.bind(m2).connect(changed);
-        notify.bind(m3).connect(changed);
+        notify.connect(m1, changed);
+        notify.connect(m2, changed);
+        notify.connect(m3, changed);
         p1.get(m1);
         p2.get(m1);
         p3.get(m1);
@@ -330,7 +330,7 @@ describe('patterns/properties', () => {
         let oldvals: number[] = [];
         let newvals: number[] = [];
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let changed = (sender: Model, args: IChangedArgs<number>) => {
+        let changed = (args: IChangedArgs<number>, sender: Model) => {
           models.push(sender);
           names.push(args.name);
           oldvals.push(args.oldValue);
@@ -342,9 +342,9 @@ describe('patterns/properties', () => {
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
-        notify.bind(m1).connect(changed);
-        notify.bind(m2).connect(changed);
-        notify.bind(m3).connect(changed);
+        notify.connect(m1, changed);
+        notify.connect(m2, changed);
+        notify.connect(m3, changed);
         p1.set(m1, 1);
         p1.set(m2, 2);
         p1.set(m3, 3);
@@ -367,7 +367,7 @@ describe('patterns/properties', () => {
         let notify = new Signal<Model, IChangedArgs<number>>();
         let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, changed, notify });
         let m = new Model();
-        notify.bind(m).connect(changed2);
+        notify.connect(m, changed2);
         p.set(m, 42);
         expect(result).to.eql(['c1', 'c2']);
       });
@@ -514,7 +514,7 @@ describe('patterns/properties', () => {
         let p1 = new AttachedProperty<Model, number>({ name: 'p1', value: 1, notify });
         let p2 = new AttachedProperty<Model, number>({ name: 'p2', value: 1, compare, notify });
         let m = new Model();
-        notify.bind(m).connect(changed);
+        notify.connect(m, changed);
         p1.set(m, 1);
         p1.set(m, 1);
         p2.set(m, 1);
@@ -562,7 +562,7 @@ describe('patterns/properties', () => {
         let notify = new Signal<Model, IChangedArgs<number>>();
         let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce, notify });
         let m = new Model();
-        notify.bind(m).connect(changed);
+        notify.connect(m, changed);
         p.coerce(m);
         expect(called).to.be(true);
       });
@@ -575,7 +575,7 @@ describe('patterns/properties', () => {
         let notify = new Signal<Model, IChangedArgs<number>>();
         let p = new AttachedProperty<Model, number>({ name: 'p', value: 0, coerce, changed, notify });
         let m = new Model();
-        notify.bind(m).connect(changed2);
+        notify.connect(m, changed2);
         p.coerce(m);
         expect(result).to.eql(['c1', 'c2']);
       });
@@ -673,7 +673,7 @@ describe('patterns/properties', () => {
         let notify = new Signal<Model, IChangedArgs<number>>();
         let p = new AttachedProperty<Model, number>({ name: 'p', value: 1, notify });
         let m = new Model();
-        notify.bind(m).connect(changed);
+        notify.connect(m, changed);
         p.coerce(m);
         expect(called).to.be(false);
       });
