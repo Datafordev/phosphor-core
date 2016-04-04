@@ -300,13 +300,13 @@ function reduce<T>(iterable: IIterable<T>, fn: (accumulator: any, value: T) => a
   let next: T;
   let accumulator = initial;
 
-  // If iterator is empty, initial value is required and is what reduce returns.
+  // If iterator is empty and no initial value is supplied,
+  // reduce will throw a type error.
   if (first === void 0 && initial === void 0) {
     throw new TypeError('Cannot reduce empty iterator without initial value.');
   }
 
-  // If iterator is empty and no initial value is supplied,
-  // reduce will throw a type error.
+  // If iterator is empty, initial value is required and is what reduce returns.
   if (first === void 0) {
     return initial;
   }
