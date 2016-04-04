@@ -407,16 +407,16 @@ function disconnect(sender: any, signal: Signal<any, any>, slot: Slot<any, any>,
   }
 
   // Bail if no matching connection exits.
-  let target = findConnection(receiverList, signal, slot, thisArg);
-  if (target === null) {
+  let conn = findConnection(receiverList, signal, slot, thisArg);
+  if (conn === null) {
     return false;
   }
 
   // Lookup the list of senders, which is now known to exist.
   let senderList = receiverData.get(thisArg || slot);
 
-  // Clear the target connection and schedule list cleanup.
-  target.signal = null;
+  // Clear the connection and schedule list cleanup.
+  conn.signal = null;
   scheduleCleanup(receiverList);
   scheduleCleanup(senderList);
 
