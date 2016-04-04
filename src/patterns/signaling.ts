@@ -39,7 +39,7 @@ type Slot<T, U> = (args: U, sender: T) => void;
  * ```typescript
  * import { Signal } from 'phosphor-core/lib/patterns/signaling';
  *
- * class MyClass {
+ * class SomeClass {
  *
  *   constructor(name: string) {
  *     this._name = name;
@@ -58,26 +58,26 @@ type Slot<T, U> = (args: U, sender: T) => void;
  *       return;
  *     }
  *     this._value = value;
- *     MyClass.valueChanged.emit(this, value);
+ *     SomeClass.valueChanged.emit(this, value);
  *   }
  *
  *   private _name: string;
  *   private _value = 0;
  * }
  *
- * namespace MyClass {
- *   export const valueChanged = new Signal<MyClass, number>();
+ * namespace SomeClass {
+ *   export const valueChanged = new Signal<SomeClass, number>();
  * }
  *
- * function logger(value: number, sender: MyClass): void {
+ * function logger(value: number, sender: SomeClass): void {
  *   console.log(sender.name, value);
  * }
  *
- * let m1 = new MyClass('foo');
- * let m2 = new MyClass('bar');
+ * let m1 = new SomeClass('foo');
+ * let m2 = new SomeClass('bar');
  *
- * MyClass.valueChanged.connect(m1, logger);
- * MyClass.valueChanged.connect(m2, logger);
+ * SomeClass.valueChanged.connect(m1, logger);
+ * SomeClass.valueChanged.connect(m2, logger);
  *
  * m1.value = 42;  // logs: foo 42
  * m2.value = 17;  // logs: bar 17
