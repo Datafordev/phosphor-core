@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - '5'
+sudo: false
+env:
+  matrix:
+    - GROUP=
+  global:
+    - GHREPO=github.com/phosphorjs/phosphor-core
+    - secure: vJuT4eqfK/pekFlb/eptt3HjtqofYR0XF6eSE3M0JTH8Ctu3q4mrrMq9dE36JLcim/dUo2lPd/sABfGAoQgG2zaS7McclsHVlfp4GRXrwjK8AcTlElsSHzcpErOHATorowfbWukItpwgL1hvZZU0s0LDKMx0Hb8eboOO3/xEfKn2bR6D/mWOioHYBVIjPCDbY+VmIJAHsCK/IfAJ79g6pgUTQ9xyUI/Gfn4NKOzaPmKPuiTuTyfKAPpteANopxVG7p2tGox8eB3RVftqY9syZWVg4Tmz3AeND3ht1lYsBAKOBTP5yOGEOiAkJGemzwF+qV1xi5yVVMLPqUooR8ePBXY8jytolmBwoqgo8mHq3o1Ml5dEVq7NhTOB1HrSUHmoojaeWhalHl4g3i419M4Dj3Cf7rUvF116owNSfXATnnjEEF+oJjCwFaahnXkx4mSjtVYH7ewv2v5oxsc/Rhr1aSpDbDGefsvXNXj834eSrzqvF49B6KrC6T8i6CQTzAnmWBnZYtbBV5wzNPpd4DMRmjhXRsUv/CiPi1BklhlRKTgz23PpivOQf6Xs45Fur3uQKfoW7Ed+agHKL2swhYivuxrckNr0VTNoI1dgBVlNLZO9EoOZSC1tgrgQgR4KkcNdZeyPCQqRH7W/OG+Iwf4ejT/axjXEBHJyQaq2ExhKTgY=
+install:
+  - npm install
+script:
+  - bash ./scripts/travis_script.sh
+after_success:
+  - bash ./scripts/travis_after_success.sh
