@@ -8,10 +8,6 @@
 import expect = require('expect.js');
 
 import {
-  toArray
-} from '../../../lib/algorithm/iteration';
-
-import {
   Stack, StackIterator
 } from '../../../lib/collections/stack';
 
