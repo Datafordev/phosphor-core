@@ -32,19 +32,9 @@
     "lib/**/*.js"
   ],
   "keywords": [
-    "arrays",
     "algorithm",
     "collections",
-    "deque",
-    "disposable",
-    "iteration",
-    "messaging",
-    "patterns",
-    "properties",
-    "queue",
-    "range",
-    "signaling",
-    "stack"
+    "patterns"
   ],
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
   "contributors": [
