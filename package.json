@@ -47,6 +47,12 @@
     "stack"
   ],
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
+  "contributors": [
+    "A. Darian <git@darian.af>",
+    "Dave Willmer <dave.willmer@gmail.com>",
+    "S. Chris Colbert <sccolbert@gmail.com>",
+    "Steven Silvester <steven.silvester@gmail.com>"
+  ],
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/phosphorjs/phosphor-core/issues"
