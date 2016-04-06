@@ -76,5 +76,4 @@ import { Signal } from 'phosphor-core/lib/patterns/signaling';
 
 Any bundler which understands the CommonJS format and the NodeJS module
 lookup semantics can be used with this package.
-
 [Webpack](https://webpack.github.io/) is known to work well for this purpose.
