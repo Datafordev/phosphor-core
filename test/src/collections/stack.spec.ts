@@ -8,8 +8,13 @@
 import expect = require('expect.js');
 
 import {
+  toArray
+} from '../../../lib/algorithm/iteration';
+
+import {
   Stack, StackIterator
 } from '../../../lib/collections/stack';
+
 
 describe('collections/stack', () => {
 
@@ -49,13 +54,13 @@ describe('collections/stack', () => {
 
       it('should return 0 for an empty stack', () => {
         let stack = new Stack();
-        expect(stack.length).to.equal(0);
+        expect(stack.length).to.be(0);
       });
 
       it('should return the number of items in a stack', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let stack = new Stack(data);
-        expect(stack.length).to.equal(data.length);
+        expect(stack.length).to.be(data.length);
       });
 
     });
@@ -65,7 +70,7 @@ describe('collections/stack', () => {
       it('should return the value at the back of a stack', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let stack = new Stack(data);
-        expect(stack.back).to.equal(data[data.length - 1]);
+        expect(stack.back).to.be(data[data.length - 1]);
       });
 
     });
@@ -77,7 +82,7 @@ describe('collections/stack', () => {
         let stack = new Stack(data);
         let iterator = stack.iter()
         expect(iterator).to.be.a(StackIterator);
-        expect(iterator.next()).to.equal(data[data.length - 1]);
+        expect(iterator.next()).to.be(data[data.length - 1]);
       });
 
     });
@@ -85,10 +90,31 @@ describe('collections/stack', () => {
     describe('#pushBack()', () => {
 
       it('should add a value to the back of the stack', () => {
-        let data = 99;
+        let stack = new Stack([1, 2, 3, 4]);
+
+        expect(stack.isEmpty).to.be(false);
+        expect(stack.length).to.be(4);
+        expect(stack.back).to.be(4);
+
+        stack.pushBack(99);
+
+        expect(stack.isEmpty).to.be(false);
+        expect(stack.length).to.be(5);
+        expect(stack.back).to.be(99);
+      });
+
+      it('should add a value to an empty stack', () => {
         let stack = new Stack();
-        expect(stack.pushBack(data)).to.be(void 0);
-        expect(stack.popBack()).to.equal(data);
+
+        expect(stack.isEmpty).to.be(true);
+        expect(stack.length).to.be(0);
+        expect(stack.back).to.be(void 0);
+
+        stack.pushBack(99);
+
+        expect(stack.isEmpty).to.be(false);
+        expect(stack.length).to.be(1);
+        expect(stack.back).to.be(99);
       });
 
     });
@@ -96,11 +122,19 @@ describe('collections/stack', () => {
     describe('#popBack()', () => {
 
       it('should remove and return the value at the back of the stack', () => {
-        let data = 99;
-        let stack = new Stack();
-        expect(stack.pushBack(data)).to.equal(void 0);
-        expect(stack.popBack()).to.equal(data);
-        expect(stack.popBack()).to.equal(void 0);
+        let data = [99, 98, 97];
+        let stack = new Stack(data);
+
+        expect(stack.isEmpty).to.be(false);
+        expect(stack.length).to.be(3);
+
+        expect(stack.popBack()).to.be(data[2]);
+        expect(stack.popBack()).to.be(data[1]);
+        expect(stack.popBack()).to.be(data[0]);
+        expect(stack.popBack()).to.be(void 0);
+
+        expect(stack.isEmpty).to.be(true);
+        expect(stack.length).to.be(0);
       });
 
     });
@@ -110,9 +144,11 @@ describe('collections/stack', () => {
       it('should remove all values from the stack', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let stack = new Stack(data);
-        expect(stack.clear()).to.equal(void 0);
-        expect(stack.popBack()).to.equal(void 0);
-        expect(stack.length).to.equal(0);
+        stack.clear();
+        expect(stack.back).to.be(void 0);
+        expect(stack.popBack()).to.be(void 0);
+        expect(stack.isEmpty).to.be(true);
+        expect(stack.length).to.be(0);
       });
 
     });
@@ -124,14 +160,11 @@ describe('collections/stack', () => {
     describe('#clone()', () => {
 
       it('should create a clone of the original iterator', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new StackIterator(data, data.length - 1);
+        let stack = new Stack([99, 98, 97, 96, 95]);
+        let iterator = stack.iter();
         let clone = iterator.clone();
         expect(clone).to.be.a(StackIterator);
-        for (let i = 0, len = data.length; i < len; ++i) {
-          expect(iterator.next()).to.equal(clone.next());
-        }
-        expect(iterator.next() === void 0).to.equal(clone.next() === void 0);
+        expect(toArray(iterator)).to.eql(toArray(clone));
       });
 
     });
@@ -139,9 +172,20 @@ describe('collections/stack', () => {
     describe('#iter()', () => {
 
       it('should return `this`', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new StackIterator(data, data.length - 1);
+        let stack = new Stack([99, 98, 97, 96, 95]);
+        let iterator = stack.iter();
         expect(iterator.iter()).to.be(iterator);
+      });
+
+    });
+
+    describe('#next()', () => {
+
+      it('should return the next value from the iterator', () => {
+        let data = [99, 98, 97, 96, 95];
+        let stack = new Stack(data);
+        let iterator = stack.iter();
+        expect(toArray(iterator)).to.eql(data.slice().reverse());
       });
 
     });
