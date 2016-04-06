@@ -64,10 +64,14 @@ Earlier versions may also work, but come with no guarantees.
 Bundle for the Browser
 ----------------------
 
-The modules in this package designed to be required directly:
+The modules in this package are designed to be required directly:
 
 ```typescript
 var Signal = require('phosphor-core/lib/patterns/signaling').Signal;
+
+// or via ES6 import
+
+import { Signal } from 'phosphor-core/lib/patterns/signaling';
 ```
 
 Any bundler which understands the CommonJS format and the NodeJS module
