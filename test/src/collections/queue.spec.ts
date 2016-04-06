@@ -8,8 +8,13 @@
 import expect = require('expect.js');
 
 import {
+  toArray
+} from '../../../lib/algorithm/iteration';
+
+import {
   Queue, QueueIterator
 } from '../../../lib/collections/queue';
+
 
 describe('collections/queue', () => {
 
@@ -49,13 +54,13 @@ describe('collections/queue', () => {
 
       it('should return 0 for an empty queue', () => {
         let queue = new Queue();
-        expect(queue.length).to.equal(0);
+        expect(queue.length).to.be(0);
       });
 
       it('should return the number of items in a queue', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let queue = new Queue(data);
-        expect(queue.length).to.equal(data.length);
+        expect(queue.length).to.be(data.length);
       });
 
     });
@@ -65,7 +70,7 @@ describe('collections/queue', () => {
       it('should return the value at the back of a queue', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let queue = new Queue(data);
-        expect(queue.back).to.equal(data[data.length - 1]);
+        expect(queue.back).to.be(data[data.length - 1]);
       });
 
     });
@@ -75,7 +80,7 @@ describe('collections/queue', () => {
       it('should return the value at the front of a queue', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let queue = new Queue(data);
-        expect(queue.front).to.equal(data[0]);
+        expect(queue.front).to.be(data[0]);
       });
 
     });
@@ -87,7 +92,7 @@ describe('collections/queue', () => {
         let queue = new Queue(data);
         let iterator = queue.iter()
         expect(iterator).to.be.a(QueueIterator);
-        expect(iterator.next()).to.equal(data[0]);
+        expect(iterator.next()).to.be(data[0]);
       });
 
     });
@@ -95,10 +100,35 @@ describe('collections/queue', () => {
     describe('#pushBack()', () => {
 
       it('should add a value to the back of the queue', () => {
-        let data = 99;
+        let queue = new Queue([1, 2, 3, 4]);
+
+        expect(queue.isEmpty).to.be(false);
+        expect(queue.length).to.be(4);
+        expect(queue.front).to.be(1);
+        expect(queue.back).to.be(4);
+
+        queue.pushBack(99);
+
+        expect(queue.isEmpty).to.be(false);
+        expect(queue.length).to.be(5);
+        expect(queue.front).to.be(1);
+        expect(queue.back).to.be(99);
+      });
+
+      it('should add a value to an empty queue', () => {
         let queue = new Queue();
-        expect(queue.pushBack(data)).to.be(void 0);
-        expect(queue.back).to.equal(data);
+
+        expect(queue.isEmpty).to.be(true);
+        expect(queue.length).to.be(0);
+        expect(queue.front).to.be(void 0);
+        expect(queue.back).to.be(void 0);
+
+        queue.pushBack(99);
+
+        expect(queue.isEmpty).to.be(false);
+        expect(queue.length).to.be(1);
+        expect(queue.front).to.be(99);
+        expect(queue.back).to.be(99);
       });
 
     });
@@ -106,11 +136,19 @@ describe('collections/queue', () => {
     describe('#popFront()', () => {
 
       it('should remove and return the value at the front of the queue', () => {
-        let data = [99, 98];
+        let data = [99, 98, 97];
         let queue = new Queue(data);
-        expect(queue.popFront()).to.equal(data[0]);
-        expect(queue.popFront()).to.equal(data[1]);
-        expect(queue.popFront()).to.equal(void 0);
+
+        expect(queue.isEmpty).to.be(false);
+        expect(queue.length).to.be(3);
+
+        expect(queue.popFront()).to.be(data[0]);
+        expect(queue.popFront()).to.be(data[1]);
+        expect(queue.popFront()).to.be(data[2]);
+        expect(queue.popFront()).to.be(void 0);
+
+        expect(queue.isEmpty).to.be(true);
+        expect(queue.length).to.be(0);
       });
 
     });
@@ -120,11 +158,12 @@ describe('collections/queue', () => {
       it('should remove all values from the queue', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let queue = new Queue(data);
-        expect(queue.clear()).to.equal(void 0);
-        expect(queue.back).to.equal(void 0);
-        expect(queue.front).to.equal(void 0);
-        expect(queue.popFront()).to.equal(void 0);
-        expect(queue.length).to.equal(0);
+        queue.clear();
+        expect(queue.back).to.be(void 0);
+        expect(queue.front).to.be(void 0);
+        expect(queue.popFront()).to.be(void 0);
+        expect(queue.isEmpty).to.be(true);
+        expect(queue.length).to.be(0);
       });
 
     });
@@ -136,14 +175,11 @@ describe('collections/queue', () => {
     describe('#clone()', () => {
 
       it('should create a clone of the original iterator', () => {
-        let data = [99, 98, 97, 96, 95];
-        let iterator = (new Queue(data)).iter();
+        let queue = new Queue([99, 98, 97, 96, 95]);
+        let iterator = queue.iter();
         let clone = iterator.clone();
         expect(clone).to.be.a(QueueIterator);
-        for (let i = 0, len = data.length; i < len; ++i) {
-          expect(iterator.next()).to.equal(clone.next());
-        }
-        expect(iterator.next() === void 0).to.equal(clone.next() === void 0);
+        expect(toArray(iterator)).to.eql(toArray(clone));
       });
 
     });
@@ -151,9 +187,20 @@ describe('collections/queue', () => {
     describe('#iter()', () => {
 
       it('should return `this`', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = (new Queue(data)).iter();
+        let queue = new Queue([99, 98, 97, 96, 95]);
+        let iterator = queue.iter();
         expect(iterator.iter()).to.be(iterator);
+      });
+
+    });
+
+    describe('#next()', () => {
+
+      it('should return the next value from the iterator', () => {
+        let data = [99, 98, 97, 96, 95];
+        let queue = new Queue(data);
+        let iterator = queue.iter();
+        expect(toArray(iterator)).to.eql(data);
       });
 
     });
