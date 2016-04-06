@@ -8,7 +8,7 @@
 import expect = require('expect.js');
 
 import {
-  Queue, QueueIterator, QueueNode
+  Queue, QueueIterator
 } from '../../../lib/collections/queue';
 
 describe('collections/queue', () => {
@@ -121,6 +121,8 @@ describe('collections/queue', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let queue = new Queue(data);
         expect(queue.clear()).to.equal(void 0);
+        expect(queue.back).to.equal(void 0);
+        expect(queue.front).to.equal(void 0);
         expect(queue.popFront()).to.equal(void 0);
         expect(queue.length).to.equal(0);
       });
@@ -157,6 +159,5 @@ describe('collections/queue', () => {
     });
 
   });
-
 
 });

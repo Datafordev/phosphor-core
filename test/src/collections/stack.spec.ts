@@ -148,5 +148,4 @@ describe('collections/stack', () => {
 
   });
 
-
 });
