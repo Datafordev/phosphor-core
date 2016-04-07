@@ -138,6 +138,58 @@ function toArray<T>(iterable: Iterable<T>): T[] {
 
 
 /**
+ * An iterator which is always empty.
+ */
+export
+class EmptyIterator<T> implements IIterator<T> {
+  /**
+   * Construct a new empty iterator.
+   */
+  constructor() { }
+
+  /**
+   * Create an iterator over the object's values.
+   *
+   * @returns A reference to `this` iterator.
+   */
+  iter(): this {
+    return this;
+  }
+
+  /**
+   * Create an independent clone of the current iterator.
+   *
+   * @returns A new independent clone of the current iterator.
+   */
+  clone(): EmptyIterator<T> {
+    return new EmptyIterator<T>();
+  }
+
+  /**
+   * Get the next value from the iterator.
+   *
+   * @returns Always `undefined`.
+   */
+  next(): T {
+    return void 0;
+  }
+}
+
+
+/**
+ * The namespace for the `EmptyIterator` class statics.
+ */
+export
+namespace EmptyIterator {
+  /**
+   * A singleton insance of an empty iterator.
+   */
+  export
+  const instance = new EmptyIterator<any>();
+}
+
+
+/**
  * An iterator for an array-like object.
  *
  * #### Notes
