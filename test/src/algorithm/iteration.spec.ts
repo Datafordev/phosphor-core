@@ -140,6 +140,14 @@ describe('algorithm/iteration', () => {
 
   describe('EmptyIterator', () => {
 
+    describe('.instance', () => {
+
+      it('should be an `EmptyIterator` insance', () => {
+        expect(EmptyIterator.instance).to.be.an(EmptyIterator);
+      });
+
+    });
+
     describe('#constructor()', () => {
 
       it('should accept no arguments', () => {
