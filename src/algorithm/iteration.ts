@@ -182,7 +182,7 @@ class EmptyIterator<T> implements IIterator<T> {
 export
 namespace EmptyIterator {
   /**
-   * A singleton insance of an empty iterator.
+   * A singleton instance of an empty iterator.
    */
   export
   const instance = new EmptyIterator<any>();
