@@ -8,7 +8,7 @@
 import expect = require('expect.js');
 
 import {
-  ArrayIterator, EnumerateIterator, FilterIterator, MapIterator,
+  ArrayIterator, EmptyIterator, EnumerateIterator, FilterIterator, MapIterator,
   StrideIterator, ZipIterator, each, enumerate, every, filter, iter, map,
   reduce, some, stride, toArray, zip
 } from '../../../lib/algorithm/iteration';
@@ -131,6 +131,60 @@ describe('algorithm/iteration', () => {
         expect(iterator.next()).to.be(data[5]);
         expect(iterator.next()).to.be(void 0);
         iterator.index = 99;
+        expect(iterator.next()).to.be(void 0);
+      });
+
+    });
+
+  });
+
+  describe('EmptyIterator', () => {
+
+    describe('.instance', () => {
+
+      it('should be an `EmptyIterator` insance', () => {
+        expect(EmptyIterator.instance).to.be.an(EmptyIterator);
+      });
+
+    });
+
+    describe('#constructor()', () => {
+
+      it('should accept no arguments', () => {
+        let iterator = new EmptyIterator<number>();
+        expect(iterator).to.be.an(EmptyIterator);
+      });
+
+    });
+
+    describe('#clone()', () => {
+
+      it('should create a clone of the original iterator', () => {
+        let iterator = new EmptyIterator<number>();
+        let clone = iterator.clone();
+        expect(clone).to.be.an(EmptyIterator);
+        expect(toArray(iterator)).to.eql([]);
+        expect(toArray(clone)).to.eql([]);
+      });
+
+    });
+
+    describe('#iter()', () => {
+
+      it('should return `this`', () => {
+        let iterator = new EmptyIterator<number>();
+        expect(iterator.iter()).to.be(iterator);
+      });
+
+    });
+
+    describe('#next()', () => {
+
+      it('should always return `undefined`', () => {
+        let iterator = new EmptyIterator<number>();
+        expect(iterator.next()).to.be(void 0);
+        expect(iterator.next()).to.be(void 0);
+        expect(iterator.next()).to.be(void 0);
         expect(iterator.next()).to.be(void 0);
       });
 
