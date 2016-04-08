@@ -8,11 +8,11 @@
 
 
 /**
- * An object which can be the target of the iteration algorithms.
+ * An object which can be the target of iteration algorithms.
  *
  * #### Notes
  * An iterable object is either a builtin array-like object, or a user
- * defined object which implements the [[IIterable]] interface.
+ * defined object which implements [[IIterable]].
  */
 export
 type Iterable<T> = IIterable<T> | IArrayLike<T>;
