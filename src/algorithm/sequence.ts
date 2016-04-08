@@ -12,14 +12,11 @@ import {
 
 /**
  * A finite-length sequence of indexable values.
- *
- * #### Notes
- * A slice is commonly used to provide a view into a collection.
  */
 export
-interface ISlice<T> extends IIterable<T> {
+interface ISequence<T> extends IIterable<T> {
   /**
-   * The length of the slice.
+   * The length of the sequence.
    *
    * #### Notes
    * This is a read-only property.
@@ -31,18 +28,20 @@ interface ISlice<T> extends IIterable<T> {
    *
    * @param index - The positive integer index of interest.
    *
-   * @returns The value at the specified index, or `undefined` if
-   *   the index is non-integral, negative, or is out of range.
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * For performance, **no bounds checking is performed**.
    */
-  get(index: number): T;
+  at(index: number): T;
 }
 
 
 /**
- * A slice which allows mutation of the underlying values.
+ * A sequence which allows mutation of the underlying values.
  */
 export
-interface IMutableSlice<T> extends ISlice<T> {
+interface IMutableSequence<T> extends ISequence<T> {
   /**
    * Set the value at the specified index.
    *
@@ -51,8 +50,7 @@ interface IMutableSlice<T> extends ISlice<T> {
    * @param value - The value to set at the specified index.
    *
    * #### Notes
-   * This is a no-op if the index is non-integral, negative, or
-   * is out of range.
+   * For performance, **no bounds checking is performed**.
    */
   set(index: number, value: T): void;
 }

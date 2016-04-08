@@ -10,8 +10,8 @@ import {
 } from './iteration';
 
 import {
-  ISlice
-} from './slice';
+  ISequence
+} from './sequence';
 
 
 /**
@@ -50,7 +50,7 @@ function range(start: number, stop?: number, step?: number): Range {
  * An object which produces a range of evenly spaced values.
  */
 export
-class Range implements ISlice<number> {
+class Range implements ISequence<number> {
   /**
    * Construct a new range.
    *
@@ -122,16 +122,12 @@ class Range implements ISlice<number> {
    *
    * @param index - The positive integer index of interest.
    *
-   * @returns The value at the specified index, or `undefined` if
-   *   the index is non-integral, negative, or is out of range.
+   * @returns The value at the specified index.
+   *
+   * #### Notes
+   * For performance, **no bounds checking is performed**.
    */
-  get(index: number): number {
-    if (Math.floor(index) !== index) {
-      return void 0;
-    }
-    if (index < 0 || index >= this._length) {
-      return void 0;
-    }
+  at(index: number): number {
     return this._start + this._step * index;
   }
 
