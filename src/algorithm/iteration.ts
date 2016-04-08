@@ -8,17 +8,6 @@
 
 
 /**
- * An object which can be the target of iteration algorithms.
- *
- * #### Notes
- * An iterable object is either a builtin array-like object, or a user
- * defined object which implements [[IIterable]].
- */
-export
-type Iterable<T> = IIterable<T> | IArrayLike<T>;
-
-
-/**
  * An object which can produce an iterator over its values.
  */
 export
@@ -100,11 +89,30 @@ interface IArrayLike<T> {
 
 
 /**
+ * An object for which an iterator can be produced.
+ *
+ * #### Notes
+ * An iterable object is either a user-defined [[IIterable]] object,
+ * or a builtin array-like object.
+ *
+ * The [[iter]] function can be used to produce an [[IIterator]] for
+ * the object, which allows iteration algorithms to operate on user-
+ * defined objects and builtin array-like objects in a uniform way.
+ */
+export
+type Iterable<T> = IIterable<T> | IArrayLike<T>;
+
+
+/**
  * Create an iterator for an iterable object.
  *
  * @param iterable - The iterable object of interest.
  *
  * @returns A new iterator for the iterable object.
+ *
+ * #### Notes
+ * This function allows iteration algorithms to operate on user-defined
+ * objects and builtin array-like objects in a uniform way.
  */
 export
 function iter<T>(iterable: Iterable<T>): IIterator<T> {
