@@ -92,14 +92,14 @@ type MutableSequenceOrArrayLike<T> = IMutableSequence<T> | IArrayLike<T>;
  * sequence types and builtin array-like objects in a uniform fashion.
  */
 export
-function seq<T>(object: SequenceOrArrayLike<T>): ISequence<T> {
-  let sequence: ISequence<T>;
+function asSequence<T>(object: SequenceOrArrayLike<T>): ISequence<T> {
+  let seq: ISequence<T>;
   if (typeof (object as any).at === 'function') {
-    sequence = object as ISequence<T>;
+    seq = object as ISequence<T>;
   } else {
-    sequence = new ArraySequence(object as IArrayLike<T>);
+    seq = new ArraySequence(object as IArrayLike<T>);
   }
-  return sequence;
+  return seq;
 }
 
 
@@ -115,14 +115,14 @@ function seq<T>(object: SequenceOrArrayLike<T>): ISequence<T> {
  * sequence types and builtin array-like objects in a uniform fashion.
  */
 export
-function mseq<T>(object: MutableSequenceOrArrayLike<T>): IMutableSequence<T> {
-  let sequence: IMutableSequence<T>;
+function asMutableSequence<T>(object: MutableSequenceOrArrayLike<T>): IMutableSequence<T> {
+  let seq: IMutableSequence<T>;
   if (typeof (object as any).set === 'function') {
-    sequence = object as IMutableSequence<T>;
+    seq = object as IMutableSequence<T>;
   } else {
-    sequence = new MutableArraySequence(object as IArrayLike<T>);
+    seq = new MutableArraySequence(object as IArrayLike<T>);
   }
-  return sequence;
+  return seq;
 }
 
 
