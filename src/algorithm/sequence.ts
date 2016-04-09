@@ -11,28 +11,6 @@ import {
 
 
 /**
- * An object which can be the target of sequence algorithms.
- *
- * #### Notes
- * A sequence is either a builtin array-like object, or a user defined
- * object which implements [[ISequence]].
- */
-export
-type Sequence<T> = ISequence<T> | IArrayLike<T>;
-
-
-/**
- * An object which can be the target of mutable sequence algorithms.
- *
- * #### Notes
- * A mutable sequence is either a builtin mutable array-like object,
- * or a user defined object which implements [[IMutableSequence]].
- */
-export
-type MutableSequence<T> = IMutableSequence<T> | IArrayLike<T>;
-
-
-/**
  * A finite-length sequence of indexable values.
  */
 export
@@ -79,19 +57,42 @@ interface IMutableSequence<T> extends ISequence<T> {
 
 
 /**
- * Cast an object into a sequence.
- *
- * @param object - The sequence-like object of interest.
- *
- * @returns An object which implements [[ISequence]].
+ * A type alias for a sequence or builtin array-like object.
  *
  * #### Notes
- * If the object already implements [[ISequence]], it will be returned
- * directly. Otherwise, the object is a builtin array-like object, and
- * a new array sequence will be returned.
+ * The [[seq]] function can be used to produce an [[ISequence]] for
+ * objects of this type. This allows sequence algorithms to operate
+ * on these objects in a uniform fashion.
  */
 export
-function asSequence<T>(object: Sequence<T>): ISequence<T> {
+type SequenceOrArrayLike<T> = ISequence<T> | IArrayLike<T>;
+
+
+/**
+ * A type alias for a mutable sequence or builtin array-like object.
+ *
+ * #### Notes
+ * The [[mseq]] function can be used to produce an [[IMutableSequence]]
+ * for objects of this type. This allows sequence algorithms to operate
+ * on these objects in a uniform fashion.
+ */
+export
+type MutableSequenceOrArrayLike<T> = IMutableSequence<T> | IArrayLike<T>;
+
+
+/**
+ * Cast a sequence or array-like object to a sequence.
+ *
+ * @param object - The sequence or array-like object of interest.
+ *
+ * @returns A sequence for the given object.
+ *
+ * #### Notes
+ * This function allows sequence algorithms to operate on user-defined
+ * sequence types and builtin array-like objects in a uniform fashion.
+ */
+export
+function seq<T>(object: SequenceOrArrayLike<T>): ISequence<T> {
   let sequence: ISequence<T>;
   if (typeof (object as any).at === 'function') {
     sequence = object as ISequence<T>;
@@ -103,19 +104,18 @@ function asSequence<T>(object: Sequence<T>): ISequence<T> {
 
 
 /**
- * Cast an object into a mutable sequence.
+ * Cast a mutable sequence or array-like object to a mutable sequence.
  *
- * @param object - The sequence-like object of interest.
+ * @param object - The sequence or array-like object of interest.
  *
- * @returns An object which implements [[IMutableSequence]].
+ * @returns A mutable sequence for the given object.
  *
  * #### Notes
- * If the object already implements [[IMutableSequence]], it will be
- * returned directly. Otherwise, the object is a builtin array-like
- * object, and a new mutable array sequence will be returned.
+ * This function allows sequence algorithms to operate on user-defined
+ * sequence types and builtin array-like objects in a uniform fashion.
  */
 export
-function asMutableSequence<T>(object: MutableSequence<T>): IMutableSequence<T> {
+function mseq<T>(object: MutableSequenceOrArrayLike<T>): IMutableSequence<T> {
   let sequence: IMutableSequence<T>;
   if (typeof (object as any).set === 'function') {
     sequence = object as IMutableSequence<T>;
