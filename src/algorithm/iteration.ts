@@ -71,8 +71,7 @@ interface IIterator<T> extends IIterable<T> {
  * An object which behaves like an array for property access.
  *
  * #### Notes
- * This interface represents the builtin JS array-like objects which
- * have a length and index-based property access.
+ * This interface represents the builtin JS array-like objects.
  */
 export
 interface IArrayLike<T> {
@@ -89,38 +88,35 @@ interface IArrayLike<T> {
 
 
 /**
- * An object for which an iterator can be produced.
+ * A type alias for an iterable or builtin array-like object.
  *
  * #### Notes
- * An iterable object is either a user-defined [[IIterable]] object,
- * or a builtin array-like object.
- *
  * The [[iter]] function can be used to produce an [[IIterator]] for
- * the object, which allows iteration algorithms to operate on user-
- * defined objects and builtin array-like objects in a uniform way.
+ * objects of this type. This allows iteration algorithms to operate
+ * on these objects in a uniform fashion.
  */
 export
-type Iterable<T> = IIterable<T> | IArrayLike<T>;
+type IterableOrArrayLike<T> = IIterable<T> | IArrayLike<T>;
 
 
 /**
- * Create an iterator for an iterable object.
+ * Create an iterator for an iterable or array-like object.
  *
- * @param iterable - The iterable object of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @returns A new iterator for the iterable object.
+ * @returns A new iterator for the given object.
  *
  * #### Notes
  * This function allows iteration algorithms to operate on user-defined
- * objects and builtin array-like objects in a uniform way.
+ * iterable types and builtin array-like objects in a uniform fashion.
  */
 export
-function iter<T>(iterable: Iterable<T>): IIterator<T> {
+function iter<T>(object: IterableOrArrayLike<T>): IIterator<T> {
   let it: IIterator<T>;
-  if (typeof (iterable as any).iter === 'function') {
-    it = (iterable as IIterable<T>).iter();
+  if (typeof (object as any).iter === 'function') {
+    it = (object as IIterable<T>).iter();
   } else {
-    it = new ArrayIterator(iterable as IArrayLike<T>, 0);
+    it = new ArrayIterator(object as IArrayLike<T>, 0);
   }
   return it;
 }
@@ -129,15 +125,15 @@ function iter<T>(iterable: Iterable<T>): IIterator<T> {
 /**
  * Create an array from an iterable of values.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @returns A new array of values from the iterable.
+ * @returns A new array of values from the given object.
  */
 export
-function toArray<T>(iterable: Iterable<T>): T[] {
+function toArray<T>(object: IterableOrArrayLike<T>): T[] {
   let value: T;
   let result: T[] = [];
-  let it = iter(iterable);
+  let it = iter(object);
   while ((value = it.next()) !== void 0) {
     result[result.length] = value;
   }
@@ -272,18 +268,17 @@ class ArrayIterator<T> implements IIterator<T> {
 /**
  * Invoke a function for each value in an iterable.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @param fn - The callback function to invoke for each value in the
- *   iterable. The return value is ignored.
+ * @param fn - The callback function to invoke for each value.
  *
  * #### Notes
  * Iteration cannot be terminated early.
  */
 export
-function each<T>(iterable: Iterable<T>, fn: (value: T) => void): void {
+function each<T>(object: IterableOrArrayLike<T>, fn: (value: T) => void): void {
   let value: T;
-  let it = iter(iterable);
+  let it = iter(object);
   while ((value = it.next()) !== void 0) {
     fn(value);
   }
@@ -293,10 +288,9 @@ function each<T>(iterable: Iterable<T>, fn: (value: T) => void): void {
 /**
  * Test whether all values in an iterable satisfy a predicate.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @param fn - The predicate function to invoke for each value in the
- *   iterable. It returns whether the value passes the test.
+ * @param fn - The predicate function to invoke for each value.
  *
  * @returns `true` if all values pass the test, `false` otherwise.
  *
@@ -304,9 +298,9 @@ function each<T>(iterable: Iterable<T>, fn: (value: T) => void): void {
  * Iteration terminates on the first `false` predicate result.
  */
 export
-function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
+function every<T>(object: IterableOrArrayLike<T>, fn: (value: T) => boolean): boolean {
   let value: T;
-  let it = iter(iterable);
+  let it = iter(object);
   while ((value = it.next()) !== void 0) {
     if (!fn(value)) return false;
   }
@@ -317,10 +311,9 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
 /**
  * Test whether any value in an iterable satisfies a predicate.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @param fn - The predicate function to invoke for each value in the
- *   iterable. It returns whether the value passes the test.
+ * @param fn - The predicate function to invoke for each value.
  *
  * @returns `true` if any value passes the test, `false` otherwise.
  *
@@ -328,9 +321,9 @@ function every<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
  * Iteration terminates on the first `true` predicate result.
  */
 export
-function some<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
+function some<T>(object: IterableOrArrayLike<T>, fn: (value: T) => boolean): boolean {
   let value: T;
-  let it = iter(iterable);
+  let it = iter(object);
   while ((value = it.next()) !== void 0) {
     if (fn(value)) return true;
   }
@@ -341,10 +334,9 @@ function some<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
 /**
  * Summarize all values in an iterable using a reducer function.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @param fn - The reducer function to invoke for each value in the
- *   iterable. It returns the updated accumulator value.
+ * @param fn - The reducer function to invoke for each value.
  *
  * @param initial - The initial value for the accumulator.
  *
@@ -365,13 +357,13 @@ function some<T>(iterable: Iterable<T>, fn: (value: T) => boolean): boolean {
  * as the initial accumulator value.
  */
 export
-function reduce<T>(iterable: Iterable<T>, fn: (accumulator: T, value: T) => T): T;
+function reduce<T>(object: IterableOrArrayLike<T>, fn: (accumulator: T, value: T) => T): T;
 export
-function reduce<T, U>(iterable: Iterable<T>, fn: (accumulator: U, value: T) => U, initial: U): U;
+function reduce<T, U>(object: IterableOrArrayLike<T>, fn: (accumulator: U, value: T) => U, initial: U): U;
 export
-function reduce<T>(iterable: Iterable<T>, fn: (accumulator: any, value: T) => any, initial?: any): any {
+function reduce<T>(object: IterableOrArrayLike<T>, fn: (accumulator: any, value: T) => any, initial?: any): any {
   // Setup the iterator and fetch the first value.
-  let it = iter(iterable);
+  let it = iter(object);
   let first = it.next();
 
   // An empty iterator and no initial value is an error.
@@ -419,16 +411,15 @@ function reduce<T>(iterable: Iterable<T>, fn: (accumulator: any, value: T) => an
 /**
  * Filter an iterable for values which pass a test.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @param fn - The predicate function to invoke for each value in the
- *   iterable. It returns whether the value passes the test.
+ * @param fn - The predicate function to invoke for each value.
  *
  * @returns An iterator which yields the values which pass the test.
  */
 export
-function filter<T>(iterable: Iterable<T>, fn: (value: T) => boolean): FilterIterator<T> {
-  return new FilterIterator<T>(iter(iterable), fn);
+function filter<T>(object: IterableOrArrayLike<T>, fn: (value: T) => boolean): FilterIterator<T> {
+  return new FilterIterator<T>(iter(object), fn);
 }
 
 
@@ -510,16 +501,15 @@ class FilterIterator<T> implements IIterator<T> {
 /**
  * Transform the values of an iterable with a mapping function.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
- * @param fn - The mapping function to invoke for each value in the
- *   iterable. It returns the transformed value.
+ * @param fn - The mapping function to invoke for each value.
  *
  * @returns An iterator which yields the transformed values.
  */
 export
-function map<T, U>(iterable: Iterable<T>, fn: (value: T) => U): MapIterator<T, U> {
-  return new MapIterator<T, U>(iter(iterable), fn);
+function map<T, U>(object: IterableOrArrayLike<T>, fn: (value: T) => U): MapIterator<T, U> {
+  return new MapIterator<T, U>(iter(object), fn);
 }
 
 
@@ -599,15 +589,15 @@ class MapIterator<T, U> implements IIterator<U> {
 /**
  * Attach an incremental index to an iterable.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
  * @param start - The initial value of the index. The default is zero.
  *
  * @returns An iterator which yields `[index, value]` tuples.
  */
 export
-function enumerate<T>(iterable: Iterable<T>, start = 0): EnumerateIterator<T> {
-  return new EnumerateIterator<T>(iter(iterable), start);
+function enumerate<T>(object: IterableOrArrayLike<T>, start = 0): EnumerateIterator<T> {
+  return new EnumerateIterator<T>(iter(object), start);
 }
 
 
@@ -684,15 +674,15 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
 /**
  * Iterate several iterables in lockstep.
  *
- * @param iterables - The iterables of interest.
+ * @param objects - The iterables or array-like objects of interest.
  *
  * @returns An iterator which yields successive tuples of values where
  *   each value is taken in turn from the provided iterables. It will
  *   be as long as the shortest provided iterable.
  */
 export
-function zip<T>(...iterables: Iterable<T>[]): ZipIterator<T> {
-  return new ZipIterator<T>(iterables.map(iter));
+function zip<T>(...objects: IterableOrArrayLike<T>[]): ZipIterator<T> {
+  return new ZipIterator<T>(objects.map(iter));
 }
 
 
@@ -763,7 +753,7 @@ class ZipIterator<T> implements IIterator<T[]> {
 /**
  * Iterate over an iterable using a stepped increment.
  *
- * @param iterable - The iterable of values of interest.
+ * @param object - The iterable or array-like object of interest.
  *
  * @param step - The distance to step on each iteration. A value
  *   of less than `1` will behave the same as a value of `1`.
@@ -771,8 +761,8 @@ class ZipIterator<T> implements IIterator<T[]> {
  * @returns An iterator which traverses the iterable step-wise.
  */
 export
-function stride<T>(iterable: Iterable<T>, step: number): StrideIterator<T> {
-  return new StrideIterator<T>(iter(iterable), step);
+function stride<T>(object: IterableOrArrayLike<T>, step: number): StrideIterator<T> {
+  return new StrideIterator<T>(iter(object), step);
 }
 
 

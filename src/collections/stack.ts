@@ -6,7 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IIterable, IIterator, Iterable, each
+  IIterable, IIterator, IterableOrArrayLike, each
 } from '../algorithm/iteration';
 
 
@@ -18,9 +18,9 @@ class Stack<T> implements IIterable<T> {
   /**
    * Construct a new stack.
    *
-   * @param values - An iterator of initial values for the stack.
+   * @param values - The initial values for the stack.
    */
-  constructor(values?: Iterable<T>) {
+  constructor(values?: IterableOrArrayLike<T>) {
     if (values) each(values, value => { this.pushBack(value); });
   }
 

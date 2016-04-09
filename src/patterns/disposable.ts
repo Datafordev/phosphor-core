@@ -6,7 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  Iterable, each
+  IterableOrArrayLike, each
 } from '../algorithm/iteration';
 
 
@@ -87,9 +87,9 @@ class DisposableSet implements IDisposable {
   /**
    * Construct a new disposable set.
    *
-   * @param items - An iterable of initial disposable items.
+   * @param items - The initial disposable items.
    */
-  constructor(items?: Iterable<IDisposable>) {
+  constructor(items?: IterableOrArrayLike<IDisposable>) {
     if (items) each(items, item => { this._set.add(item); });
   }
 
