@@ -56,6 +56,14 @@ describe('algorithm/mutation', () => {
       expect(data).to.eql([4, 5, 2, 1, 3]);
     });
 
+    it('should be a no-op if `first >= last` index', () => {
+      let data = [1, 2, 3, 4, 5];
+      reverse(data, 2, 2);
+      expect(data).to.eql([1, 2, 3, 4, 5]);
+      reverse(data, 4, 2);
+      expect(data).to.eql([1, 2, 3, 4, 5]);
+    });
+
     it('should be a no-op for a sequence length `<= 1`', () => {
       let data = [1];
       let data2: any[] = [];
