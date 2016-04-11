@@ -138,6 +138,24 @@ class Stack<T> implements IIterable<T> {
     this._array.length = 0;
   }
 
+  /**
+   * Swap the contents of the stack with the contents of another.
+   *
+   * @param other - The other stack holding the contents to swap.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * All current iterators remain valid, but will now point to the
+   * contents of the other stack involved in the swap.
+   */
+  swap(other: Stack<T>): void {
+    let array = other._array;
+    other._array = this._array;
+    this._array = array;
+  }
+
   private _array: T[] = [];
 }
 

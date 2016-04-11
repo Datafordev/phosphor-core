@@ -241,6 +241,30 @@ class Deque<T> implements IIterable<T> {
     this._back = null;
   }
 
+  /**
+   * Swap the contents of the deque with the contents of another.
+   *
+   * @param other - The other deque holding the contents to swap.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * All current iterators remain valid, but will now point to the
+   * contents of the other deque involved in the swap.
+   */
+  swap(other: Deque<T>): void {
+    let length = other._length;
+    let front = other._front;
+    let back = other._back;
+    other._length = this._length;
+    other._front = this._front;
+    other._back = this._back;
+    this._length = length;
+    this._front = front;
+    this._back = back;
+  }
+
   private _length = 0;
   private _front: DequeNode<T> = null;
   private _back: DequeNode<T> = null;
