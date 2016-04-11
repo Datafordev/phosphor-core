@@ -361,6 +361,29 @@ describe('algorithm/iteration', () => {
 
     });
 
+    describe('#clone()', () => {
+
+      it('should create a clone of the original iterator', () => {
+        let dataA = iter([1, 2, 3, 4, 5]);
+        let dataB = iter([1, 4, 9, 16, 25]);
+        let dataC = iter([1, 8, 27, 64, 125]);
+        let data = [dataA, dataB, dataC];
+        let wanted = [
+          [1, 1, 1],
+          [2, 4, 8],
+          [3, 9, 27],
+          [4, 16, 64],
+          [5, 25, 125]
+        ];
+        let iterator = new ZipIterator(data);
+        let clone = iterator.clone();
+        expect(clone).to.be.a(ZipIterator);
+        expect(toArray(iterator)).to.eql(wanted);
+        expect(toArray(clone)).to.eql(wanted);
+      });
+
+    });
+
     describe('#iter()', () => {
 
       it('should return `this`', () => {
