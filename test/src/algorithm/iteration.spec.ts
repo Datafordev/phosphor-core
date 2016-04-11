@@ -27,59 +27,6 @@ describe('algorithm/iteration', () => {
 
     });
 
-    describe('#source', () => {
-
-      it('should be the array data source', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator(data, 0);
-        expect(iterator.source).to.be(data);
-      });
-
-      it('should be writable', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator([9, 8, 7], 0);
-        expect(iterator.source).to.not.be(data);
-        iterator.source = data;
-        expect(iterator.source).to.be(data);
-      });
-
-      it('should iterate the source array', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator([9, 8, 7], 0);
-        iterator.source = data;
-        expect(toArray(iterator)).to.eql(data);
-      });
-
-    });
-
-    describe('#index', () => {
-
-      it('should be the iteration index', () => {
-        let iterator = new ArrayIterator([0, 1, 2, 3, 4, 5], 2);
-        expect(iterator.index).to.be(2);
-        iterator.next();
-        expect(iterator.index).to.be(3);
-      });
-
-      it('should be writable', () => {
-        let iterator = new ArrayIterator([0, 1, 2, 3, 4, 5], 0);
-        expect(iterator.index).to.be(0);
-        iterator.index = 4;
-        expect(iterator.index).to.be(4);
-      });
-
-      it('should iterate from the specified index', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let iterator = new ArrayIterator(data, 0);
-        expect(toArray(iterator)).to.eql(data);
-        expect(iterator.index).to.be(6);
-        iterator.index = 0;
-        expect(toArray(iterator)).to.eql(data);
-        expect(iterator.index).to.be(6);
-      });
-
-    });
-
     describe('#clone()', () => {
 
       it('should create a clone of the original iterator', () => {
@@ -121,16 +68,6 @@ describe('algorithm/iteration', () => {
         let iterator = new ArrayIterator(data, 4);
         expect(iterator.next()).to.be(data[4]);
         expect(iterator.next()).to.be(data[5]);
-        expect(iterator.next()).to.be(void 0);
-        iterator.index = 0;
-        expect(iterator.next()).to.be(data[0]);
-        expect(iterator.next()).to.be(data[1]);
-        expect(iterator.next()).to.be(data[2]);
-        expect(iterator.next()).to.be(data[3]);
-        expect(iterator.next()).to.be(data[4]);
-        expect(iterator.next()).to.be(data[5]);
-        expect(iterator.next()).to.be(void 0);
-        iterator.index = 99;
         expect(iterator.next()).to.be(void 0);
       });
 
@@ -203,64 +140,6 @@ describe('algorithm/iteration', () => {
 
     });
 
-    describe('#source', () => {
-
-      it('should be the iterator data source', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new EnumerateIterator(src, 0);
-        expect(iterator.source).to.be(src);
-      });
-
-      it('should be writable', () => {
-        let src1 = iter([1, 2, 3]);
-        let src2 = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new EnumerateIterator(src1, 0);
-        expect(iterator.source).to.be(src1);
-        iterator.source = src2;
-        expect(iterator.source).to.be(src2);
-      });
-
-      it('should iterate the source', () => {
-        let data = [1, 2, 4, 8];
-        let wanted = [[0, 1], [1, 2], [2, 4], [3, 8]];
-        let iterator = new EnumerateIterator(iter([9, 8, 7]), 0);
-        iterator.source = iter(data);
-        expect(toArray(iterator)).to.eql(wanted);
-      });
-
-    });
-
-    describe('#index', () => {
-
-      it('should be the enumeration index', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new EnumerateIterator(src, 10);
-        expect(iterator.index).to.be(10);
-        iterator.next();
-        expect(iterator.index).to.be(11);
-      });
-
-      it('should be writable', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new EnumerateIterator(src, 10);
-        expect(iterator.index).to.be(10);
-        iterator.index = 0;
-        expect(iterator.index).to.be(0);
-      });
-
-      it('should enumerate from the index', () => {
-        let data = [1, 2, 4, 8];
-        let wanted = [[10, 1], [11, 2], [12, 4], [13, 8]];
-        let iterator = new EnumerateIterator(iter([9, 8, 7]), 10);
-        iterator.source = iter(data);
-        expect(toArray(iterator)).to.eql(wanted);
-        iterator.source = iter(data);
-        iterator.index = 10;
-        expect(toArray(iterator)).to.eql(wanted);
-      });
-
-    });
-
     describe('#clone()', () => {
 
       it('should create a clone of the original iterator', () => {
@@ -315,71 +194,6 @@ describe('algorithm/iteration', () => {
 
     });
 
-    describe('#source', () => {
-
-      it('should be the iterator data source', () => {
-        let filter = (x: number) => !!(x % 2);
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new FilterIterator(src, filter);
-        expect(iterator.source).to.be(src);
-      });
-
-      it('should be writable', () => {
-        let filter = (x: number) => !!(x % 2);
-        let src1 = iter([0, 1, 2, 3, 4, 5]);
-        let src2 = iter([10, 11, 12, 13, 14, 15]);
-        let iterator = new FilterIterator(src1, filter);
-        expect(iterator.source).to.be(src1);
-        iterator.source = src2;
-        expect(iterator.source).to.be(src2);
-      });
-
-      it('should filter the source', () => {
-        let wanted = [1, 3, 5];
-        let data = [0, 1, 2, 3, 4, 5];
-        let filter = (x: number) => !!(x % 2);
-        let iterator = new FilterIterator(iter(data), filter);
-        expect(toArray(iterator)).to.eql(wanted);
-        iterator.source = iter(data);
-        expect(toArray(iterator)).to.eql(wanted);
-      });
-
-    });
-
-    describe('#fn', () => {
-
-      it('should be the filter function', () => {
-        let filter = (x: number) => !!(x % 2);
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new FilterIterator(src, filter);
-        expect(iterator.fn).to.be(filter);
-      });
-
-      it('should be writable', () => {
-        let filter1 = (x: number) => !!(x % 2);
-        let filter2 = (x: number) => !!(x % 3);
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new FilterIterator(src, filter1);
-        expect(iterator.fn).to.be(filter1);
-        iterator.fn = filter2;
-        expect(iterator.fn).to.be(filter2);
-      });
-
-      it('should use the filter function', () => {
-        let wanted1 = [1, 3, 5];
-        let wanted2 = [1, 2, 4, 5];
-        let data = [0, 1, 2, 3, 4, 5];
-        let filter1 = (x: number) => !!(x % 2);
-        let filter2 = (x: number) => !!(x % 3);
-        let iterator = new FilterIterator(iter(data), filter1);
-        expect(toArray(iterator)).to.eql(wanted1);
-        iterator.source = iter(data);
-        iterator.fn = filter2;
-        expect(toArray(iterator)).to.eql(wanted2);
-      });
-
-    });
-
     describe('#clone()', () => {
 
       it('should create a clone of the original iterator', () => {
@@ -430,71 +244,6 @@ describe('algorithm/iteration', () => {
         let transformer = (x: number) => x ** 2;
         let iterator = new MapIterator(iter([1, 2, 3]), transformer);
         expect(iterator).to.be.a(MapIterator);
-      });
-
-    });
-
-    describe('#source', () => {
-
-      it('should be the iterator data source', () => {
-        let transformer = (x: number) => x ** 2;
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new MapIterator(src, transformer);
-        expect(iterator.source).to.be(src);
-      });
-
-      it('should be writable', () => {
-        let transformer = (x: number) => x ** 2;
-        let src1 = iter([0, 1, 2, 3, 4, 5]);
-        let src2 = iter([10, 11, 12, 13, 14, 15]);
-        let iterator = new MapIterator(src1, transformer);
-        expect(iterator.source).to.be(src1);
-        iterator.source = src2;
-        expect(iterator.source).to.be(src2);
-      });
-
-      it('should transform the source', () => {
-        let data = [0, 1, 2, 3, 4, 5];
-        let wanted = [0, 1, 4, 9, 16, 25];
-        let transformer = (x: number) => x ** 2;
-        let iterator = new MapIterator(iter(data), transformer);
-        expect(toArray(iterator)).to.eql(wanted);
-        iterator.source = iter(data);
-        expect(toArray(iterator)).to.eql(wanted);
-      });
-
-    });
-
-    describe('#fn', () => {
-
-      it('should be the transformer function', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let transformer = (x: number) => x ** 2;
-        let iterator = new MapIterator(src, transformer);
-        expect(iterator.fn).to.be(transformer);
-      });
-
-      it('should be writable', () => {
-        let transformer1 = (x: number) => x ** 2;
-        let transformer2 = (x: number) => x ** 3;
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new MapIterator(src, transformer1);
-        expect(iterator.fn).to.be(transformer1);
-        iterator.fn = transformer2;
-        expect(iterator.fn).to.be(transformer2);
-      });
-
-      it('should use the transformer function', () => {
-        let data = [0, 1, 2, 3];
-        let wanted1 = [0, 1, 4, 9];
-        let wanted2 = [0, 1, 8, 27];
-        let transformer1 = (x: number) => x ** 2;
-        let transformer2 = (x: number) => x ** 3;
-        let iterator = new MapIterator(iter(data), transformer1);
-        expect(toArray(iterator)).to.eql(wanted1);
-        iterator.source = iter(data);
-        iterator.fn = transformer2;
-        expect(toArray(iterator)).to.eql(wanted2);
       });
 
     });
@@ -556,63 +305,6 @@ describe('algorithm/iteration', () => {
 
     });
 
-    describe('#source', () => {
-
-      it('should be the iterator data source', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new StrideIterator(src, 2);
-        expect(iterator.source).to.be(src);
-      });
-
-      it('should be writable', () => {
-        let src1 = iter([0, 1, 2, 3, 4, 5]);
-        let src2 = iter([10, 11, 12, 13, 14, 15]);
-        let iterator = new StrideIterator(src1, 2);
-        expect(iterator.source).to.be(src1);
-        iterator.source = src2;
-        expect(iterator.source).to.be(src2);
-      });
-
-      it('should stride the source', () => {
-        let wanted = [0, 3, 6];
-        let data = [0, 1, 2, 3, 4, 5, 6];
-        let iterator = new StrideIterator(iter(data), 3);
-        expect(toArray(iterator)).to.eql(wanted);
-        iterator.source = iter(data);
-        expect(toArray(iterator)).to.eql(wanted);
-      });
-
-    });
-
-    describe('#step', () => {
-
-      it('should be the step amount', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new StrideIterator(src, 2);
-        expect(iterator.step).to.be(2);
-      });
-
-      it('should be writable', () => {
-        let src = iter([0, 1, 2, 3, 4, 5]);
-        let iterator = new StrideIterator(src, 2);
-        expect(iterator.step).to.be(2);
-        iterator.step = 5;
-        expect(iterator.step).to.be(5);
-      });
-
-      it('should use the step value', () => {
-        let wanted1 = [0, 2, 4, 6];
-        let wanted2 = [0, 3, 6];
-        let data = [0, 1, 2, 3, 4, 5, 6];
-        let iterator = new StrideIterator(iter(data), 2);
-        expect(toArray(iterator)).to.eql(wanted1);
-        iterator.source = iter(data);
-        iterator.step = 3;
-        expect(toArray(iterator)).to.eql(wanted2);
-      });
-
-    });
-
     describe('#clone()', () => {
 
       it('should create a clone of the original iterator', () => {
@@ -665,69 +357,6 @@ describe('algorithm/iteration', () => {
         let data = [dataA, dataB, dataC];
         let iterator = new ZipIterator(data);
         expect(iterator).to.be.a(ZipIterator);
-      });
-
-    });
-
-    describe('#source', () => {
-
-      it('should be the iterator data sources', () => {
-        let dataA = iter([1, 2, 3, 4, 5]);
-        let dataB = iter([1, 4, 9, 16, 25]);
-        let dataC = iter([1, 8, 27, 64, 125]);
-        let data = [dataA, dataB, dataC];
-        let iterator = new ZipIterator(data);
-        expect(iterator.source).to.be(data);
-      });
-
-      it('should be writable', () => {
-        let dataA = iter([1, 2, 3, 4, 5]);
-        let dataB = iter([1, 4, 9, 16, 25]);
-        let dataC = iter([1, 8, 27, 64, 125]);
-        let src1 = [dataA, dataB];
-        let src2 = [dataB, dataC];
-        let iterator = new ZipIterator(src1);
-        expect(iterator.source).to.be(src1);
-        iterator.source = src2;
-        expect(iterator.source).to.be(src2);
-      });
-
-      it('should zip the source', () => {
-        let dataA = iter([1, 2, 3, 4, 5]);
-        let dataB = iter([1, 4, 9, 16, 25]);
-        let dataC = iter([1, 8, 27, 64, 125]);
-        let dataD = iter([0, 1, 2, 3, 4]);
-        let src1 = [dataA, dataB];
-        let src2 = [dataC, dataD];
-        let wanted1 = [[1, 1], [2, 4], [3, 9], [4, 16], [5, 25]];
-        let wanted2 = [[1, 0], [8, 1], [27, 2], [64, 3], [125, 4]];
-        let iterator = new ZipIterator(src1);
-        expect(toArray(iterator)).to.eql(wanted1);
-        iterator.source = src2;
-        expect(toArray(iterator)).to.eql(wanted2);
-      });
-
-    });
-
-    describe('#clone()', () => {
-
-      it('should create a clone of the original iterator', () => {
-        let dataA = iter([1, 2, 3, 4, 5]);
-        let dataB = iter([1, 4, 9, 16, 25]);
-        let dataC = iter([1, 8, 27, 64, 125]);
-        let data = [dataA, dataB, dataC];
-        let wanted = [
-          [1, 1, 1],
-          [2, 4, 8],
-          [3, 9, 27],
-          [4, 16, 64],
-          [5, 25, 125]
-        ];
-        let iterator = new ZipIterator(data);
-        let clone = iterator.clone();
-        expect(clone).to.be.a(ZipIterator);
-        expect(toArray(iterator)).to.eql(wanted);
-        expect(toArray(clone)).to.eql(wanted);
       });
 
     });
@@ -854,7 +483,7 @@ describe('algorithm/iteration', () => {
 
   describe('filter()', () => {
 
-    it('should return a filtered iterator', () => {
+    it('should return a filter iterator', () => {
       let data = [0, 1, 2, 3, 4, 5];
       let wanted = [1, 3, 5];
       let iterator = filter(data, x => !!(x % 2));
@@ -866,7 +495,7 @@ describe('algorithm/iteration', () => {
 
   describe('map()', () => {
 
-    it('should return a transformed iterator', () => {
+    it('should return a map iterator', () => {
       let data = [0, 1, 2, 3, 4, 5];
       let wanted = [0, 1, 4, 9, 16, 25];
       let iterator = map(data, x => x ** 2);
@@ -938,7 +567,7 @@ describe('algorithm/iteration', () => {
 
   describe('stride()', () => {
 
-    it('should return an iterator with stepped values of the source', () => {
+    it('should return a stride iterator', () => {
       let data = [0, 1, 2, 3, 4, 5];
       let wanted = [0, 2, 4];
       let iterator = stride(data, 2);
@@ -950,17 +579,17 @@ describe('algorithm/iteration', () => {
 
   describe('zip()', () => {
 
-    it('should return an iterator with transposed values sources', () => {
+    it('should return a zip iterator', () => {
       let dataA = [1, 2, 3, 4, 5];
       let dataB = [1, 4, 9, 16, 25];
       let dataC = [1, 8, 27, 64, 125];
       let wanted = [
-          [1, 1, 1],
-          [2, 4, 8],
-          [3, 9, 27],
-          [4, 16, 64],
-          [5, 25, 125]
-        ];
+        [1, 1, 1],
+        [2, 4, 8],
+        [3, 9, 27],
+        [4, 16, 64],
+        [5, 25, 125]
+      ];
       let iterator = zip(dataA, dataB, dataC);
       expect(iterator).to.be.a(ZipIterator);
       expect(toArray(iterator)).to.eql(wanted);
