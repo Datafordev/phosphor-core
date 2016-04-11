@@ -159,7 +159,6 @@ describe('algorithm/range', () => {
 
     });
 
-
     describe('#at()', () => {
 
       it('get the value at the specified index', () => {
@@ -186,7 +185,6 @@ describe('algorithm/range', () => {
       });
 
     });
-
 
     describe('#iter()', () => {
 
