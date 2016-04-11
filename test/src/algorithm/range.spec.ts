@@ -49,6 +49,22 @@ describe('algorithm/range', () => {
       expect(() => { range(0, 1, 0); }).to.throwError();
     });
 
+    it('should have a zero length if start is greater than stop', () => {
+      let seq = range(10, 0);
+      expect(seq.length).to.be(0);
+      expect(seq.start).to.be(10);
+      expect(seq.stop).to.be(0);
+      expect(seq.step).to.be(1);
+    });
+
+    it('should have a zero length if the step is less than zero', () => {
+      let seq = range(0, 10, -1);
+      expect(seq.length).to.be(0);
+      expect(seq.start).to.be(0);
+      expect(seq.stop).to.be(10);
+      expect(seq.step).to.be(-1);
+    });
+
   });
 
   describe('Range', () => {
