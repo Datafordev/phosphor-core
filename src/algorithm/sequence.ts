@@ -30,8 +30,8 @@ interface ISequence<T> extends IIterable<T> {
    *
    * @returns The value at the specified index.
    *
-   * #### Notes
-   * For performance, **no bounds checking is performed**.
+   * #### Undefined Behavior
+   * An `index` which is non-integral or out of range.
    */
   at(index: number): T;
 }
@@ -49,8 +49,8 @@ interface IMutableSequence<T> extends ISequence<T> {
    *
    * @param value - The value to set at the specified index.
    *
-   * #### Notes
-   * For performance, **no bounds checking is performed**.
+   * #### Undefined Behavior
+   * An `index` which is non-integral or out of range.
    */
   set(index: number, value: T): void;
 }
@@ -169,8 +169,8 @@ class ArraySequence<T> implements ISequence<T> {
    *
    * @returns The value at the specified index.
    *
-   * #### Notes
-   * For performance, **no bounds checking is performed**.
+   * #### Undefined Behavior
+   * An `index` which is non-integral or out of range.
    */
   at(index: number): T {
     return this._source[index];
@@ -195,8 +195,8 @@ class MutableArraySequence<T> extends ArraySequence<T> implements IMutableSequen
    *
    * @param value - The value to set at the specified index.
    *
-   * #### Notes
-   * For performance, **no bounds checking is performed**.
+   * #### Undefined Behavior
+   * An `index` which is non-integral or out of range.
    */
   set(index: number, value: T): void {
     this._source[index] = value;

@@ -124,8 +124,8 @@ class Range implements ISequence<number> {
    *
    * @returns The value at the specified index.
    *
-   * #### Notes
-   * For performance, **no bounds checking is performed**.
+   * #### Undefined Behavior
+   * An `index` which is non-integral or out of range.
    */
   at(index: number): number {
     return this._start + this._step * index;
