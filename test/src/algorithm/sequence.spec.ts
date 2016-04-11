@@ -55,23 +55,6 @@ describe('algorithm/sequence', () => {
 
     });
 
-    describe('#source', () => {
-
-      it('should be the source array-like object', () => {
-        let src = [1, 2, 3, 4, 5];
-        let seq = new ArraySequence(src);
-        expect(seq.source).to.be(src);
-      });
-
-      it('should be writable', () => {
-        let src = [1, 2, 3, 4, 5];
-        let seq = new ArraySequence([]);
-        seq.source = src;
-        expect(seq.source).to.be(src);
-      });
-
-    });
-
     describe('#length', () => {
 
       it('should reflect the length of the source', () => {
