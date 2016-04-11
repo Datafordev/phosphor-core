@@ -206,7 +206,6 @@ describe('algorithm/range', () => {
 
     });
 
-
     describe('#next()', () => {
 
       it('should return the next item in the iterator', () => {
