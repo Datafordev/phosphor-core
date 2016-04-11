@@ -39,7 +39,7 @@ class Stack<T> implements IIterable<T> {
    * No changes.
    */
   get isEmpty(): boolean {
-    return this._stack.length === 0;
+    return this._array.length === 0;
   }
 
   /**
@@ -57,7 +57,7 @@ class Stack<T> implements IIterable<T> {
    * No changes.
    */
   get length(): number {
-    return this._stack.length;
+    return this._array.length;
   }
 
   /**
@@ -76,7 +76,7 @@ class Stack<T> implements IIterable<T> {
    * No changes.
    */
   get back(): T {
-    return this._stack[this._stack.length - 1];
+    return this._array[this._array.length - 1];
   }
 
   /**
@@ -91,7 +91,7 @@ class Stack<T> implements IIterable<T> {
    * No changes.
    */
   iter(): IIterator<T> {
-    return new StackIterator<T>(this._stack, this._stack.length - 1);
+    return new StackIterator<T>(this._array, this._array.length - 1);
   }
 
   /**
@@ -106,7 +106,7 @@ class Stack<T> implements IIterable<T> {
    * No changes.
    */
   pushBack(value: T): void {
-    this._stack.push(value);
+    this._array.push(value);
   }
 
   /**
@@ -122,7 +122,7 @@ class Stack<T> implements IIterable<T> {
    * Iterators pointing at the removed value are invalidated.
    */
   popBack(): T {
-    return this._stack.pop();
+    return this._array.pop();
   }
 
   /**
@@ -135,10 +135,10 @@ class Stack<T> implements IIterable<T> {
    * All current iterators are invalidated.
    */
   clear(): void {
-    this._stack.length = 0;
+    this._array.length = 0;
   }
 
-  private _stack: T[] = [];
+  private _array: T[] = [];
 }
 
 
@@ -149,12 +149,12 @@ class StackIterator<T> implements IIterator<T> {
   /**
    * Construct a new stack iterator.
    *
-   * @param stack - The stack of values of interest.
+   * @param array - The stack of values of interest.
    *
    * @param index - The index of the top of the stack.
    */
-  constructor(stack: T[], index: number) {
-    this._stack = stack;
+  constructor(array: T[], index: number) {
+    this._array = array;
     this._index = index;
   }
 
@@ -173,7 +173,7 @@ class StackIterator<T> implements IIterator<T> {
    * @returns A new iterator starting with the current value.
    */
   clone(): StackIterator<T> {
-    return new StackIterator<T>(this._stack, this._index);
+    return new StackIterator<T>(this._array, this._index);
   }
 
   /**
@@ -183,12 +183,12 @@ class StackIterator<T> implements IIterator<T> {
    *   iterator is exhausted.
    */
   next(): T {
-    if (this._index < 0 || this._index >= this._stack.length) {
+    if (this._index < 0 || this._index >= this._array.length) {
       return void 0;
     }
-    return this._stack[this._index--];
+    return this._array[this._index--];
   }
 
-  private _stack: T[];
+  private _array: T[];
   private _index: number;
 }
