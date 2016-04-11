@@ -90,7 +90,7 @@ class Stack<T> implements IIterable<T> {
    * #### Iterator Validity
    * No changes.
    */
-  iter(): StackIterator<T> {
+  iter(): IIterator<T> {
     return new StackIterator<T>(this._stack, this._stack.length - 1);
   }
 
@@ -145,7 +145,6 @@ class Stack<T> implements IIterable<T> {
 /**
  * An iterator for a stack.
  */
-export
 class StackIterator<T> implements IIterator<T> {
   /**
    * Construct a new stack iterator.

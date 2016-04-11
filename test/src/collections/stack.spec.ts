@@ -12,7 +12,7 @@ import {
 } from '../../../lib/algorithm/iteration';
 
 import {
-  Stack, StackIterator
+  Stack
 } from '../../../lib/collections/stack';
 
 
@@ -81,8 +81,7 @@ describe('collections/stack', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let stack = new Stack(data);
         let iterator = stack.iter()
-        expect(iterator).to.be.a(StackIterator);
-        expect(iterator.next()).to.be(data[data.length - 1]);
+        expect(toArray(iterator)).to.eql(data.slice().reverse());
       });
 
     });
@@ -155,7 +154,7 @@ describe('collections/stack', () => {
 
   });
 
-  describe('StackIterator', () => {
+  describe('typeof Stack#iter()', () => {
 
     describe('#clone()', () => {
 
@@ -163,7 +162,6 @@ describe('collections/stack', () => {
         let stack = new Stack([99, 98, 97, 96, 95]);
         let iterator = stack.iter();
         let clone = iterator.clone();
-        expect(clone).to.be.a(StackIterator);
         expect(toArray(iterator)).to.eql(toArray(clone));
       });
 

@@ -140,16 +140,8 @@ class ArraySequence<T> implements ISequence<T> {
    * @param source - The array-like object of interest.
    */
   constructor(source: IArrayLike<T>) {
-    this.source = source;
+    this._source = source;
   }
-
-  /**
-   * The source array for the array sequence.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IArrayLike<T>;
 
   /**
    * The length of the sequence.
@@ -158,7 +150,7 @@ class ArraySequence<T> implements ISequence<T> {
    * This is a read-only property.
    */
   get length(): number {
-    return this.source.length;
+    return this._source.length;
   }
 
   /**
@@ -167,7 +159,7 @@ class ArraySequence<T> implements ISequence<T> {
    * @returns A new iterator which traverses the object's values.
    */
   iter(): ArrayIterator<T> {
-    return new ArrayIterator(this.source, 0);
+    return new ArrayIterator(this._source, 0);
   }
 
   /**
@@ -181,8 +173,10 @@ class ArraySequence<T> implements ISequence<T> {
    * For performance, **no bounds checking is performed**.
    */
   at(index: number): T {
-    return this.source[index];
+    return this._source[index];
   }
+
+  protected _source: IArrayLike<T>;
 }
 
 
@@ -205,6 +199,6 @@ class MutableArraySequence<T> extends ArraySequence<T> implements IMutableSequen
    * For performance, **no bounds checking is performed**.
    */
   set(index: number, value: T): void {
-    this.source[index] = value;
+    this._source[index] = value;
   }
 }

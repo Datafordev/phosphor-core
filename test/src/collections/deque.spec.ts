@@ -12,7 +12,7 @@ import {
 } from '../../../lib/algorithm/iteration';
 
 import {
-  Deque, DequeIterator
+  Deque
 } from '../../../lib/collections/deque';
 
 
@@ -91,8 +91,7 @@ describe('collections/deque', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let deque = new Deque(data);
         let iterator = deque.iter();
-        expect(iterator).to.be.a(DequeIterator);
-        expect(iterator.next()).to.be(data[0]);
+        expect(toArray(iterator)).to.eql(data);
       });
 
     });
@@ -226,7 +225,7 @@ describe('collections/deque', () => {
 
   });
 
-  describe('DequeIterator', () => {
+  describe('typeof Deque#iter()', () => {
 
     describe('#clone()', () => {
 
@@ -234,7 +233,6 @@ describe('collections/deque', () => {
         let deque = new Deque([99, 98, 97, 96, 95]);
         let iterator = deque.iter();
         let clone = iterator.clone();
-        expect(clone).to.be.a(DequeIterator);
         expect(toArray(iterator)).to.eql(toArray(clone));
       });
 

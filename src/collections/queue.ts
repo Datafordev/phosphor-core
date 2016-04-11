@@ -109,7 +109,7 @@ class Queue<T> implements IIterable<T> {
    * #### Iterator Validity
    * No changes.
    */
-  iter(): QueueIterator<T> {
+  iter(): IIterator<T> {
     return new QueueIterator<T>(this._front);
   }
 
@@ -194,7 +194,6 @@ class Queue<T> implements IIterable<T> {
 /**
  * An iterator for a queue.
  */
-export
 class QueueIterator<T> implements IIterator<T> {
   /**
    * Construct a new queue iterator.
@@ -244,11 +243,7 @@ class QueueIterator<T> implements IIterator<T> {
 
 /**
  * The node type for a queue.
- *
- * #### Notes
- * User code will not typically interact with this type directly.
  */
-export
 class QueueNode<T> {
   /**
    * The next node the queue.

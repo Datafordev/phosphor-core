@@ -209,25 +209,9 @@ class ArrayIterator<T> implements IIterator<T> {
    * @param start - The starting index for iteration.
    */
   constructor(source: IArrayLike<T>, start: number) {
-    this.source = source;
-    this.index = start;
+    this._source = source;
+    this._index = start;
   }
-
-  /**
-   * The source array for the array iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IArrayLike<T>;
-
-  /**
-   * The current index for the array iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  index: number;
 
   /**
    * Create an iterator over the object's values.
@@ -247,7 +231,7 @@ class ArrayIterator<T> implements IIterator<T> {
    * The source array is shared among clones.
    */
   clone(): ArrayIterator<T> {
-    return new ArrayIterator<T>(this.source, this.index);
+    return new ArrayIterator<T>(this._source, this._index);
   }
 
   /**
@@ -257,11 +241,14 @@ class ArrayIterator<T> implements IIterator<T> {
    *   if the iterator is exhausted.
    */
   next(): T {
-    if (this.index >= this.source.length) {
+    if (this._index >= this._source.length) {
       return void 0;
     }
-    return this.source[this.index++];
+    return this._source[this._index++];
   }
+
+  private _source: IArrayLike<T>;
+  private _index: number;
 }
 
 
@@ -437,25 +424,9 @@ class FilterIterator<T> implements IIterator<T> {
    *   the iterator. It returns whether the value passes the test.
    */
   constructor(source: IIterator<T>, fn: (value: T) => boolean) {
-    this.source = source;
-    this.fn = fn;
+    this._source = source;
+    this._fn = fn;
   }
-
-  /**
-   * The source iterator for the filter iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IIterator<T>;
-
-  /**
-   * The predicate function for the filter iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  fn: (value: T) => boolean;
 
   /**
    * Create an iterator over the object's values.
@@ -477,7 +448,7 @@ class FilterIterator<T> implements IIterator<T> {
    * The predicate function is shared among clones.
    */
   clone(): FilterIterator<T> {
-    return new FilterIterator<T>(this.source.clone(), this.fn);
+    return new FilterIterator<T>(this._source.clone(), this._fn);
   }
 
   /**
@@ -488,13 +459,16 @@ class FilterIterator<T> implements IIterator<T> {
    */
   next(): T {
     let value: T;
-    let fn = this.fn;
-    let it = this.source;
+    let fn = this._fn;
+    let it = this._source;
     while ((value = it.next()) !== void 0) {
       if (fn(value)) return value;
     }
     return void 0;
   }
+
+  private _source: IIterator<T>;
+  private _fn: (value: T) => boolean;
 }
 
 
@@ -527,25 +501,9 @@ class MapIterator<T, U> implements IIterator<U> {
    *   iterator. It returns the transformed value.
    */
   constructor(source: IIterator<T>, fn: (value: T) => U) {
-    this.source = source;
-    this.fn = fn;
+    this._source = source;
+    this._fn = fn;
   }
-
-  /**
-   * The source iterator for the map iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IIterator<T>;
-
-  /**
-   * The mapping function for the map iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  fn: (value: T) => U;
 
   /**
    * Create an iterator over the object's values.
@@ -567,7 +525,7 @@ class MapIterator<T, U> implements IIterator<U> {
    * The mapping function is shared among clones.
    */
   clone(): MapIterator<T, U> {
-    return new MapIterator<T, U>(this.source.clone(), this.fn);
+    return new MapIterator<T, U>(this._source.clone(), this._fn);
   }
 
   /**
@@ -577,12 +535,15 @@ class MapIterator<T, U> implements IIterator<U> {
    *   by the mapper, or `undefined` if the iterator is exhausted.
    */
   next(): U {
-    let value = this.source.next();
+    let value = this._source.next();
     if (value === void 0) {
       return void 0;
     }
-    return this.fn.call(void 0, value);
+    return this._fn.call(void 0, value);
   }
+
+  private _source: IIterator<T>;
+  private _fn: (value: T) => U;
 }
 
 
@@ -614,25 +575,9 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
    * @param start - The initial value of the index.
    */
   constructor(source: IIterator<T>, start: number) {
-    this.source = source;
-    this.index = start;
+    this._source = source;
+    this._index = start;
   }
-
-  /**
-   * The source iterator for the enumerate iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IIterator<T>;
-
-  /**
-   * The current index for the enumerate iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  index: number;
 
   /**
    * Create an iterator over the object's values.
@@ -652,7 +597,7 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
    * The source iterator must be cloneable.
    */
   clone(): EnumerateIterator<T> {
-    return new EnumerateIterator<T>(this.source.clone(), this.index);
+    return new EnumerateIterator<T>(this._source.clone(), this._index);
   }
 
   /**
@@ -662,12 +607,15 @@ class EnumerateIterator<T> implements IIterator<[number, T]> {
    *   the iterator is exhausted.
    */
   next(): [number, T] {
-    let value = this.source.next();
+    let value = this._source.next();
     if (value === void 0) {
       return void 0;
     }
-    return [this.index++, value];
+    return [this._index++, value];
   }
+
+  private _source: IIterator<T>;
+  private _index: number;
 }
 
 
@@ -697,16 +645,8 @@ class ZipIterator<T> implements IIterator<T[]> {
    * @param source - The iterators of interest.
    */
   constructor(source: IIterator<T>[]) {
-    this.source = source;
+    this._source = source;
   }
-
-  /**
-   * The array of source iterators for the zip iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IIterator<T>[];
 
   /**
    * Create an iterator over the object's values.
@@ -726,7 +666,7 @@ class ZipIterator<T> implements IIterator<T[]> {
    * The source iterators must be cloneable.
    */
   clone(): ZipIterator<T> {
-    return new ZipIterator<T>(this.source.map(it => it.clone()));
+    return new ZipIterator<T>(this._source.map(it => it.clone()));
   }
 
   /**
@@ -736,7 +676,7 @@ class ZipIterator<T> implements IIterator<T[]> {
    *   when the first source iterator is exhausted.
    */
   next(): T[] {
-    let iters = this.source;
+    let iters = this._source;
     let result = new Array<T>(iters.length);
     for (let i = 0, n = iters.length; i < n; ++i) {
       let value = iters[i].next();
@@ -747,6 +687,8 @@ class ZipIterator<T> implements IIterator<T[]> {
     }
     return result;
   }
+
+  private _source: IIterator<T>[];
 }
 
 
@@ -780,27 +722,9 @@ class StrideIterator<T> implements IIterator<T> {
    *   of less than `1` will behave the same as a value of `1`.
    */
   constructor(source: IIterator<T>, step: number) {
-    this.source = source;
-    this.step = step;
+    this._source = source;
+    this._step = step;
   }
-
-  /**
-   * The source iterator for the stride iterator.
-   *
-   * #### Notes
-   * User code can get/set this value for advanced use cases.
-   */
-  source: IIterator<T>;
-
-  /**
-   * The distance to step on each iteration.
-   *
-   * #### Notes
-   * A value of less than `1` will behave the same as a value of `1`.
-   *
-   * User code can get/set this value for advanced use cases.
-   */
-  step: number;
 
   /**
    * Create an iterator over the object's values.
@@ -820,7 +744,7 @@ class StrideIterator<T> implements IIterator<T> {
    * The source iterator must be cloneable.
    */
   clone(): StrideIterator<T> {
-    return new StrideIterator<T>(this.source.clone(), this.step);
+    return new StrideIterator<T>(this._source.clone(), this._step);
   }
 
   /**
@@ -830,14 +754,17 @@ class StrideIterator<T> implements IIterator<T> {
    *   when the source iterator is exhausted.
    */
   next(): T {
-    let value = this.source.next();
+    let value = this._source.next();
     if (value === void 0) {
       return void 0;
     }
-    let step = this.step;
+    let step = this._step;
     while (--step > 0) {
-      this.source.next();
+      this._source.next();
     }
     return value;
   }
+
+  private _source: IIterator<T>;
+  private _step: number;
 }
