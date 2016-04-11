@@ -234,15 +234,21 @@ describe('collections/stack', () => {
 
       it('should swap the contents with another vector', () => {
         let data1 = [0, 1, 2, 3, 4, 5];
-        let data2 = [5, 4, 3, 2, 1, 0];
+        let data2 = [5, 4, 3, 2];
         let vec1 = new Vector(data1);
         let vec2 = new Vector(data2);
+        expect(vec1.length).to.be(6);
+        expect(vec2.length).to.be(4);
         expect(toArray(vec1)).to.eql(data1);
         expect(toArray(vec2)).to.eql(data2);
         vec1.swap(vec2);
+        expect(vec1.length).to.be(4);
+        expect(vec2.length).to.be(6);
         expect(toArray(vec1)).to.eql(data2);
         expect(toArray(vec2)).to.eql(data1);
         vec2.swap(vec1);
+        expect(vec1.length).to.be(6);
+        expect(vec2.length).to.be(4);
         expect(toArray(vec1)).to.eql(data1);
         expect(toArray(vec2)).to.eql(data2);
       });
