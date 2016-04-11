@@ -6,7 +6,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayIterator, IterableOrArrayLike, each
+  ArrayIterator, IIterator, IterableOrArrayLike, each
 } from '../algorithm/iteration';
 
 import {
@@ -113,7 +113,7 @@ class Vector<T> implements IMutableSequence<T> {
    * #### Iterator Validity
    * No changes.
    */
-  iter(): VectorIterator<T> {
+  iter(): IIterator<T> {
     return new ArrayIterator<T>(this._array, 0);
   }
 
@@ -269,10 +269,3 @@ class Vector<T> implements IMutableSequence<T> {
 
   private _array: T[] = [];
 }
-
-
-/**
- * A type alias for a vector iterator.
- */
-export
-type VectorIterator<T> = ArrayIterator<T>;
