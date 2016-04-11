@@ -12,7 +12,7 @@ import {
 } from '../../../lib/algorithm/iteration';
 
 import {
-  Queue, QueueIterator
+  Queue
 } from '../../../lib/collections/queue';
 
 
@@ -91,8 +91,7 @@ describe('collections/queue', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let queue = new Queue(data);
         let iterator = queue.iter()
-        expect(iterator).to.be.a(QueueIterator);
-        expect(iterator.next()).to.be(data[0]);
+        expect(toArray(iterator)).to.eql(data);
       });
 
     });
@@ -170,7 +169,7 @@ describe('collections/queue', () => {
 
   });
 
-  describe('QueueIterator', () => {
+  describe('typeof Queue#iter()', () => {
 
     describe('#clone()', () => {
 
@@ -178,7 +177,6 @@ describe('collections/queue', () => {
         let queue = new Queue([99, 98, 97, 96, 95]);
         let iterator = queue.iter();
         let clone = iterator.clone();
-        expect(clone).to.be.a(QueueIterator);
         expect(toArray(iterator)).to.eql(toArray(clone));
       });
 

@@ -109,7 +109,7 @@ class Deque<T> implements IIterable<T> {
    * #### Iterator Validity
    * No changes.
    */
-  iter(): DequeIterator<T> {
+  iter(): IIterator<T> {
     return new DequeIterator<T>(this._front);
   }
 
@@ -250,7 +250,6 @@ class Deque<T> implements IIterable<T> {
 /**
  * An iterator for a deque.
  */
-export
 class DequeIterator<T> implements IIterator<T> {
   /**
    * Construct a new deque iterator.
@@ -300,11 +299,7 @@ class DequeIterator<T> implements IIterator<T> {
 
 /**
  * The node type for a deque.
- *
- * #### Notes
- * User code will not typically interact with this type directly.
  */
-export
 class DequeNode<T> {
   /**
    * The next node the deque.
