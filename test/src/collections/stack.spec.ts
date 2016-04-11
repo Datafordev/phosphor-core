@@ -152,6 +152,31 @@ describe('collections/stack', () => {
 
     });
 
+    describe('#swap()', () => {
+
+      it('should swap the contents with another stack', () => {
+        let data1 = [0, 1, 2, 3, 4, 5];
+        let data2 = [5, 4, 3, 2];
+        let stack1 = new Stack(data1);
+        let stack2 = new Stack(data2);
+        expect(stack1.length).to.be(6);
+        expect(stack2.length).to.be(4);
+        expect(toArray(stack1)).to.eql(data1.slice().reverse());
+        expect(toArray(stack2)).to.eql(data2.slice().reverse());
+        stack1.swap(stack2);
+        expect(stack1.length).to.be(4);
+        expect(stack2.length).to.be(6);
+        expect(toArray(stack1)).to.eql(data2.slice().reverse());
+        expect(toArray(stack2)).to.eql(data1.slice().reverse());
+        stack2.swap(stack1);
+        expect(stack1.length).to.be(6);
+        expect(stack2.length).to.be(4);
+        expect(toArray(stack1)).to.eql(data1.slice().reverse());
+        expect(toArray(stack2)).to.eql(data2.slice().reverse());
+      });
+
+    });
+
   });
 
   describe('typeof Stack#iter()', () => {

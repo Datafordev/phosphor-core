@@ -167,6 +167,31 @@ describe('collections/queue', () => {
 
     });
 
+    describe('#swap()', () => {
+
+      it('should swap the contents with another queue', () => {
+        let data1 = [0, 1, 2, 3, 4, 5];
+        let data2 = [5, 4, 3, 2];
+        let queue1 = new Queue(data1);
+        let queue2 = new Queue(data2);
+        expect(queue1.length).to.be(6);
+        expect(queue2.length).to.be(4);
+        expect(toArray(queue1)).to.eql(data1);
+        expect(toArray(queue2)).to.eql(data2);
+        queue1.swap(queue2);
+        expect(queue1.length).to.be(4);
+        expect(queue2.length).to.be(6);
+        expect(toArray(queue1)).to.eql(data2);
+        expect(toArray(queue2)).to.eql(data1);
+        queue2.swap(queue1);
+        expect(queue1.length).to.be(6);
+        expect(queue2.length).to.be(4);
+        expect(toArray(queue1)).to.eql(data1);
+        expect(toArray(queue2)).to.eql(data2);
+      });
+
+    });
+
   });
 
   describe('typeof Queue#iter()', () => {

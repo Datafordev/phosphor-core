@@ -223,6 +223,31 @@ describe('collections/deque', () => {
 
     });
 
+    describe('#swap()', () => {
+
+      it('should swap the contents with another deque', () => {
+        let data1 = [0, 1, 2, 3, 4, 5];
+        let data2 = [5, 4, 3, 2];
+        let deque1 = new Deque(data1);
+        let deque2 = new Deque(data2);
+        expect(deque1.length).to.be(6);
+        expect(deque2.length).to.be(4);
+        expect(toArray(deque1)).to.eql(data1);
+        expect(toArray(deque2)).to.eql(data2);
+        deque1.swap(deque2);
+        expect(deque1.length).to.be(4);
+        expect(deque2.length).to.be(6);
+        expect(toArray(deque1)).to.eql(data2);
+        expect(toArray(deque2)).to.eql(data1);
+        deque2.swap(deque1);
+        expect(deque1.length).to.be(6);
+        expect(deque2.length).to.be(4);
+        expect(toArray(deque1)).to.eql(data1);
+        expect(toArray(deque2)).to.eql(data2);
+      });
+
+    });
+
   });
 
   describe('typeof Deque#iter()', () => {

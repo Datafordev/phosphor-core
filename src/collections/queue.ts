@@ -185,6 +185,30 @@ class Queue<T> implements IIterable<T> {
     this._back = null;
   }
 
+  /**
+   * Swap the contents of the queue with the contents of another.
+   *
+   * @param other - The other queue holding the contents to swap.
+   *
+   * #### Complexity
+   * Constant.
+   *
+   * #### Iterator Validity
+   * All current iterators remain valid, but will now point to the
+   * contents of the other queue involved in the swap.
+   */
+  swap(other: Queue<T>): void {
+    let length = other._length;
+    let front = other._front;
+    let back = other._back;
+    other._length = this._length;
+    other._front = this._front;
+    other._back = this._back;
+    this._length = length;
+    this._front = front;
+    this._back = back;
+  }
+
   private _length = 0;
   private _front: QueueNode<T> = null;
   private _back: QueueNode<T> = null;
