@@ -9,10 +9,10 @@ import expect = require('expect.js');
 
 import {
   move, reverse, rotate
-} from '../../../lib/algorithm/mutation';
+} from '../../lib/mutation';
 
 
-describe('algorithm/mutation', () => {
+describe('mutation', () => {
 
   describe('move()', () => {
 

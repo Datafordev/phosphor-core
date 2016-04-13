@@ -7,7 +7,7 @@
 |----------------------------------------------------------------------------*/
 import {
   IterableOrArrayLike, each
-} from '../algorithm/iteration';
+} from './iteration';
 
 
 /**

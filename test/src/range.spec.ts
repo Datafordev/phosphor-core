@@ -9,14 +9,14 @@ import expect = require('expect.js');
 
 import {
   toArray
-} from '../../../lib/algorithm/iteration';
+} from '../../lib/iteration';
 
 import {
   Range, RangeIterator, range
-} from '../../../lib/algorithm/range';
+} from '../../lib/range';
 
 
-describe('algorithm/range', () => {
+describe('range', () => {
 
   describe('range()', () => {
 
