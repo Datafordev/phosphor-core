@@ -11,10 +11,10 @@ import {
   ArrayIterator, EmptyIterator, EnumerateIterator, FilterIterator, MapIterator,
   StrideIterator, ZipIterator, each, enumerate, every, filter, iter, map,
   reduce, some, stride, toArray, zip
-} from '../../../lib/algorithm/iteration';
+} from '../../lib/iteration';
 
 
-describe('algorithm/iteration', () => {
+describe('iteration', () => {
 
   describe('ArrayIterator', () => {
 

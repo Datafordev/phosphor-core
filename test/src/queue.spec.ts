@@ -9,14 +9,14 @@ import expect = require('expect.js');
 
 import {
   toArray
-} from '../../../lib/algorithm/iteration';
+} from '../../lib/iteration';
 
 import {
   Queue
-} from '../../../lib/collections/queue';
+} from '../../lib/queue';
 
 
-describe('collections/queue', () => {
+describe('queue', () => {
 
   describe('Queue', () => {
 

@@ -9,11 +9,11 @@ import expect = require('expect.js');
 
 import {
   IChangedArgs, AttachedProperty, clearPropertyData
-} from '../../../lib/patterns/properties';
+} from '../../lib/properties';
 
 import {
   Signal
-} from '../../../lib/patterns/signaling';
+} from '../../lib/signaling';
 
 
 class Model {
@@ -29,7 +29,7 @@ function expectArrayEqual(arr1: any[], arr2: any[]): void {
 }
 
 
-describe('patterns/properties', () => {
+describe('properties', () => {
 
   describe('AttachedProperty', () => {
 

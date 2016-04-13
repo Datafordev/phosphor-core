@@ -10,7 +10,7 @@ import expect = require('expect.js');
 import {
   ConflatableMessage, IMessageHandler, Message, MessageHook, clearMessageData,
   installMessageHook, postMessage, removeMessageHook, sendMessage
-} from '../../../lib/patterns/messaging';
+} from '../../lib/messaging';
 
 
 class Handler implements IMessageHandler {
@@ -64,7 +64,7 @@ const defer = (() => {
 })();
 
 
-describe('patterns/messaging', () => {
+describe('messaging', () => {
 
   describe('Message', () => {
 
