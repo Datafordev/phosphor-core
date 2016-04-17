@@ -330,7 +330,7 @@ describe('properties', () => {
         let oldvals: number[] = [];
         let newvals: number[] = [];
         let notify = new Signal<Model, IChangedArgs<number>>();
-        let changed = (args: IChangedArgs<number>, sender: Model) => {
+        let changed = (sender: Model, args: IChangedArgs<number>) => {
           models.push(sender);
           names.push(args.name);
           oldvals.push(args.oldValue);

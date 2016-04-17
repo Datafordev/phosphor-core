@@ -14,11 +14,17 @@ import {
 
 class TestObject {
 
-  static one = new Signal<TestObject, void>();
+  private _testObjectStructuralProperty: any;
+}
 
-  static two = new Signal<TestObject, number>();
 
-  static three = new Signal<TestObject, string[]>();
+namespace TestObject {
+
+  export const one = new Signal<TestObject, void>();
+
+  export const two = new Signal<TestObject, number>();
+
+  export const three = new Signal<TestObject, string[]>();
 }
 
 
@@ -46,12 +52,12 @@ class TestHandler {
     this.oneCount++;
   }
 
-  onTwo(args: number, sender: TestObject): void {
+  onTwo(sender: TestObject, args: number): void {
     this.twoSender = sender;
     this.twoValue = args;
   }
 
-  onThree(args: string[], sender: TestObject): void {
+  onThree(sender: TestObject, args: string[]): void {
     args.push(this.name);
   }
 
