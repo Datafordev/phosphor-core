@@ -10,20 +10,15 @@
 /**
  * A type alias for a slot function.
  *
- * @param args - The args object emitted with the signal.
- *
  * @param sender - The object emitting the signal.
+ *
+ * @param args - The args object emitted with the signal.
  *
  * #### Notes
  * A slot is invoked when a signal to which it is connected is emitted.
- *
- * The order of slot arguments is reversed from the type declaration.
- * Since the `args` is typically the most important parameter for the
- * slot, the reversal allows the slot to declare a `sender` only when
- * it is actually required.
  */
 export
-type Slot<T, U> = (args: U, sender: T) => void;
+type Slot<T, U> = (sender: T, args: U) => void;
 
 
 /**
@@ -69,7 +64,7 @@ type Slot<T, U> = (args: U, sender: T) => void;
  *   export const valueChanged = new Signal<SomeClass, number>();
  * }
  *
- * function logger(value: number, sender: SomeClass): void {
+ * function logger(sender: SomeClass, value: number): void {
  *   console.log(sender.name, value);
  * }
  *
@@ -469,7 +464,7 @@ function emit(sender: any, signal: Signal<any, any>, args: any): void {
  */
 function invokeSlot(conn: IConnection, args: any): void {
   try {
-    conn.slot.call(conn.thisArg, args, conn.sender);
+    conn.slot.call(conn.thisArg, conn.sender, args);
   } catch (err) {
     console.error(err);
   }
