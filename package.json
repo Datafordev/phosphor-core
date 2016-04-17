@@ -1,6 +1,6 @@
 {
   "name": "phosphor-core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "The core non-ui functionality of the PhosphorJS project.",
   "dependencies": {},
   "devDependencies": {
