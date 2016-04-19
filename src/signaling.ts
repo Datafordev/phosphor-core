@@ -158,7 +158,7 @@ interface ISignal<T, U> {
 
 
 /**
- * Define a signal property on an object.
+ * Define a signal property on a prototype object.
  *
  * @param target - The prototype for the class of interest.
  *
