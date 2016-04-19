@@ -5,31 +5,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  Signal
-} from './signaling';
-
-
-/**
- * The args object emitted with a property change notification signal.
- */
-export
-interface IChangedArgs<T> {
-  /**
-   * The name of the property which was changed.
-   */
-  name: string;
-
-  /**
-   * The old value of the property.
-   */
-  oldValue: T;
-
-  /**
-   * The new value of the property.
-   */
-  newValue: T;
-}
 
 
 /**
@@ -105,24 +80,8 @@ interface IAttachedPropertyOptions<T, U> {
    * value.
    *
    * This will **not** be called for the initial default value.
-   *
-   * This will be invoked **before** the notify signal is emitted.
    */
   changed?: (owner: T, oldValue: U, newValue: U) => void;
-
-  /**
-   * A signal emitted when the property value has changed.
-   *
-   * #### Notes
-   * This will be bound and emitted on behalf of the owner when the
-   * property is changed and the comparator indicates that the old
-   * value is not equal to the new value.
-   *
-   * This will **not** be emitted for the initial default value.
-   *
-   * This will be emitted **after** the changed callback is invoked.
-   */
-  notify?: Signal<T, IChangedArgs<U>>;
 }
 
 
@@ -153,7 +112,6 @@ class AttachedProperty<T, U> {
     this._coerce = options.coerce;
     this._compare = options.compare;
     this._changed = options.changed;
-    this._notify = options.notify;
   }
 
   /**
@@ -164,18 +122,6 @@ class AttachedProperty<T, U> {
    */
   get name(): string {
     return this._name;
-  }
-
-  /**
-   * Get the notify signal for the property.
-   *
-   * #### Notes
-   * This will be `undefined` if no notify signal was provided.
-   *
-   * This is a read-only property.
-   */
-  get notify(): Signal<T, IChangedArgs<U>> {
-    return this._notify;
   }
 
   /**
@@ -272,20 +218,10 @@ class AttachedProperty<T, U> {
    * Run the change notification if the given values are different.
    */
   private _maybeNotify(owner: T, oldValue: U, newValue: U): void {
-    let changed = this._changed;
-    let notify = this._notify;
-    if (!changed && !notify) {
+    if (!this._changed || this._compareValue(oldValue, newValue)) {
       return;
     }
-    if (this._compareValue(oldValue, newValue)) {
-      return;
-    }
-    if (changed) {
-      changed(owner, oldValue, newValue);
-    }
-    if (notify) {
-      notify.emit(owner, { name: this._name, oldValue, newValue });
-    }
+    this._changed.call(void 0, owner, oldValue, newValue);
   }
 
   private _value: U;
@@ -293,7 +229,6 @@ class AttachedProperty<T, U> {
   private _pid = nextPID();
   private _create: (owner: T) => U;
   private _coerce: (owner: T, value: U) => U;
-  private _notify: Signal<T, IChangedArgs<U>>;
   private _compare: (oldValue: U, newValue: U) => boolean;
   private _changed: (owner: T, oldValue: U, newValue: U) => void;
 }
