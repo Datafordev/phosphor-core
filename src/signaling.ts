@@ -164,6 +164,9 @@ interface ISignal<T, U> {
  *
  * @param name - The name of the signal property.
  *
+ * #### Notes
+ * The defined signal property is read-only.
+ *
  * #### Example
  * ```typescript
  * class SomeClass {
