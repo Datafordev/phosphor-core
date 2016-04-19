@@ -168,6 +168,11 @@ describe('signaling', () => {
 
     describe('#emit()', () => {
 
+      it('should be a no-op if there are no connection', () => {
+        let obj = new TestObject();
+        expect(() => { obj.one.emit(void 0); }).to.not.throwError();
+      });
+
       it('should pass the sender and args to the handlers', () => {
         let obj = new TestObject();
         let handler1 = new TestHandler();
