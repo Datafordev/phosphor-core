@@ -7,7 +7,7 @@
 |----------------------------------------------------------------------------*/
 import {
   IIterable, IIterator, IterableOrArrayLike, each
-} from './iteration';
+} from '../algorithm/iteration';
 
 
 /**

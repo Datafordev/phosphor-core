@@ -7,11 +7,11 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayIterator, IIterator, IterableOrArrayLike, each
-} from './iteration';
+} from '../algorithm/iteration';
 
 import {
   IMutableSequence
-} from './sequence';
+} from '../algorithm/sequence';
 
 
 /**

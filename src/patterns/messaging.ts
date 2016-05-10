@@ -7,11 +7,11 @@
 |----------------------------------------------------------------------------*/
 import {
   each, some
-} from './iteration';
+} from '../algorithm/iteration';
 
 import {
   Queue
-} from './queue';
+} from '../collections/queue';
 
 
 /**
