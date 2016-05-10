@@ -9,10 +9,10 @@ import expect = require('expect.js');
 
 import {
   topSort
-} from '../../lib/sorting';
+} from '../../../lib/algorithm/sorting';
 
 
-describe('sorting', () => {
+describe('algorithm/sorting', () => {
 
   describe('topSort()', () => {
 

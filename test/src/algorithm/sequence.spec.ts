@@ -9,14 +9,14 @@ import expect = require('expect.js');
 
 import {
   toArray
-} from '../../lib/iteration';
+} from '../../../lib/algorithm/iteration';
 
 import {
   ArraySequence, MutableArraySequence, asMutableSequence, asSequence
-} from '../../lib/sequence';
+} from '../../../lib/algorithm/sequence';
 
 
-describe('sequence', () => {
+describe('algorithm/sequence', () => {
 
   describe('asSequence()', () => {
 

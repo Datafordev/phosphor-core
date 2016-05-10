@@ -8,15 +8,15 @@
 import expect = require('expect.js');
 
 import {
-  Deque
-} from '../../lib/deque';
+  toArray
+} from '../../../lib/algorithm/iteration';
 
 import {
-  toArray
-} from '../../lib/iteration';
+  Deque
+} from '../../../lib/collections/deque';
 
 
-describe('deque', () => {
+describe('collections/deque', () => {
 
   describe('Deque', () => {
 

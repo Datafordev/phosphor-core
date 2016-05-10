@@ -9,7 +9,7 @@ import expect = require('expect.js');
 
 import {
   DisposableDelegate, DisposableSet, IDisposable
-} from '../../lib/disposable';
+} from '../../../lib/patterns/disposable';
 
 
 class TestDisposable implements IDisposable {
@@ -26,7 +26,7 @@ class TestDisposable implements IDisposable {
 }
 
 
-describe('disposable', () => {
+describe('patterns/disposable', () => {
 
   describe('DisposableDelegate', () => {
 

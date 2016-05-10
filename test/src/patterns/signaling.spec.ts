@@ -9,7 +9,7 @@ import expect = require('expect.js');
 
 import {
   ISignal, clearSignalData, defineSignal, disconnectReceiver, disconnectSender
-} from '../../lib/signaling';
+} from '../../../lib/patterns/signaling';
 
 
 class TestObject {
@@ -65,7 +65,7 @@ class TestHandler {
 }
 
 
-describe('signaling', () => {
+describe('patterns/signaling', () => {
 
   describe('ISignal', () => {
 

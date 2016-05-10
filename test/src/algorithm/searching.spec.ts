@@ -9,10 +9,10 @@ import expect = require('expect.js');
 
 import {
   find, findIndex, findLastIndex, indexOf, lastIndexOf, lowerBound, upperBound
-} from '../../lib/searching';
+} from '../../../lib/algorithm/searching';
 
 
-describe('searching', () => {
+describe('algorithm/searching', () => {
 
   describe('find()', () => {
 
