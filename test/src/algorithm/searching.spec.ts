@@ -8,7 +8,8 @@
 import expect = require('expect.js');
 
 import {
-  find, findIndex, findLastIndex, indexOf, lastIndexOf, lowerBound, upperBound
+  StringSearch, find, findIndex, findLastIndex, indexOf, lastIndexOf,
+  lowerBound, upperBound
 } from '../../../lib/algorithm/searching';
 
 
@@ -244,6 +245,51 @@ describe('algorithm/searching', () => {
       let cmp = (a: number, b: number) => a - b;
       let i = upperBound(data, 0, cmp);
       expect(i).to.be(0);
+    });
+
+  });
+
+  describe('StringSearch', () => {
+
+    describe('sumOfSquares()', () => {
+
+      it('should score the match using the sum of squared distances', () => {
+        let r1 = StringSearch.sumOfSquares('Foo Bar Baz', 'Faa');
+        let r2 = StringSearch.sumOfSquares('Foo Bar Baz', 'oBz');
+        let r3 = StringSearch.sumOfSquares('Foo Bar Baz', 'r B');
+        expect(r1.score).to.be(106);
+        expect(r1.indices).to.eql([0, 5, 9]);
+        expect(r2.score).to.be(117);
+        expect(r2.indices).to.eql([1, 4, 10]);
+        expect(r3.score).to.be(149);
+        expect(r3.indices).to.eql([6, 7, 8]);
+      });
+
+      it('should return `null` if no match is found', () => {
+        let r1 = StringSearch.sumOfSquares('Foo Bar Baz', 'faa');
+        let r2 = StringSearch.sumOfSquares('Foo Bar Baz', 'obz');
+        let r3 = StringSearch.sumOfSquares('Foo Bar Baz', 'raB');
+        expect(r1).to.be(null);
+        expect(r2).to.be(null);
+        expect(r3).to.be(null);
+      });
+
+    });
+
+    describe('highlight()', () => {
+
+      it('should interpolate text with <mark> tags', () => {
+        let r1 = StringSearch.sumOfSquares('Foo Bar Baz', 'Faa');
+        let r2 = StringSearch.sumOfSquares('Foo Bar Baz', 'oBz');
+        let r3 = StringSearch.sumOfSquares('Foo Bar Baz', 'r B');
+        let h1 = StringSearch.highlight('Foo Bar Baz', r1.indices);
+        let h2 = StringSearch.highlight('Foo Bar Baz', r2.indices);
+        let h3 = StringSearch.highlight('Foo Bar Baz', r3.indices);
+        expect(h1).to.be('<mark>F</mark>oo B<mark>a</mark>r B<mark>a</mark>z');
+        expect(h2).to.be('F<mark>o</mark>o <mark>B</mark>ar Ba<mark>z</mark>');
+        expect(h3).to.be('Foo Ba<mark>r B</mark>az');
+      });
+
     });
 
   });
